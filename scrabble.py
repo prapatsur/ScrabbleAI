@@ -194,13 +194,13 @@ def runGame(USERDATA, useHintBox = False):
 				stillPlaying = False
 
 		# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
-		if (hintKeyHit or TRAINING_FLAG) and not is_computer_turn(None, None, current_player) and not gameOver:
+		if (hintKeyHit or TRAINING_FLAG) and not is_computer_turn(current_player) and not gameOver:
 			place_hinted_tiles(theBoard, current_player, firstTurn)							
 
 		# Play action
-		if (actionKeyHit or TRAINING_FLAG or is_computer_turn(None, None, current_player)) and not gameOver:
+		if (actionKeyHit or TRAINING_FLAG or is_computer_turn(current_player)) and not gameOver:
 			#If it's the computer turn, we need to process its move first!
-			if is_computer_turn(None, None, current_player):
+			if is_computer_turn(current_player):
 				playedMove = current_player.executeTurn(firstTurn, DISPLAYSURF)
 			else:
 				playedMove = True
@@ -221,13 +221,13 @@ def runGame(USERDATA, useHintBox = False):
 						active = 0
 					current_player = players[active]
 					#If we were stuck before, we aren't anymore
-					if is_computer_turn(None, None, current_player):
+					if is_computer_turn(current_player):
 						AIstuck = False					
 				else:
 					if TRAINING_FLAG:
 						AIstuck = True
 					TICTIC.play()
-					if is_computer_turn(None, None, current_player):
+					if is_computer_turn(current_player):
 						print ("AI thinks it has a good move, but it doesn't")
 			else:
 				# ???
@@ -247,7 +247,7 @@ def runGame(USERDATA, useHintBox = False):
 
 			redrawEverything(theBoard, players[active], players, gameOver, gameMenu)	
 
-		if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not is_computer_turn(None, None, current_player) and not gameOver:
+		if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not is_computer_turn(current_player) and not gameOver:
 			SCRIFFLE.play()
 			players[active].shuffle()
 			active += 1
@@ -259,7 +259,7 @@ def runGame(USERDATA, useHintBox = False):
 				endGame(players, active, useHintBox, USERDATA, stuck = True)
 			redrawEverything(theBoard, players[active], players, gameOver, gameMenu)
 
-		if mouseClicked and not is_computer_turn(None, None, current_player) and not gameOver:
+		if mouseClicked and not is_computer_turn(current_player) and not gameOver:
 			inHand = tileGrab(mouseX, mouseY, inHand, theBoard, players[active])
 			redrawEverything(theBoard, players[active], players, gameOver, gameMenu)	
 
@@ -275,10 +275,8 @@ def next_player(players, active):
 	active = 1 - active
 	return players[active]
 
-def is_computer_turn(players, active, current_player = None):
-	if current_player:
-		return isinstance(current_player, ai.AI)
-	return isinstance(players[active], ai.AI)
+def is_computer_turn(current_player):
+	return isinstance(current_player, ai.AI)
 
 def place_hinted_tiles(theBoard, player, firstTurn):
 	revert_played_tiles(theBoard, player)
