@@ -88,16 +88,18 @@ class ScrabbleGame:
 		]
 		self.current_player = self.players[0]
 		self.active = 0
+		self.gameOver = False
 
 	def runGame(self, USERDATA, useHintBox = False):
 		players = self.players
 		# active = 0
 		firstTurn = True
-		gameOver = False
+		
 
 		gameMenu = menu.GameMenu(useHintBox)
 
-		redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)
+		# redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)
+		redrawEverything(self.the_board, self.current_player, players, self.gameOver, gameMenu)
 
 		inHand = None
 		stillPlaying = True
@@ -148,11 +150,11 @@ class ScrabbleGame:
 					stillPlaying = False
 
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
-			if (hintKeyHit or TRAINING_FLAG) and not self.is_computer_turn() and not gameOver:
+			if (hintKeyHit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
 				place_hinted_tiles(self.the_board, self.current_player, firstTurn)							
 
 			# Play action
-			if (actionKeyHit or TRAINING_FLAG or self.is_computer_turn()) and not gameOver:
+			if (actionKeyHit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
 				#If it's the computer turn, we need to process its move first!
 				if self.is_computer_turn():
 					playedMove = self.current_player.executeTurn(firstTurn, DISPLAYSURF)
@@ -163,7 +165,7 @@ class ScrabbleGame:
 
 					success = self.current_player.play(firstTurn)
 					if success == "END":
-						gameOver = True
+						self.gameOver = True
 						endGame(players, self.active, useHintBox, USERDATA)
 					elif success:
 						DINGDING.play()
@@ -194,26 +196,26 @@ class ScrabbleGame:
 						AIstuck = True
 					self.current_player = self.next_player()
 
-				redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)	
+				redrawEverything(self.the_board, players[self.active], players, self.gameOver, gameMenu)	
 
-			if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not gameOver:
+			if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 				SCRIFFLE.play()
 				players[self.active].shuffle()
 				self.current_player = self.next_player()
 				#If we're stuck AND the AI is stuck, end the game without subtracting points
 				if AIstuck:
-					gameOver = True
+					self.gameOver = True
 					endGame(players, self.active, useHintBox, USERDATA, stuck = True)
-				redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)
+				redrawEverything(self.the_board, players[self.active], players, self.gameOver, gameMenu)
 
-			if mouseClicked and not self.is_computer_turn() and not gameOver:
+			if mouseClicked and not self.is_computer_turn() and not self.gameOver:
 				inHand = tileGrab(mouseX, mouseY, inHand, self.the_board, players[self.active])
-				redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)	
+				redrawEverything(self.the_board, players[self.active], players, self.gameOver, gameMenu)	
 
-			if gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
+			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
 				stillPlaying = False
 
-			redrawNecessary(self.the_board, players, gameOver)
+			redrawNecessary(self.the_board, players, self.gameOver)
 			pygame.display.update()
 
 	def is_computer_turn(self):
