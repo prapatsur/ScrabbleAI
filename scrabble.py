@@ -147,13 +147,13 @@ class ScrabbleGame:
 					stillPlaying = False
 
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
-			if (hintKeyHit or TRAINING_FLAG) and not is_computer_turn(self.current_player) and not gameOver:
+			if (hintKeyHit or TRAINING_FLAG) and not self.is_computer_turn() and not gameOver:
 				place_hinted_tiles(self.the_board, self.current_player, firstTurn)							
 
 			# Play action
-			if (actionKeyHit or TRAINING_FLAG or is_computer_turn(self.current_player)) and not gameOver:
+			if (actionKeyHit or TRAINING_FLAG or self.is_computer_turn()) and not gameOver:
 				#If it's the computer turn, we need to process its move first!
-				if is_computer_turn(self.current_player):
+				if self.is_computer_turn():
 					playedMove = self.current_player.executeTurn(firstTurn, DISPLAYSURF)
 				else:
 					playedMove = True
@@ -174,13 +174,13 @@ class ScrabbleGame:
 							active = 0
 						self.current_player = players[active]
 						#If we were stuck before, we aren't anymore
-						if is_computer_turn(self.current_player):
+						if self.is_computer_turn():
 							AIstuck = False					
 					else:
 						if TRAINING_FLAG:
 							AIstuck = True
 						TICTIC.play()
-						if is_computer_turn(self.current_player):
+						if self.is_computer_turn():
 							print ("AI thinks it has a good move, but it doesn't")
 				else:
 					# ???
@@ -199,7 +199,7 @@ class ScrabbleGame:
 
 				redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)	
 
-			if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not is_computer_turn(self.current_player) and not gameOver:
+			if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not gameOver:
 				SCRIFFLE.play()
 				players[active].shuffle()
 				active += 1
@@ -211,7 +211,7 @@ class ScrabbleGame:
 					endGame(players, active, useHintBox, USERDATA, stuck = True)
 				redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)
 
-			if mouseClicked and not is_computer_turn(self.current_player) and not gameOver:
+			if mouseClicked and not self.is_computer_turn() and not gameOver:
 				inHand = tileGrab(mouseX, mouseY, inHand, self.the_board, players[active])
 				redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)	
 
@@ -220,6 +220,9 @@ class ScrabbleGame:
 
 			redrawNecessary(self.the_board, players, gameOver)
 			pygame.display.update()
+
+	def is_computer_turn(self):
+		return isinstance(self.current_player, ai.AI)
 
 def main():
 	USERDATA = loadUser()
@@ -275,8 +278,8 @@ def next_player(players, active):
 	active = 1 - active
 	return players[active]
 
-def is_computer_turn(current_player):
-	return isinstance(current_player, ai.AI)
+# def is_computer_turn(current_player):
+# 	return isinstance(current_player, ai.AI)
 
 def place_hinted_tiles(theBoard, player, firstTurn):
 	revert_played_tiles(theBoard, player)
