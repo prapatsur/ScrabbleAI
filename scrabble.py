@@ -138,7 +138,6 @@ def runGame(USERDATA, useHintBox = False):
 	player_cycle = itertools.cycle(players)
 
 	active = 0
-	# computerTurn = isinstance(players[active], ai.AI)
 	firstTurn = True
 	gameOver = False
 
@@ -220,7 +219,6 @@ def runGame(USERDATA, useHintBox = False):
 					if active >= len(players):
 						active = 0
 					current_player = players[active]
-					# computerTurn = isinstance(current_player, ai.AI)
 					#If we were stuck before, we aren't anymore
 					if is_computer_turn(players, active):
 						AIstuck = False					
@@ -254,7 +252,6 @@ def runGame(USERDATA, useHintBox = False):
 			active += 1
 			if active >= len(players):
 				active = 0
-			# computerTurn = is_computer_turn(players, active)
 			#If we're stuck AND the AI is stuck, end the game without subtracting points
 			if AIstuck:
 				gameOver = True
