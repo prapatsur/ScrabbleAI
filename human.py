@@ -5,6 +5,9 @@ so that a human-controlled player can make moves
 
 import pygame, player, tile
 
+# constand used in this file
+EMPTY_HAND = -1
+
 class Human(player.Player):
 	
 	TRAY_COLOR = (110, 92, 80)
@@ -16,19 +19,23 @@ class Human(player.Player):
 	'''
 	Initialize the human-controlled player (currently does nothing but call's player initialization)
 	'''
+	# note - if self.hand = -1 means there is no tile in hand
+	# or self.hand may contain index of tile in the tray
 	def __init__(self, name, theBoard, theBag, theHeuristic = None):
 		player.Player.__init__(self, name, theBoard, theBag, 10.0, theHeuristic)
-		self.hand = -1
+		self.hand = EMPTY_HAND
 	
 	'''
 	Try to grab a tile from the tray. If no tile is picked, return None, otherwise return the tile
 	grabbed and put the tile in-hand. If there is a tile in-hand, swap it with the tile chosen
 	'''
+	# This function is when user tries to grab a tile in the tray
+	# or swap a tile if there is a tile already in user's hand
 	def pickup(self, x, y):
 		index = self.getTrayIndex(x, y)
 		
 		if index != -1 and index < len(self.tray):
-			if self.hand == -1:
+			if self.hand == EMPTY_HAND:
 				#Pick up the tile
 				self.hand = index
 				return self.tray[index]
@@ -37,16 +44,16 @@ class Human(player.Player):
 				self.tray[index], self.tray[self.hand] = self.tray[self.hand], self.tray[index]
 
 		#if we swapped OR if we tried to pickup something else, dump it		
-		self.hand = -1
+		self.hand = EMPTY_HAND
 		return None
 		
 	'''
 	Removes the in-hand piece from the tray
 	'''
 	def placeTentative(self):		
-		if self.hand != -1:
+		if self.hand != EMPTY_HAND:
 			del self.tray[self.hand]
-			self.hand = -1
+			self.hand = EMPTY_HAND
 			
 	'''
 	Finds the index selected based on screen coordinates provided (returns None if out of range)
@@ -66,29 +73,21 @@ class Human(player.Player):
 					return index
 		return -1
 		
+	def draw_empty_tray(self, DISPLAYSURF):
+		""" Draw a basic tray """
+		pygame.draw.rect(DISPLAYSURF, Human.TRAY_COLOR, (Human.TRAY_LEFT, Human.TRAY_TOP, 
+						(tile.Tile.SQUARE_SIZE + tile.Tile.SQUARE_BORDER)*8, 
+						tile.Tile.SQUARE_SIZE + tile.Tile.SQUARE_BORDER*2))
+		
+	def draw_all_tiles_in_tray(self, DISPLAYSURF):
+		for i, t in enumerate(self.tray):
+			top = Human.TRAY_FIRSTTOP
+			left = Human.TRAY_FIRSTLEFT + (i * (tile.Tile.SQUARE_SIZE + tile.Tile.SQUARE_BORDER))
+			t.draw(left, top, DISPLAYSURF, highlight= (i == self.hand))
+
 	'''
 	Draws the tray at the bottom of the screen
 	'''	
 	def drawTray(self, DISPLAYSURF):
-		
-		#Draw a basic tray
-		pygame.draw.rect(DISPLAYSURF, Human.TRAY_COLOR, (Human.TRAY_LEFT, Human.TRAY_TOP, 
-						(tile.Tile.SQUARE_SIZE + tile.Tile.SQUARE_BORDER)*8, 
-						tile.Tile.SQUARE_SIZE + tile.Tile.SQUARE_BORDER*2))
-			
-		#Draw each tile
-		i = 0
-		for t in self.tray:
-			top = Human.TRAY_FIRSTTOP
-			left = (Human.TRAY_FIRSTLEFT + (i * (tile.Tile.SQUARE_SIZE + tile.Tile.SQUARE_BORDER)))
-			
-			if i == self.hand:
-				highlight = True
-			else:
-				highlight = False
-			
-			t.draw(left, top, DISPLAYSURF, highlight)	
-			i += 1
-
-
-	
+		self.draw_empty_tray(DISPLAYSURF)
+		self.draw_all_tiles_in_tray(DISPLAYSURF)

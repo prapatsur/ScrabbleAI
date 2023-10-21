@@ -34,7 +34,7 @@ class DictionaryWords:
 			startTime = time.time()
 	
 		#True if the word was in the dictionary
-		if self.words.has_key(word):
+		if word in self.words:
 			value = self.words[word]
 			success = True
 			if vocabulary > 0:
@@ -107,7 +107,7 @@ class DictionaryWords:
 	'''		
 	def saveUsage(self, filename):
 		with open(filename, 'w') as outfile:
-			keylist = self.words.keys()
+			keylist = list(self.words.keys())
 			keylist.sort()
 			for w in keylist:	
 				outfile.write(w+"\t"+str(self.words[w])+"\n")	
@@ -142,7 +142,7 @@ if __name__ == '__main__':
 		usages.append( dic.difficultyToUsage(i+1) )
 		
 	word = "PORK"
-	print word+": "+str(dic.words[word])	
+	print(word+": "+str(dic.words[word]))	
 	i = 0
 	for usage in usages:
 		i += 1
@@ -150,4 +150,4 @@ if __name__ == '__main__':
 			suffix = "n't"
 		else:
 			suffix = ""
-		print "Difficulty level "+str(i)+" could"+suffix+" play this. "+str(usage)	
+		print("Difficulty level "+str(i)+" could"+suffix+" play this. "+str(usage))	

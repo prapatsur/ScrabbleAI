@@ -51,7 +51,7 @@ class Player:
 		
 		self.usageLimit = self.theBoard.dictionary.difficultyToUsage(theDifficulty)
 		
-		print str(theDifficulty)+", "+str(self.usageLimit)
+		print(str(theDifficulty)+", "+str(self.usageLimit))
 		
 		if theHeuristic == None:
 			self.heuristic = heuristic.Heuristic()
@@ -97,7 +97,7 @@ class Player:
 		(tiles, points) = self.theBoard.play(firstTurn)
 		
 		#The play was successful, add the points to our score and grab new tiles
-		if tiles == None and points >= 0:
+		if tiles is None and points >= 0:
 			self.score += points
 			self.lastScore = points
 			gameContinues = self.grab()
@@ -150,10 +150,7 @@ class Player:
 	Returns the value of the players tray in points
 	'''
 	def trayValue(self):
-		value = 0
-		for tile in self.tray:
-			value += tile.points
-		return value
+		return sum(tile.points for tile in self.tray)
 		
 	'''
 	Gives the points to the player
@@ -210,7 +207,7 @@ class Player:
 			self.validationTime = 0
 			self.theBoard.dictionary.resetLookupTime()
 			self.theBoard.resetAllMetrics()
-			print [tile.letter for tile in self.tray]
+			print([tile.letter for tile in self.tray])
 			self.theWordsConsidered = ""
 			self.maxScore = -1
 				
@@ -313,7 +310,7 @@ class Player:
 				
 		if board.Board.DEBUG_ERRORS:
 			initTime = time.time()-startTime	
-			print "Considering: "	
+			print("Considering: ")	
 					
 		#Now tileSlots should contain all possible tile slots, from that seed position
 		progress = 0
@@ -349,7 +346,7 @@ class Player:
 			playedMove = True
 			
 			seedRatio = self.theBoard.calculateSeedRatio()
-			print "Seed Ratio: "+str(seedRatio)
+			print("Seed Ratio: "+str(seedRatio))
 			
 			#Update statistics about the play made
 			if board.Board.DEBUG_ERRORS:
@@ -383,26 +380,26 @@ class Player:
 			percentDictionaryValidation = self.theBoard.dictionaryValidationTime / totalValidationTime
 			percentScoring = self.theBoard.scoringTime / totalValidationTime
 		
-			print "AI: Wordsmith--Stats"
-			print "--------------------"
-			print "\t"+str(timeSpent)+" seconds required, of which,"
-			print "\t\t"+str(percentInitializing)+" percent was spent initializing seed positions."
-			print "\t\t"+str(percentValidating)+" percent was spent validating, in total."
-			print "\t\t"+str(percentLookup)+" percent was spent on dictionary lookups."
-			print "\t"+str(len(seeds))+" number of seed positions considered."
-			print "\t"+str(100.0*self.numValidations/(self.numRawValidations+1) - 100)+" percent complexity increase due to blanks."
-			print "\t"+str(self.numValidations)+" validations."
-			print "\t"+str(self.numValidations - self.theBoard.invalidWordCount)+" of those plays were possible."
-			print "\t"+str(self.theBoard.crosswordErrors)+" errors from invalid crossword formation."
-			print "\t"+str(1.0*self.numValidations/(len(tileSlots)+1))+" average validations per slot."
-			print "\t"+str(len(tileSlots))+" slot sets considered."
-			print "\t"+str(100.0 * numEliminated/originalSize)+" percent reduction by using trimming."
-			print "\tValidation details:"
-			print "\t\tQuick validation: "+str(percentQuickValidation)
-			print "\t\tCrossword generation: "+str(percentCrosswordValidation)
-			print "\t\tDictionary validation: "+str(percentDictionaryValidation)
-			print "\t\tScoring: "+str(percentScoring)
-			print "--------------------"
+			print("AI: Wordsmith--Stats")
+			print("--------------------")
+			print("\t"+str(timeSpent)+" seconds required, of which,")
+			print("\t\t"+str(percentInitializing)+" percent was spent initializing seed positions.")
+			print("\t\t"+str(percentValidating)+" percent was spent validating, in total.")
+			print("\t\t"+str(percentLookup)+" percent was spent on dictionary lookups.")
+			print("\t"+str(len(seeds))+" number of seed positions considered.")
+			print("\t"+str(100.0*self.numValidations/(self.numRawValidations+1) - 100)+" percent complexity increase due to blanks.")
+			print("\t"+str(self.numValidations)+" validations.")
+			print("\t"+str(self.numValidations - self.theBoard.invalidWordCount)+" of those plays were possible.")
+			print("\t"+str(self.theBoard.crosswordErrors)+" errors from invalid crossword formation.")
+			print("\t"+str(1.0*self.numValidations/(len(tileSlots)+1))+" average validations per slot.")
+			print("\t"+str(len(tileSlots))+" slot sets considered.")
+			print("\t"+str(100.0 * numEliminated/originalSize)+" percent reduction by using trimming.")
+			print("\tValidation details:")
+			print("\t\tQuick validation: "+str(percentQuickValidation))
+			print("\t\tCrossword generation: "+str(percentCrosswordValidation))
+			print("\t\tDictionary validation: "+str(percentDictionaryValidation))
+			print("\t\tScoring: "+str(percentScoring))
+			print("--------------------")
 			#print "Considered the following main words, when making a choice"
 			#print self.theWordsConsidered
 			

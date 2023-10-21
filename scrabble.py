@@ -23,7 +23,7 @@ Heuristic ideas:
 '''
 
 
-import pygame, random, sys, time
+import pygame, random, sys, time, itertools
 from pygame.locals import *
 
 #local files
@@ -34,7 +34,7 @@ pygame.init()
 #window setup
 DISPLAYSURF = pygame.display.set_mode((800, 600))
 ALPHASURF = DISPLAYSURF.convert_alpha()
-pygame.display.set_caption('Wordsmith!')
+pygame.display.set_caption('Wordsmith - Prapat edition')
 
 tile.Tile.initialize()
 
@@ -65,7 +65,8 @@ SCORE_COLOR = (55, 46, 40)
 #GAME MODES
 TRAINING_FLAG = False #With this set to true, entering training mode causes the AI to play against
 					  #itself automatically
-					
+
+#If training, make no sound					
 if TRAINING_FLAG:
 	TIC.set_volume(0.0)
 	TICTIC.set_volume(0.0)
@@ -78,12 +79,12 @@ if TRAINING_FLAG:
 ##=====================MAIN======================
 def main():
 	USERDATA = loadUser()
-	
+
 	theMenu = menu.MainMenu(USERDATA)
 	while True:
-		mouseClicked = False	
+		mouseClicked = False
 		mouseMoved = False
-		SELECTION = ""	
+		SELECTION = ""
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.quit()
@@ -94,59 +95,61 @@ def main():
 			elif event.type == MOUSEBUTTONUP:
 				mouseX, mouseY = event.pos
 				mouseClicked = True
-				
+
 		if mouseClicked:
 			SELECTION = theMenu.execute(mouseX, mouseY)
-			
+
 		if mouseMoved:
 			theMenu.update(mouseX, mouseY)
-			
+
 		if SELECTION == menu.MainMenu.NEW_GAME:
-			USERDATA["numGames"] += 1
-			saveUser(USERDATA)
-			theMenu.resetAchievements(USERDATA)
-			runGame(USERDATA)
-			theMenu.resetAchievements(USERDATA)
-			theMenu.redraw()
+			new_game(USERDATA, theMenu)
 		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
 			runGame(USERDATA, useHintBox=True)
-			theMenu.redraw()
+			# theMenu.redraw()
 		elif SELECTION == menu.MainMenu.EXIT_GAME:
 			pygame.quit()
 			sys.exit()
-			
+		theMenu.redraw()
 		pygame.display.update()
+
+
+def new_game(USERDATA, theMenu):
+	USERDATA["numGames"] += 1
+	saveUser(USERDATA)
+	theMenu.resetAchievements(USERDATA)
+	runGame(USERDATA)
+	theMenu.resetAchievements(USERDATA)
+
 
 
 	
 def runGame(USERDATA, useHintBox = False):	
 	theBag = bag.Bag()
-	
 	theBoard = board.Board()
-	
-	players = []
-	
+
 	h = heuristic.notEndGameHeuristic(heuristic.tileQuantileHeuristic(.5, 1.0))
-	
-	players.append(human.Human("Player", theBoard, theBag))
-	players.append(ai.AI(theBoard, theBag, theHeuristic = h, theDifficulty = 10.0))
-	#players.append(ai.AI(theBoard, theBag))
-	
+
+	players = [
+		human.Human("Player", theBoard, theBag),
+		ai.AI(theBoard, theBag, theHeuristic=h, theDifficulty=10.0),
+	]
+	# Create an iterator that cycles through the list indefinitely
+	player_cycle = itertools.cycle(players)
+
 	active = 0
-	
-	computerTurn = isinstance(players[active], ai.AI)	
+	# computerTurn = isinstance(players[active], ai.AI)
 	firstTurn = True
 	gameOver = False
-	
-	
+
 	gameMenu = menu.GameMenu(useHintBox)
-	
+
 	redrawEverything(theBoard, players[active], players, gameOver, gameMenu)
-	
+
 	inHand = None
 	stillPlaying = True
 	AIstuck = False
-	
+
 	while stillPlaying:
 		
 		mouseClicked = False
@@ -154,7 +157,9 @@ def runGame(USERDATA, useHintBox = False):
 		actionKeyHit = False
 		shuffleKeyHit = False
 		hintKeyHit = False
-		
+
+		current_player = players[active]
+
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.quit()
@@ -166,13 +171,13 @@ def runGame(USERDATA, useHintBox = False):
 				mouseX, mouseY = event.pos
 				mouseClicked = True
 			elif event.type == KEYUP:
-				if event.key == K_SPACE or event.key == K_RETURN:
+				if event.key in [K_SPACE, K_RETURN]:
 					actionKeyHit = True
 				if event.key == K_r:
 					shuffleKeyHit = True
 				if event.key == K_h and useHintBox:
 					hintKeyHit = True
-					
+
 		#GAME MENU BUTTONS	
 		if mouseMoved:
 			gameMenu.update(mouseX, mouseY)
@@ -188,86 +193,103 @@ def runGame(USERDATA, useHintBox = False):
 				hintKeyHit = True
 			elif SELECTION == menu.GameMenu.MAIN_MENU:
 				stillPlaying = False
-				
-		if (hintKeyHit or TRAINING_FLAG) and not computerTurn and not gameOver:
-			tilesPulled = theBoard.removeTempTiles()
-			if tilesPulled != None:		
-				#take the tiles back
-				for t in tilesPulled:
-					players[active].take(t)
-			players[active].executeTurn(firstTurn, DISPLAYSURF)
-			TICTIC.play()									
-					
-		if (actionKeyHit or TRAINING_FLAG or computerTurn) and not gameOver:
+
+		# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
+		if (hintKeyHit or TRAINING_FLAG) and not is_computer_turn(players, active) and not gameOver:
+			place_hinted_tiles(theBoard, current_player, firstTurn)							
+
+		# Play action
+		if (actionKeyHit or TRAINING_FLAG or is_computer_turn(players, active)) and not gameOver:
 			#If it's the computer turn, we need to process its move first!
-			if computerTurn:
-				playedMove = players[active].executeTurn(firstTurn, DISPLAYSURF)
+			if is_computer_turn(players, active):
+				playedMove = current_player.executeTurn(firstTurn, DISPLAYSURF)
 			else:
 				playedMove = True
-			
+
 			if playedMove:	
-				
-				success = players[active].play(firstTurn)
+
+				success = current_player.play(firstTurn)
 				if success == "END":
 					gameOver = True
 					endGame(players, active, useHintBox, USERDATA)
 				elif success:
 					DINGDING.play()
-					players[active].pulseScore()
+					current_player.pulseScore()
 					firstTurn = False
 					active += 1
 					if active >= len(players):
 						active = 0
-					computerTurn = isinstance(players[active], ai.AI)
+					current_player = players[active]
+					# computerTurn = isinstance(current_player, ai.AI)
 					#If we were stuck before, we aren't anymore
-					if computerTurn:
+					if is_computer_turn(players, active):
 						AIstuck = False					
 				else:
 					if TRAINING_FLAG:
 						AIstuck = True
 					TICTIC.play()
-					if computerTurn:
-						print "AI thinks it has a good move, but it doesn't"
+					if is_computer_turn(players, active):
+						print ("AI thinks it has a good move, but it doesn't")
 			else:
-				players[active].shuffle()
+				# ???
+				print("shuffle")
+				current_player.shuffle()
 				#Let the player know the AI shuffled
-				players[active].lastScore = 0
-				players[active].pulseScore()
+				current_player.lastScore = 0
+				current_player.pulseScore()
 				if theBag.isEmpty():
 					AIstuck = True
-					
+
 				active += 1
 				if active >= len(players):
 					active = 0
-				computerTurn = isinstance(players[active], ai.AI)
+				current_player = players[active]
+				# computerTurn = isinstance(current_player, ai.AI)
 
 			redrawEverything(theBoard, players[active], players, gameOver, gameMenu)	
-			
-		if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not computerTurn and not gameOver:
+
+		if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not is_computer_turn(players, active) and not gameOver:
 			SCRIFFLE.play()
 			players[active].shuffle()
 			active += 1
 			if active >= len(players):
 				active = 0
-			computerTurn = isinstance(players[active], ai.AI)
+			# computerTurn = is_computer_turn(players, active)
 			#If we're stuck AND the AI is stuck, end the game without subtracting points
 			if AIstuck:
 				gameOver = True
 				endGame(players, active, useHintBox, USERDATA, stuck = True)
 			redrawEverything(theBoard, players[active], players, gameOver, gameMenu)
-			
-				
-			
-		if mouseClicked and not computerTurn and not gameOver:
+
+
+
+		if mouseClicked and not is_computer_turn(players, active) and not gameOver:
 			inHand = tileGrab(mouseX, mouseY, inHand, theBoard, players[active])
 			redrawEverything(theBoard, players[active], players, gameOver, gameMenu)	
-			
+
 		if gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
 			stillPlaying = False
 
-		redrawNecessary(theBoard, players, gameOver)		
+		redrawNecessary(theBoard, players, gameOver)
 		pygame.display.update()
-##===============================================
+
+def is_computer_turn(players, active):
+	return isinstance(players[active], ai.AI)
+
+def place_hinted_tiles(theBoard, player, firstTurn):
+	revert_played_tiles(theBoard, player)
+	player.executeTurn(firstTurn, DISPLAYSURF)
+	TICTIC.play()		
+
+def revert_played_tiles(theBoard, player):
+	print("revert_played_tiles")
+	tilesPulled = theBoard.removeTempTiles()
+	# if there are tiles back, put it back to the player
+	if tilesPulled is not None:
+		# Take the tiles back
+		for tile in tilesPulled:
+			player.take(tile)	
+
 '''
 This resolves the action of the player to try to pick up a tile. Two situations:
 1) The player has a piece in hand:
@@ -278,31 +300,43 @@ This resolves the action of the player to try to pick up a tile. Two situations:
 	-If it's on the board and the piece is not locked, return it to the tray (at the end)
 	-If it's on the tray, highlight that piece and put it in hand.
 '''
+
 def tileGrab(x, y, hand, theBoard, theHuman):
-	
-	if hand == None:
+	"""
+	Grab a tile from the board or the player's hand.
+
+	Args:
+		x (int): The x-coordinate of the tile.
+		y (int): The y-coordinate of the tile.
+		hand (list): The player's hand.
+		theBoard (Board): The game board.
+		theHuman (Player): The player.
+
+	Returns:
+		Tile or None: The grabbed tile, or None if no tile was grabbed.
+
+	If the player's hand is empty, try to remove a tile from the board. If that fails, try to remove a tile from the tray.
+	If the player's hand is not empty, try to place the tile on the board. If successful, place a tentative piece on the board.
+	"""
+
+	if hand is None:
 		tile = theBoard.remove(x, y) # try to remove a piece from the board
-		if tile != None:
+		if tile is None:
+			tile = theHuman.pickup(x, y) # if it didn't, try to remove from the tray
+			return tile if tile != None else None
+		else:
 			TIC.play()
 			theHuman.take(tile)		# if it worked, put it back on our tray
 			return None
-		else:
-			tile = theHuman.pickup(x, y) # if it didn't, try to remove from the tray
-			if tile != None:
-				return tile	 #if it worked, put the tile inHand (pickup will remember the held tile)
-			else:
-				return None  #hand stays empty
 	else:
 		(success, blank) = theBoard.placeTentative(x, y, hand) #try to place the tile on the board
-		if success != False:
-			TIC.play()
-			if success == "ASK":
-				theBoard.askForLetter(blank, DISPLAYSURF, ALPHASURF)
-			theHuman.placeTentative()	#if it's successful place a tentative piece
-			return None					#empty the hand
-		else:
-			tile = theHuman.pickup(x, y)	#otherwise try to swap the piece on the tray
-			return tile
+		if success == False:
+			return theHuman.pickup(x, y)
+		TIC.play()
+		if success == "ASK":
+			theBoard.askForLetter(blank, DISPLAYSURF, ALPHASURF)
+		theHuman.placeTentative()	#if it's successful place a tentative piece
+		return None					#empty the hand
 			
 
 '''
@@ -383,14 +417,14 @@ def endGame(players, active, isPractice, userdata, stuck = False):
 		maxPlayer = players[0]
 		for p in players:
 			if isinstance(p, human.Human):
-				if userdata.has_key("bestScore") and p.score > userdata["bestScore"]:
+				if "bestScore" in userdata and p.score > userdata["bestScore"]:
 					userdata["bestScore"] = p.score
 			if p.score > maxScore:
 				maxPlayer = p
 				maxScore = p.score
 			
 		if isinstance(maxPlayer, human.Human):
-			if userdata.has_key("numVictories"):
+			if "numVictories" in userdata:
 				userdata["numVictories"] += 1
 			
 		saveUser(userdata)
@@ -425,22 +459,22 @@ def loadUser():
 	
 def saveUser(USERDATA):
 	userFile = open(USERFILE, 'w')
-	if USERDATA.has_key("name"):
+	if "name" in USERDATA:
 		userFile.write(str(USERDATA["name"])+"\n")
 	else:
 		userFile.write("Guest\n")
 	
-	if USERDATA.has_key("bestScore"):
+	if "bestScore" in USERDATA:
 		userFile.write(str(USERDATA["bestScore"])+"\n")
 	else:
 		userFile.write("0\n")	
 		
-	if USERDATA.has_key("numVictories"):
+	if "numVictories" in USERDATA:
 		userFile.write(str(USERDATA["numVictories"])+"\n")
 	else:
 		userFile.write("0\n")
 
-	if USERDATA.has_key("numGames"):
+	if "numGames" in USERDATA:
 		userFile.write(str(USERDATA["numGames"])+"\n")
 	else:
 		userFile.write("0\n")	

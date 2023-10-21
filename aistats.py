@@ -121,7 +121,8 @@ class AIStats():
 			for letter in lettersUsed:
 				self.letterPlays[letter].append(points)
 				
-	def updateSeedRatio(self, (numSeeds, numTiles), points):
+	def updateSeedRatio(self, xxx_todo_changeme, points):
+		(numSeeds, numTiles) = xxx_todo_changeme
 		if AIStats.COLLECT_WORD_DATA:
 			self.seedRatio.append((numSeeds, numTiles, points))
 				
@@ -354,10 +355,10 @@ class AIStats():
 		
 		dictionary = dictionarywords.DictionaryWords("media/scrabblewords_usage.txt")
 		
-		values = dictionary.words.values()
+		values = list(dictionary.words.values())
 		maxUsage = math.log(max(values))
 					
-		print "Most used word appeared "+str(maxUsage)+" times in Google's ngram corpus."
+		print("Most used word appeared "+str(maxUsage)+" times in Google's ngram corpus.")
 		
 		normalizedValues = []
 		
@@ -375,7 +376,7 @@ class AIStats():
 	def wordUsageQuantiles(self, quantiles):
 		dictionary = dictionarywords.DictionaryWords("media/scrabblewords_usage.txt")
 		
-		values = dictionary.words.values()
+		values = list(dictionary.words.values())
 		values.sort(reverse=True)
 		for quantile in quantiles:
 			
@@ -387,7 +388,7 @@ class AIStats():
 			if point <= 1:
 				point = 1
 			
-			print str(quantile)+" = "+str(math.log(point))			
+			print(str(quantile)+" = "+str(math.log(point)))			
 			
 	'''
 	Draws a histogram given a set of values ranging from 0.0 -> 1.0 and
@@ -430,7 +431,7 @@ if __name__ == '__main__':
 	
 	aiStats = AIStats()
 	
-	print str(len(aiStats.timingInfo)) + " data points collected."
+	print(str(len(aiStats.timingInfo)) + " data points collected.")
 	
 	#DISPLAYSURF = pygame.display.set_mode((800, 600))
 	#pygame.display.set_caption('Wordsmith Statistics')
@@ -448,31 +449,31 @@ if __name__ == '__main__':
 	groupStdDev = aiStats.letterPlaysStdDev(None)
 	for code in range(ord('A'), ord('Z')+1):
 		char = chr(code)
-		print char+": \tmedian = "+str(aiStats.letterPlaysInvCDF(char, .5)-groupMedian)
-		print "\tmean = "+str(aiStats.letterPlaysMean(char)-groupMean)
-		print "\t25th percentile: "+str(aiStats.letterPlaysInvCDF(char, .25)-group25p)
-		print "\t75th percentile: "+str(aiStats.letterPlaysInvCDF(char, .75)-group75p)
-		print "\tStd dev: "+str(aiStats.letterPlaysStdDev(char)/groupStdDev)
-		print "\tBest play ever: "+str(aiStats.getHighestWord(char))
+		print(char+": \tmedian = "+str(aiStats.letterPlaysInvCDF(char, .5)-groupMedian))
+		print("\tmean = "+str(aiStats.letterPlaysMean(char)-groupMean))
+		print("\t25th percentile: "+str(aiStats.letterPlaysInvCDF(char, .25)-group25p))
+		print("\t75th percentile: "+str(aiStats.letterPlaysInvCDF(char, .75)-group75p))
+		print("\tStd dev: "+str(aiStats.letterPlaysStdDev(char)/groupStdDev))
+		print("\tBest play ever: "+str(aiStats.getHighestWord(char)))
 		
 	char = '_'	
-	print char+": \tmedian = "+str(aiStats.letterPlaysInvCDF(char, .5)-groupMedian)
-	print "\tmean = "+str(aiStats.letterPlaysMean(char)-groupMean)
-	print "\t25th percentile: "+str(aiStats.letterPlaysInvCDF(char, .25)-group25p)
-	print "\t75th percentile: "+str(aiStats.letterPlaysInvCDF(char, .75)-group75p)
-	print "\tStd dev: "+str(aiStats.letterPlaysStdDev(char)/groupStdDev)
-	print "\tBest play ever: "+str(aiStats.getHighestWord(char))
+	print(char+": \tmedian = "+str(aiStats.letterPlaysInvCDF(char, .5)-groupMedian))
+	print("\tmean = "+str(aiStats.letterPlaysMean(char)-groupMean))
+	print("\t25th percentile: "+str(aiStats.letterPlaysInvCDF(char, .25)-group25p))
+	print("\t75th percentile: "+str(aiStats.letterPlaysInvCDF(char, .75)-group75p))
+	print("\tStd dev: "+str(aiStats.letterPlaysStdDev(char)/groupStdDev))
+	print("\tBest play ever: "+str(aiStats.getHighestWord(char)))
 	
-	print "\nHighest-ever word score: "+str(aiStats.getHighestWord())
-	print str(len(aiStats.letterPlays['Q']))+" games played counting letter statistics.\n"
+	print("\nHighest-ever word score: "+str(aiStats.getHighestWord()))
+	print(str(len(aiStats.letterPlays['Q']))+" games played counting letter statistics.\n")
 	
-	print "Latest Heuristic Game Analysis:"
-	print "Test won "+str(100.0*aiStats.getGamesWon() / (len(aiStats.scores) + 0.00001))+"% of games."
-	print "Mean performance improvement: "+str(aiStats.getGameDiffMean())
-	print "Performance difference stddev: "+str(aiStats.getGameDiffStdDev())
+	print("Latest Heuristic Game Analysis:")
+	print("Test won "+str(100.0*aiStats.getGamesWon() / (len(aiStats.scores) + 0.00001))+"% of games.")
+	print("Mean performance improvement: "+str(aiStats.getGameDiffMean()))
+	print("Performance difference stddev: "+str(aiStats.getGameDiffStdDev()))
 	
 	
-	print str(len(aiStats.scores))+" games played in this round of testing.\n"
+	print(str(len(aiStats.scores))+" games played in this round of testing.\n")
 	
 	#for i in range(0, 20, 1):
 	#	print str(100*aiStats.timingCDF(i)) + '% would be completed successfully in '+ str(i) +' seconds'

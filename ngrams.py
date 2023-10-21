@@ -46,7 +46,7 @@ class NGramReader:
 				
 				lineNumber += 1
 				if lineNumber % 10000000 == 0:
-					print str(wordsUpdated)+" words added to dictionary."
+					print(str(wordsUpdated)+" words added to dictionary.")
 					self.dictionary.saveUsage("media/scrabblewords_usage.txt")
 					
 					

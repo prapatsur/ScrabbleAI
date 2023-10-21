@@ -27,8 +27,7 @@ class Board:
 	PROMPT_HEIGHT = 75
 	PROMPT_FONT = None
 	
-	
-	
+
 	BEIGE = (200, 180, 165)
 	RED	= (200, 0, 0)
 	BLUE = (0, 0, 200)
@@ -36,136 +35,129 @@ class Board:
 	LBLUE = (100, 100, 255)
 	
 	MASK_COLOR = (0, 0, 0, 100)
-	
-	'''
-	Initialize the board, create the squares matrix and mark all the special
-	squares
-	'''
+
 	def __init__(self):
-		
-		self.squares = []
-		for x in range(Board.GRID_SIZE):
-			self.squares.append([])
-			for y in range(Board.GRID_SIZE):
-				#squares are a tuple of a tile and a square bonus
-				self.squares[x].append((None, Board.NORMAL))
-		
-		#------------BONUS SQUARES------------------		
-		triplewords = [(0,0), (7,0), (14,0), (0,7), (14,7), (0,14), (7,14), (14,14)]	
+		# Initialize squares using list comprehension
+		self.squares = [[(None, Board.NORMAL) for _ in range(Board.GRID_SIZE)] for _ in range(Board.GRID_SIZE)]
+
+		# BONUS SQUARES
+		triplewords = [(0,0), (7,0), (14,0), (0,7), (14,7), (0,14), (7,14), (14,14)]
+		doublewords = [(1,1), (2,2), (3,3), (4,4), (1,13), (2,12), (3,11), (4,10),
+					(13,1), (12,2), (11,3), (10,4), (13,13), (12,12), (11,11), (10,10), (7,7)]
+		tripleletters = [(5,1), (9,1), (1,5), (1,9), (5,13), (9,13), (13,5), (13,9), (5,5), (9,9), (5,9), (9,5)]
+		doubleletters = [(3,0), (0,3), (11,0), (0,11), (3,14), (11,14), (14,3), (14,11),
+						(2,6), (3,7), (2,8), (6,2), (7,3), (8,2), (6,12), (7,11), (8,12),
+						(12,6), (11,7), (12,8), (6,6), (8,8), (6,8), (8,6)]
+
 		for (x, y) in triplewords:
 			self.squares[x][y] = (None, Board.TRIPLEWORD)
-		
-		doublewords = [(1,1), (2,2), (3,3), (4,4), (1,13), (2,12), (3,11), (4,10),
-					   (13,1), (12,2), (11,3), (10,4), (13,13), (12,12), (11,11), (10,10),
-					   (7,7)]
 		for (x, y) in doublewords:
 			self.squares[x][y] = (None, Board.DOUBLEWORD)
-			
-		tripleletters = [(5,1), (9,1), (1,5), (1,9), (5,13), (9,13), (13,5), (13,9),
-						 (5,5), (9,9), (5,9), (9,5)]
 		for (x, y) in tripleletters:
 			self.squares[x][y] = (None, Board.TRIPLELETTER)
-		
-		doubleletters = [(3,0), (0,3), (11,0), (0,11), (3,14), (11,14), (14,3), (14,11),
-						 (2,6), (3,7), (2,8), (6,2), (7,3), (8,2), (6,12), (7,11), (8,12),
-						 (12,6), (11,7), (12,8), (6,6), (8,8), (6,8), (8,6)]
 		for (x, y) in doubleletters:
 			self.squares[x][y] = (None, Board.DOUBLELETTER)
-		#-----------------------------------------
-		
-		#These locks control which row/column can be played upon (so players must play in a straight line)
+
 		self.columnLock = -1
 		self.rowLock = -1
-		
-		#Load the dictionary
+
+		# Load the dictionary
 		self.dictionary = dictionarywords.DictionaryWords(Board.DICTIONARY_FILE)
-		
-		#Load the file keeping track of word usage
+
+		# Load the file keeping track of word usage
 		self.wordfreq = wordfrequency.WordFrequency()
-		
-		#Reset all timers
+
+		# Reset all timers
 		self.resetAllMetrics()
-		
-		#load font
+
+		# Load font
 		Board.PROMPT_FONT = pygame.font.Font('freesansbold.ttf', 20)
-		
-	
-	'''
-	Locates a board position and tries to put a tile there, returns False if the
-	square is occupied, the position is outside the bounds of the board, or if
-	play has already been constrained in a particular direction
-	'''		
+			
 	def placeTentative(self, x, y, tile):
-		(boardX, boardY) = self.getBoardPosition(x, y)
+		"""
+		Locates a board position and tries to put a tile there.
 		
-		if self.checkLocks(boardX, boardY):
-			if boardX >= 0 and boardY >= 0 and boardX < Board.GRID_SIZE and boardY < Board.GRID_SIZE:
-				previousTile = self.squares[boardX][boardY][0]
-				if previousTile == None:
-					self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
-					if tile.isBlank:
-						return ("ASK", tile)
-					self.setLocks()
-					return (True, tile)
+		Returns (False, tile) if:
+		- The square is occupied.
+		- The position is outside the bounds of the board.
+		- Play has already been constrained in a particular direction.
+		
+		Otherwise, it returns (True, tile) or ("ASK", tile) for a blank tile.
+		"""
+		boardX, boardY = self.getBoardPosition(x, y)
+		
+		if self.isPositionLocked(boardX, boardY):
+			return (False, tile)
+		
+		if 0 <= boardX < Board.GRID_SIZE and 0 <= boardY < Board.GRID_SIZE:
+			previousTile = self.squares[boardX][boardY][0]
+			
+			if previousTile is None:
+				self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
+				
+				if tile.isBlank:
+					return ("ASK", tile)
+				
+				self.setLocks()
+				return (True, tile)
+		
 		return (False, tile)
 		
-	'''
-	Returns true if the position is playable based on the lock combinations
-	'''
-	def checkLocks(self, boardX, boardY):
+	def isPositionLocked(self, boardX, boardY):
+		# fix both row and column
 		if (self.rowLock >= 0 and self.columnLock >= 0) and (boardX == self.columnLock or boardY == self.rowLock):
-			locksOkay = True
+			return False
+		# fix only column
 		elif self.columnLock >= 0 and boardX == self.columnLock:
-			locksOkay = True
+			return False
+		# fix only row
 		elif self.rowLock >= 0 and boardY == self.rowLock:
-			locksOkay = True
+			return False
+		# no fix at all
 		elif self.rowLock < 0 and self.columnLock < 0:
-			locksOkay = True
+			return False
+		# position is locked
 		else:
-			locksOkay = False
-		return locksOkay		
-		
-	'''
-	This scans the board. If there is one unlocked piece, set both a row/col lock. If there are two
-	set only the lock for that col, row. If there are none, remove all locks
-	'''	
+			return True
+
 	def setLocks(self):
-		inPlay = []
-		for x in range(Board.GRID_SIZE):
-			for y in range(Board.GRID_SIZE):
-				if self.squares[x][y][0] != None and not self.squares[x][y][0].locked:
-					inPlay.append((x, y))
-		#Case 1: No tentative tiles
-		if len(inPlay) == 0:
-			self.columnLock = -1
-			self.rowLock = -1
-		#Case 2: One tentative tile, allow play on row and col
-		elif len(inPlay) == 1:
-			self.columnLock = inPlay[0][0]
-			self.rowLock = inPlay[0][1]
-		#Case 3: More than one tentative tile, disable play outside of line
-		else:	
-			col = inPlay[0][0]
-			row = inPlay[0][1]
-			inACol = True
-			inARow = True
-			for t in inPlay:
-				if(t[0] != col):
-					inACol = False
-				if(t[1] != row):
-					inARow = False
+		"""
+		Scan the board to adjust locks based on the state of tiles in play:
+		- If no tentative tiles: clear all locks.
+		- If one tentative tile: allow play on its row and column.
+		- If multiple tentative tiles in a line: lock the perpendicular direction.
+		"""
+		
+		# Gather all unlocked tiles' positions.
+		inPlay = [(x, y) for x in range(Board.GRID_SIZE) for y in range(Board.GRID_SIZE)
+				if self.squares[x][y][0] and not self.squares[x][y][0].locked]
+
+		num_tiles = len(inPlay)
+		
+		# No tentative tiles: clear all locks.
+		if num_tiles == 0:
+			self.columnLock, self.rowLock = -1, -1
+		
+		# One tentative tile: allow play on its row and column.
+		elif num_tiles == 1:
+			self.columnLock, self.rowLock = inPlay[0]
+		
+		# Multiple tentative tiles: ensure they are in a single line.
+		else:
+			col, row = inPlay[0]
 			
-			#we shouldn't be able to place tentative tiles outside a line
-			assert inARow or inACol and not(inARow and inACol)
-			
-			if inACol:
-				self.columnLock = col
-				self.rowLock = -1
-			elif inARow:
-				self.columnLock = -1
-				self.rowLock = row	
-					
-	
+			tiles_in_same_col = all(t[0] == col for t in inPlay)
+			tiles_in_same_row = all(t[1] == row for t in inPlay)
+
+			# Tiles should only form a straight line (either column or row, but not both).
+			assert tiles_in_same_col or tiles_in_same_row
+			assert not (tiles_in_same_col and tiles_in_same_row)
+
+			if tiles_in_same_col:
+				self.columnLock, self.rowLock = col, -1
+			else:
+				self.columnLock, self.rowLock = -1, row
+
 	'''
 	Attempts to remove the tile from the given square, returns the tile if it
 	was removed successfully, otherwise returns None if the pointer was out of range,
@@ -204,7 +196,8 @@ class Board:
 	'''
 	Puts a tile on the board (board, not screen coords, for that use placeTentative)
 	'''	
-	def setPiece(self, (x,y), tile):
+	def setPiece(self, xxx_todo_changeme, tile):
+		(x,y) = xxx_todo_changeme
 		assert x >= 0 and y >= 0 and x < Board.GRID_SIZE and y < Board.GRID_SIZE
 		assert self.squares[x][y][0] == None
 		self.squares[x][y] = (tile, self.squares[x][y][1])
@@ -228,78 +221,53 @@ class Board:
 	'''	
 	def play(self, isFirstTurn=True):
 
-		
 		#collect all tentative tiles
 		inPlay = []
 		for x in range(Board.GRID_SIZE):
 			for y in range(Board.GRID_SIZE):
 				if self.squares[x][y][0] != None and not self.squares[x][y][0].locked:
 					inPlay.append((x, y))
-		
+
 		#VALIDATION STEP ONE: There must be at least one tile played
 		if len(inPlay) <= 0:
 			#fail
 			if Board.DEBUG_ERRORS:
-				print "Play requires at least one tile."
-			return ([], -1)			
-			
-		#VALIDATION STEP TWO: Tiles must be played on a straight line			
-		col = inPlay[0][0]
-		row = inPlay[0][1]
-		inACol = True
-		inARow = True
-		for (x,y) in inPlay:
-			if(x != col):
-				inACol = False
-			if(y != row):
-				inARow = False
+				print("Play requires at least one tile.")
+			return ([], -1)	
 		
-		if not inARow and not inACol:
-			#fail, remove tiles and return	
+		# VALIDATION STEP TWO: Tiles must be played in a straight line
+		start_col, start_row = inPlay[0]
+
+		all_same_column = all(x == start_col for x, y in inPlay)
+		all_same_row = all(y == start_row for x, y in inPlay)
+
+		if not (all_same_row or all_same_column):
 			if Board.DEBUG_ERRORS:
-				print "All tiles must be placed along a line."		
-			return (self.removeTempTiles(), -1)
-		
-		#VALIDATION STEP THREE: If isFirstTurn, then one tile must be on START_POSITION
-		if not Board.START_POSITION in inPlay and isFirstTurn:
-			return(self.removeTempTiles(), -1)
-		
-		#VALIDATION STEP FOUR: Word created is unbroken
-		unbroken = True
-		left = col
-		right = col
-		top = row
-		bottom = row
-		
-		#Determine the span of the word in either up/down or left/right directions
-		for (x, y) in inPlay:
-			if x < left:
-				left = x
-			elif x > right:
-				right = x
-			if y < top:
-				top = y
-			elif y > bottom:
-				bottom = y
-				
-		#Confirm that the span is unbroken
-		if inACol:
-			for y in range(top, bottom+1):
-				if self.squares[col][y][0] == None:
-					unbroken = False
-		elif inARow:
-			for x in range(left, right+1):
-				if self.squares[x][row][0] == None:
-					unbroken = False
-					
-		if not unbroken:
-			return(self.removeTempTiles(), -1)			
-			
-		
+				print("All tiles must be placed along a line.")
+			return self.removeTempTiles(), -1
+
+		# VALIDATION STEP THREE: If isFirstTurn, one tile must be on START_POSITION
+		if isFirstTurn and Board.START_POSITION not in inPlay:
+			return self.removeTempTiles(), -1
+
+		# VALIDATION STEP FOUR: Ensure the word is unbroken
+		leftmost, rightmost = min(x for x, y in inPlay), max(x for x, y in inPlay)
+		topmost, bottommost = min(y for x, y in inPlay), max(y for x, y in inPlay)
+
+		if all_same_column:
+			for y in range(topmost, bottommost + 1):
+				if self.squares[start_col][y][0] is None:
+					return self.removeTempTiles(), -1
+
+		if all_same_row:
+			for x in range(leftmost, rightmost + 1):
+				if self.squares[x][start_row][0] is None:
+					return self.removeTempTiles(), -1
+
 		#VALIDATION STEPS FIVE & SIX:
 		(totalScore, spellings, seedRatio) = self.validateWords(isFirstTurn, inPlay=inPlay)
 		
-		if spellings != None:
+		if spellings is not None:
 			for spelling in spellings:
 				self.wordfreq.wordPlayed(spelling)
 				
@@ -364,7 +332,7 @@ class Board:
 	
 		#If we're doing this step separately from normal play, put the tiles on to run
 		#the algorithm
-		if tilesPlayed != None:
+		if tilesPlayed is not None:
 			inPlay = []
 			for pos, tile in tilesPlayed:
 				self.setPiece(pos,tile)
@@ -449,7 +417,7 @@ class Board:
 			if Board.DEBUG_ERRORS:
 				self.crosswordErrors += 1
 				if tilesPlayed == None:
-					print "Word placed must form at least one crossword."
+					print("Word placed must form at least one crossword.")
 			self.pullTilesFast(tilesPlayed)			
 			return (-1, None, seedRatio)		
 					
@@ -467,7 +435,7 @@ class Board:
 				if Board.DEBUG_ERRORS:
 					self.invalidWordCount += 1
 					if tilesPlayed == None:
-						print "'"+spelling+"' isn't in the dictionary."
+						print("'"+spelling+"' isn't in the dictionary.")
 				self.pullTilesFast(tilesPlayed)				
 				return (-1, None, seedRatio)
 		
@@ -523,7 +491,7 @@ class Board:
 				wordScores[word] *= bonus	
 		
 		#Now add up all the words to make the total score		
-		for score in wordScores.values():
+		for score in list(wordScores.values()):
 			totalScore += score	
 			
 		if Board.DEBUG_ERRORS:
@@ -578,8 +546,10 @@ class Board:
 		inPlay = []
 		for x in range(Board.GRID_SIZE):
 			for y in range(Board.GRID_SIZE):
+				# find all positions in the board to find unlocked tile, they are temporary
 				if self.squares[x][y][0] != None and not self.squares[x][y][0].locked:
 					inPlay.append(self.squares[x][y][0])
+					# reset status of this board square to None
 					self.squares[x][y] = (None, self.squares[x][y][1])
 		
 		#Remove the locks the player can play again

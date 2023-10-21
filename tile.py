@@ -14,11 +14,12 @@ class Tile:
 	
 	TILE_OUTLINE = (55, 46, 40)
 	TILE_BLANK = (110, 92, 80)
-	TILE_HIGHLIGHT = (100, 100, 255)
+	# TILE_HIGHLIGHT = (100, 100, 255)
+	TILE_HIGHLIGHT = (255, 255, 255) #White color
 	TILE_COLOR = (220, 185, 167)
 	TILE_FLASH = (200, 200, 255)
 	PULSE_DURATION = 1.5
-	
+
 	SQUARE_SIZE = 32
 	SQUARE_BORDER = 4
 	
@@ -37,10 +38,7 @@ class Tile:
 		self.letter = char
 		self.points = pts
 		#BLANKS
-		if char == ' ' and pts == 0:
-			self.isBlank = True
-		else:
-			self.isBlank = False
+		self.isBlank = (char == ' ' and pts == 0)
 		self.locked = False
 		self.lastPulseTime = 0
 		self.dirty = False
@@ -56,12 +54,13 @@ class Tile:
 	Draws the tile on the screen
 	'''
 	def draw(self, left, top, DISPLAYSURF, highlight = False):
-		
+		# draw border
 		if highlight:
 			pygame.draw.rect(DISPLAYSURF, Tile.TILE_HIGHLIGHT, (left, top, Tile.SQUARE_SIZE, Tile.SQUARE_SIZE))
 		else:
 			pygame.draw.rect(DISPLAYSURF, Tile.TILE_OUTLINE, (left+1, top+1, Tile.SQUARE_SIZE-2, Tile.SQUARE_SIZE-2))
 			
+		# draw background color of the tile
 		backColor = self.getColor()	
 		pygame.draw.rect(DISPLAYSURF, backColor, (left+2, top+2, Tile.SQUARE_SIZE-4, Tile.SQUARE_SIZE-4))
 		

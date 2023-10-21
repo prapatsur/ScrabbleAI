@@ -21,7 +21,7 @@ class Menu():
 	def execute(self, mouseX, mouseY):
 		if self.within(mouseX, mouseY):
 			theKey = ""
-			for key in self.buttons.keys():
+			for key in list(self.buttons.keys()):
 				if self.buttons[key].within(mouseX, mouseY):
 					theKey = key
 		
@@ -34,7 +34,7 @@ class Menu():
 	Goes through and updates all buttons, redrawing them if they are hovered
 	'''	
 	def update(self, mouseX, mouseY):
-		for button in self.buttons.values():
+		for button in list(self.buttons.values()):
 			button.update(mouseX, mouseY)
 			
 	def within(self, mouseX, mouseY):
@@ -43,7 +43,7 @@ class Menu():
 		
 	def redraw(self):
 		pygame.draw.rect(DISPLAYSURF, self.background, self.rect)
-		for button in self.buttons.values():
+		for button in list(self.buttons.values()):
 			button.redraw()		
 
 #==================== MAIN MENU =====================
@@ -77,22 +77,22 @@ class MainMenu(Menu):
 		
 	def createAchievementText(self, userdata):
 		text = []
-		if userdata.has_key("name"):
+		if "name" in userdata:
 			text.append(userdata["name"]+"'s Achievements")
 		else:
 			text.append("Guest Achievements")
 
-		if userdata.has_key("bestScore"):
+		if "bestScore" in userdata:
 			text.append("Highest Score: "+str(userdata["bestScore"]))
 		else:
 			text.append("Highest Score: 0")	
 
-		if userdata.has_key("numVictories"):
+		if "numVictories" in userdata:
 			text.append("Victories: "+str(userdata["numVictories"]))
 		else:
 			text.append("Victories: 0")
 
-		if userdata.has_key("numGames"):
+		if "numGames" in userdata:
 			text.append("Games Played: "+str(userdata["numGames"]))
 		else:
 			text.append("Games Played: 0")	
