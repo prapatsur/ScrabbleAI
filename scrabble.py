@@ -87,16 +87,17 @@ class ScrabbleGame:
 			ai.AI(self.the_board, self.the_bag, theHeuristic=h, theDifficulty=10.0),
 		]
 		self.current_player = self.players[0]
+		self.active = 0
 
 	def runGame(self, USERDATA, useHintBox = False):
 		players = self.players
-		active = 0
+		# active = 0
 		firstTurn = True
 		gameOver = False
 
 		gameMenu = menu.GameMenu(useHintBox)
 
-		redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)
+		redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)
 
 		inHand = None
 		stillPlaying = True
@@ -110,7 +111,7 @@ class ScrabbleGame:
 			shuffleKeyHit = False
 			hintKeyHit = False
 
-			self.current_player = players[active]
+			self.current_player = players[self.active]
 
 			for event in pygame.event.get():
 				if event.type == QUIT:
@@ -163,16 +164,16 @@ class ScrabbleGame:
 					success = self.current_player.play(firstTurn)
 					if success == "END":
 						gameOver = True
-						endGame(players, active, useHintBox, USERDATA)
+						endGame(players, self.active, useHintBox, USERDATA)
 					elif success:
 						DINGDING.play()
 						self.current_player.pulseScore()
 						firstTurn = False
 						# self.current_player = next_player(players, active)
-						active += 1
-						if active >= len(players):
-							active = 0
-						self.current_player = players[active]
+						self.active += 1
+						if self.active >= len(players):
+							self.active = 0
+						self.current_player = players[self.active]
 						#If we were stuck before, we aren't anymore
 						if self.is_computer_turn():
 							AIstuck = False					
@@ -192,28 +193,29 @@ class ScrabbleGame:
 					if self.the_bag.isEmpty():
 						AIstuck = True
 
-					active += 1
-					if active >= len(players):
-						active = 0
-					self.current_player = players[active]
+					self.active += 1
+					if self.active >= len(players):
+						self.active = 0
+					self.current_player = players[self.active]
 
-				redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)	
+				redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)	
 
 			if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not gameOver:
 				SCRIFFLE.play()
-				players[active].shuffle()
-				active += 1
-				if active >= len(players):
-					active = 0
+				players[self.active].shuffle()
+				self.active += 1
+				if self.active >= len(players):
+					self.active = 0
+				self.current_player = players[self.active]
 				#If we're stuck AND the AI is stuck, end the game without subtracting points
 				if AIstuck:
 					gameOver = True
-					endGame(players, active, useHintBox, USERDATA, stuck = True)
-				redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)
+					endGame(players, self.active, useHintBox, USERDATA, stuck = True)
+				redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)
 
 			if mouseClicked and not self.is_computer_turn() and not gameOver:
-				inHand = tileGrab(mouseX, mouseY, inHand, self.the_board, players[active])
-				redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)	
+				inHand = tileGrab(mouseX, mouseY, inHand, self.the_board, players[self.active])
+				redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)	
 
 			if gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
 				stillPlaying = False
@@ -223,6 +225,11 @@ class ScrabbleGame:
 
 	def is_computer_turn(self):
 		return isinstance(self.current_player, ai.AI)
+	
+	def next_player(self):
+		# toggle active player
+		self.active = 1 - self.active
+		return self.players[self.active]	
 
 def main():
 	USERDATA = loadUser()
@@ -272,14 +279,7 @@ def new_game(USERDATA, theMenu):
 
 	
 
-def next_player(players, active):
-	print ("working")
-	# toggle active player
-	active = 1 - active
-	return players[active]
 
-# def is_computer_turn(current_player):
-# 	return isinstance(current_player, ai.AI)
 
 def place_hinted_tiles(theBoard, player, firstTurn):
 	revert_played_tiles(theBoard, player)
