@@ -193,20 +193,22 @@ class ScrabbleGame:
 					if self.the_bag.isEmpty():
 						AIstuck = True
 
-					self.active += 1
-					if self.active >= len(players):
-						self.active = 0
-					self.current_player = players[self.active]
+					# self.active += 1
+					# if self.active >= len(players):
+					# 	self.active = 0
+					# self.current_player = players[self.active]
+					self.current_player = self.next_player()
 
 				redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)	
 
 			if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not gameOver:
 				SCRIFFLE.play()
 				players[self.active].shuffle()
-				self.active += 1
-				if self.active >= len(players):
-					self.active = 0
-				self.current_player = players[self.active]
+				# self.active += 1
+				# if self.active >= len(players):
+				# 	self.active = 0
+				# self.current_player = players[self.active]
+				self.current_player = self.next_player()
 				#If we're stuck AND the AI is stuck, end the game without subtracting points
 				if AIstuck:
 					gameOver = True
