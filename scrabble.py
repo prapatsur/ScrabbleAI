@@ -77,9 +77,157 @@ if TRAINING_FLAG:
 
 
 ##=====================MAIN======================
+class ScrabbleGame:
+	def __init__(self):
+		self.the_bag = bag.Bag()
+		self.the_board = board.Board()		
+
+	def runGame(self, USERDATA, useHintBox = False):
+		# theBoard = board.Board()
+		# theBoard = self.the_board
+
+		h = heuristic.notEndGameHeuristic(heuristic.tileQuantileHeuristic(.5, 1.0))
+
+		players = [
+			human.Human("Player", self.the_board, self.the_bag),
+			ai.AI(self.the_board, self.the_bag, theHeuristic=h, theDifficulty=10.0),
+		]
+
+		active = 0
+		firstTurn = True
+		gameOver = False
+
+		gameMenu = menu.GameMenu(useHintBox)
+
+		redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)
+
+		inHand = None
+		stillPlaying = True
+		AIstuck = False
+
+		while stillPlaying:
+			
+			mouseClicked = False
+			mouseMoved = False
+			actionKeyHit = False
+			shuffleKeyHit = False
+			hintKeyHit = False
+
+			current_player = players[active]
+
+			for event in pygame.event.get():
+				if event.type == QUIT:
+					pygame.quit()
+					sys.exit()
+				elif event.type == MOUSEMOTION:
+					mouseX, mouseY = event.pos
+					mouseMoved = True
+				elif event.type == MOUSEBUTTONUP:
+					mouseX, mouseY = event.pos
+					mouseClicked = True
+				elif event.type == KEYUP:
+					if event.key in [K_SPACE, K_RETURN]:
+						actionKeyHit = True
+					if event.key == K_r:
+						shuffleKeyHit = True
+					if event.key == K_h and useHintBox:
+						hintKeyHit = True
+
+			#GAME MENU BUTTONS	
+			if mouseMoved:
+				gameMenu.update(mouseX, mouseY)
+
+			if mouseClicked:
+				SELECTION = gameMenu.execute(mouseX, mouseY)	
+
+				if SELECTION == menu.GameMenu.PLAY_TURN:
+					actionKeyHit = True
+				elif SELECTION == menu.GameMenu.RESHUFFLE:
+					shuffleKeyHit = True
+				elif SELECTION == menu.GameMenu.HINT_TURN:
+					hintKeyHit = True
+				elif SELECTION == menu.GameMenu.MAIN_MENU:
+					stillPlaying = False
+
+			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
+			if (hintKeyHit or TRAINING_FLAG) and not is_computer_turn(current_player) and not gameOver:
+				place_hinted_tiles(self.the_board, current_player, firstTurn)							
+
+			# Play action
+			if (actionKeyHit or TRAINING_FLAG or is_computer_turn(current_player)) and not gameOver:
+				#If it's the computer turn, we need to process its move first!
+				if is_computer_turn(current_player):
+					playedMove = current_player.executeTurn(firstTurn, DISPLAYSURF)
+				else:
+					playedMove = True
+
+				if playedMove:	
+
+					success = current_player.play(firstTurn)
+					if success == "END":
+						gameOver = True
+						endGame(players, active, useHintBox, USERDATA)
+					elif success:
+						DINGDING.play()
+						current_player.pulseScore()
+						firstTurn = False
+						# current_player = next_player(players, active)
+						active += 1
+						if active >= len(players):
+							active = 0
+						current_player = players[active]
+						#If we were stuck before, we aren't anymore
+						if is_computer_turn(current_player):
+							AIstuck = False					
+					else:
+						if TRAINING_FLAG:
+							AIstuck = True
+						TICTIC.play()
+						if is_computer_turn(current_player):
+							print ("AI thinks it has a good move, but it doesn't")
+				else:
+					# ???
+					print("shuffle")
+					current_player.shuffle()
+					#Let the player know the AI shuffled
+					current_player.lastScore = 0
+					current_player.pulseScore()
+					if self.the_bag.isEmpty():
+						AIstuck = True
+
+					active += 1
+					if active >= len(players):
+						active = 0
+					current_player = players[active]
+					# current_player = next_player(players, active)
+
+				redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)	
+
+			if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not is_computer_turn(current_player) and not gameOver:
+				SCRIFFLE.play()
+				players[active].shuffle()
+				active += 1
+				if active >= len(players):
+					active = 0
+				#If we're stuck AND the AI is stuck, end the game without subtracting points
+				if AIstuck:
+					gameOver = True
+					endGame(players, active, useHintBox, USERDATA, stuck = True)
+				redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)
+
+			if mouseClicked and not is_computer_turn(current_player) and not gameOver:
+				inHand = tileGrab(mouseX, mouseY, inHand, self.the_board, players[active])
+				redrawEverything(self.the_board, players[active], players, gameOver, gameMenu)	
+
+			if gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
+				stillPlaying = False
+
+			redrawNecessary(self.the_board, players, gameOver)
+			pygame.display.update()
+
 def main():
 	USERDATA = loadUser()
-
+	game = ScrabbleGame()
 	theMenu = menu.MainMenu(USERDATA)
 	while True:
 		mouseClicked = False
@@ -105,7 +253,7 @@ def main():
 		if SELECTION == menu.MainMenu.NEW_GAME:
 			new_game(USERDATA, theMenu)
 		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
-			runGame(USERDATA, useHintBox=True)
+			game.runGame(USERDATA, useHintBox=True)
 			# theMenu.redraw()
 		elif SELECTION == menu.MainMenu.EXIT_GAME:
 			pygame.quit()
@@ -118,156 +266,12 @@ def new_game(USERDATA, theMenu):
 	USERDATA["numGames"] += 1
 	saveUser(USERDATA)
 	theMenu.resetAchievements(USERDATA)
-	runGame(USERDATA)
+	ScrabbleGame().runGame(USERDATA)
 	theMenu.resetAchievements(USERDATA)
 
 
 
 	
-def runGame(USERDATA, useHintBox = False):	
-	theBag = bag.Bag()
-	theBoard = board.Board()
-
-	h = heuristic.notEndGameHeuristic(heuristic.tileQuantileHeuristic(.5, 1.0))
-
-	players = [
-		human.Human("Player", theBoard, theBag),
-		ai.AI(theBoard, theBag, theHeuristic=h, theDifficulty=10.0),
-	]
-	# Create an iterator that cycles through the list indefinitely
-	player_cycle = itertools.cycle(players)
-
-	active = 0
-	firstTurn = True
-	gameOver = False
-
-	gameMenu = menu.GameMenu(useHintBox)
-
-	redrawEverything(theBoard, players[active], players, gameOver, gameMenu)
-
-	inHand = None
-	stillPlaying = True
-	AIstuck = False
-
-	while stillPlaying:
-		
-		mouseClicked = False
-		mouseMoved = False
-		actionKeyHit = False
-		shuffleKeyHit = False
-		hintKeyHit = False
-
-		current_player = players[active]
-
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				pygame.quit()
-				sys.exit()
-			elif event.type == MOUSEMOTION:
-				mouseX, mouseY = event.pos
-				mouseMoved = True
-			elif event.type == MOUSEBUTTONUP:
-				mouseX, mouseY = event.pos
-				mouseClicked = True
-			elif event.type == KEYUP:
-				if event.key in [K_SPACE, K_RETURN]:
-					actionKeyHit = True
-				if event.key == K_r:
-					shuffleKeyHit = True
-				if event.key == K_h and useHintBox:
-					hintKeyHit = True
-
-		#GAME MENU BUTTONS	
-		if mouseMoved:
-			gameMenu.update(mouseX, mouseY)
-
-		if mouseClicked:
-			SELECTION = gameMenu.execute(mouseX, mouseY)	
-
-			if SELECTION == menu.GameMenu.PLAY_TURN:
-				actionKeyHit = True
-			elif SELECTION == menu.GameMenu.RESHUFFLE:
-				shuffleKeyHit = True
-			elif SELECTION == menu.GameMenu.HINT_TURN:
-				hintKeyHit = True
-			elif SELECTION == menu.GameMenu.MAIN_MENU:
-				stillPlaying = False
-
-		# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
-		if (hintKeyHit or TRAINING_FLAG) and not is_computer_turn(current_player) and not gameOver:
-			place_hinted_tiles(theBoard, current_player, firstTurn)							
-
-		# Play action
-		if (actionKeyHit or TRAINING_FLAG or is_computer_turn(current_player)) and not gameOver:
-			#If it's the computer turn, we need to process its move first!
-			if is_computer_turn(current_player):
-				playedMove = current_player.executeTurn(firstTurn, DISPLAYSURF)
-			else:
-				playedMove = True
-
-			if playedMove:	
-
-				success = current_player.play(firstTurn)
-				if success == "END":
-					gameOver = True
-					endGame(players, active, useHintBox, USERDATA)
-				elif success:
-					DINGDING.play()
-					current_player.pulseScore()
-					firstTurn = False
-					# current_player = next_player(players, active)
-					active += 1
-					if active >= len(players):
-						active = 0
-					current_player = players[active]
-					#If we were stuck before, we aren't anymore
-					if is_computer_turn(current_player):
-						AIstuck = False					
-				else:
-					if TRAINING_FLAG:
-						AIstuck = True
-					TICTIC.play()
-					if is_computer_turn(current_player):
-						print ("AI thinks it has a good move, but it doesn't")
-			else:
-				# ???
-				print("shuffle")
-				current_player.shuffle()
-				#Let the player know the AI shuffled
-				current_player.lastScore = 0
-				current_player.pulseScore()
-				if theBag.isEmpty():
-					AIstuck = True
-
-				active += 1
-				if active >= len(players):
-					active = 0
-				current_player = players[active]
-				# current_player = next_player(players, active)
-
-			redrawEverything(theBoard, players[active], players, gameOver, gameMenu)	
-
-		if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not is_computer_turn(current_player) and not gameOver:
-			SCRIFFLE.play()
-			players[active].shuffle()
-			active += 1
-			if active >= len(players):
-				active = 0
-			#If we're stuck AND the AI is stuck, end the game without subtracting points
-			if AIstuck:
-				gameOver = True
-				endGame(players, active, useHintBox, USERDATA, stuck = True)
-			redrawEverything(theBoard, players[active], players, gameOver, gameMenu)
-
-		if mouseClicked and not is_computer_turn(current_player) and not gameOver:
-			inHand = tileGrab(mouseX, mouseY, inHand, theBoard, players[active])
-			redrawEverything(theBoard, players[active], players, gameOver, gameMenu)	
-
-		if gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
-			stillPlaying = False
-
-		redrawNecessary(theBoard, players, gameOver)
-		pygame.display.update()
 
 def next_player(players, active):
 	print ("working")
