@@ -104,37 +104,37 @@ class ScrabbleGame:
 
 		while stillPlaying:
 			
-			mouseClicked = False
-			mouseMoved = False
-			actionKeyHit = False
-			shuffleKeyHit = False
-			hintKeyHit = False
+			# mouseClicked = False
+			# mouseMoved = False
+			# actionKeyHit = False
+			# shuffleKeyHit = False
+			# hintKeyHit = False
 
 			self.current_player = players[self.active]
 
-			for event in pygame.event.get():
-				if event.type == QUIT:
-					pygame.quit()
-					sys.exit()
-				elif event.type == MOUSEMOTION:
-					mouseX, mouseY = event.pos
-					mouseMoved = True
-				elif event.type == MOUSEBUTTONUP:
-					mouseX, mouseY = event.pos
-					mouseClicked = True
-				elif event.type == KEYUP:
-					if event.key in [K_SPACE, K_RETURN]:
-						actionKeyHit = True
-					if event.key == K_r:
-						shuffleKeyHit = True
-					if event.key == K_h and useHintBox:
-						hintKeyHit = True
-
+			# for event in pygame.event.get():
+			# 	if event.type == QUIT:
+			# 		pygame.quit()
+			# 		sys.exit()
+			# 	elif event.type == MOUSEMOTION:
+			# 		mouseX, mouseY = event.pos
+			# 		mouseMoved = True
+			# 	elif event.type == MOUSEBUTTONUP:
+			# 		mouseX, mouseY = event.pos
+			# 		mouseClicked = True
+			# 	elif event.type == KEYUP:
+			# 		if event.key in [K_SPACE, K_RETURN]:
+			# 			actionKeyHit = True
+			# 		if event.key == K_r:
+			# 			shuffleKeyHit = True
+			# 		if event.key == K_h and useHintBox:
+			# 			hintKeyHit = True
+			mouse_clicked, mouse_moved, actionKeyHit, shuffleKeyHit, hintKeyHit, mouseX, mouseY = self.handle_events()
 			#GAME MENU BUTTONS	
-			if mouseMoved:
+			if mouse_moved:
 				self.gameMenu.update(mouseX, mouseY)
 
-			if mouseClicked:
+			if mouse_clicked:
 				SELECTION = self.gameMenu.execute(mouseX, mouseY)	
 
 				if SELECTION == menu.GameMenu.PLAY_TURN:
@@ -205,7 +205,7 @@ class ScrabbleGame:
 					endGame(players, self.active, useHintBox, USERDATA, stuck = True)
 				self.redrawEverything()
 
-			if mouseClicked and not self.is_computer_turn() and not self.gameOver:
+			if mouse_clicked and not self.is_computer_turn() and not self.gameOver:
 				inHand = tileGrab(mouseX, mouseY, inHand, self.the_board, players[self.active])
 				self.redrawEverything()	
 
@@ -214,6 +214,35 @@ class ScrabbleGame:
 
 			redrawNecessary(self.the_board, players, self.gameOver)
 			pygame.display.update()
+
+
+	def handle_events(self):
+		mouse_clicked = False
+		mouse_moved = False
+		action_key_hit = False
+		shuffle_key_hit = False
+		hint_key_hit = False
+		mouse_x, mouse_y = None, None
+
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				sys.exit()
+			elif event.type == pygame.MOUSEMOTION:
+				mouse_x, mouse_y = event.pos
+				mouse_moved = True
+			elif event.type == pygame.MOUSEBUTTONUP:
+				mouse_x, mouse_y = event.pos
+				mouse_clicked = True
+			elif event.type == pygame.KEYUP:
+				if event.key in [pygame.K_SPACE, pygame.K_RETURN]:
+					action_key_hit = True
+				if event.key == pygame.K_r:
+					shuffle_key_hit = True
+				if event.key == pygame.K_h and self.game_menu.use_hint_box:
+					hint_key_hit = True
+
+		return mouse_clicked, mouse_moved, action_key_hit, shuffle_key_hit, hint_key_hit, mouse_x, mouse_y
 
 	def is_computer_turn(self):
 		return isinstance(self.current_player, ai.AI)
@@ -274,12 +303,6 @@ def new_game(USERDATA, theMenu):
 	theMenu.resetAchievements(USERDATA)
 	ScrabbleGame().runGame(USERDATA)
 	theMenu.resetAchievements(USERDATA)
-
-
-
-	
-
-
 
 def place_hinted_tiles(theBoard, player, firstTurn):
 	revert_played_tiles(theBoard, player)
