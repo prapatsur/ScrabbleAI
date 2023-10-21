@@ -78,7 +78,7 @@ if TRAINING_FLAG:
 
 ##=====================MAIN======================
 class ScrabbleGame:
-	def __init__(self):
+	def __init__(self, useHintBox = False):
 		self.the_bag = bag.Bag()
 		self.the_board = board.Board()		
 		h = heuristic.notEndGameHeuristic(heuristic.tileQuantileHeuristic(.5, 1.0))
@@ -89,17 +89,14 @@ class ScrabbleGame:
 		self.current_player = self.players[0]
 		self.active = 0
 		self.gameOver = False
+		self.gameMenu = menu.GameMenu(useHintBox)
 
 	def runGame(self, USERDATA, useHintBox = False):
 		players = self.players
-		# active = 0
 		firstTurn = True
-		
-
-		gameMenu = menu.GameMenu(useHintBox)
-
+		self.gameMenu = menu.GameMenu(useHintBox)
 		# redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)
-		redrawEverything(self.the_board, self.current_player, players, self.gameOver, gameMenu)
+		self.redrawEverything()
 
 		inHand = None
 		stillPlaying = True
@@ -135,10 +132,10 @@ class ScrabbleGame:
 
 			#GAME MENU BUTTONS	
 			if mouseMoved:
-				gameMenu.update(mouseX, mouseY)
+				self.gameMenu.update(mouseX, mouseY)
 
 			if mouseClicked:
-				SELECTION = gameMenu.execute(mouseX, mouseY)	
+				SELECTION = self.gameMenu.execute(mouseX, mouseY)	
 
 				if SELECTION == menu.GameMenu.PLAY_TURN:
 					actionKeyHit = True
@@ -196,7 +193,7 @@ class ScrabbleGame:
 						AIstuck = True
 					self.current_player = self.next_player()
 
-				redrawEverything(self.the_board, players[self.active], players, self.gameOver, gameMenu)	
+				self.redrawEverything()	
 
 			if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 				SCRIFFLE.play()
@@ -206,11 +203,11 @@ class ScrabbleGame:
 				if AIstuck:
 					self.gameOver = True
 					endGame(players, self.active, useHintBox, USERDATA, stuck = True)
-				redrawEverything(self.the_board, players[self.active], players, self.gameOver, gameMenu)
+				self.redrawEverything()
 
 			if mouseClicked and not self.is_computer_turn() and not self.gameOver:
 				inHand = tileGrab(mouseX, mouseY, inHand, self.the_board, players[self.active])
-				redrawEverything(self.the_board, players[self.active], players, self.gameOver, gameMenu)	
+				self.redrawEverything()	
 
 			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
 				stillPlaying = False
@@ -225,6 +222,18 @@ class ScrabbleGame:
 		# toggle active player
 		self.active = 1 - self.active
 		return self.players[self.active]	
+
+	'''
+	Composite function which redraws everything
+	'''	
+	def redrawEverything(self, board=None, currentPlayer=None, players=None, gameOver=None, gameMenu=None):
+		DISPLAYSURF.fill(BACKGROUND_COLOR)
+		# board.draw(DISPLAYSURF, ALPHASURF)
+		# currentPlayer.drawTray(DISPLAYSURF)	
+		self.the_board.draw(DISPLAYSURF, ALPHASURF)
+		self.current_player.drawTray(DISPLAYSURF)			
+		drawScore(self.players, self.gameOver)
+		self.gameMenu.redraw()
 
 def main():
 	USERDATA = loadUser()
@@ -338,15 +347,15 @@ def tileGrab(x, y, hand, theBoard, theHuman):
 		return None					#empty the hand
 			
 
-'''
-Composite function which redraws everything
-'''	
-def redrawEverything(board, currentPlayer, players, gameOver, gameMenu):
-	DISPLAYSURF.fill(BACKGROUND_COLOR)
-	board.draw(DISPLAYSURF, ALPHASURF)
-	currentPlayer.drawTray(DISPLAYSURF)	
-	drawScore(players, gameOver)
-	gameMenu.redraw()
+# '''
+# Composite function which redraws everything
+# '''	
+# def redrawEverything(board, currentPlayer, players, gameOver, gameMenu):
+# 	DISPLAYSURF.fill(BACKGROUND_COLOR)
+# 	board.draw(DISPLAYSURF, ALPHASURF)
+# 	currentPlayer.drawTray(DISPLAYSURF)	
+# 	drawScore(players, gameOver)
+# 	gameMenu.redraw()
 	
 '''
 Function which redraws only animated elements
