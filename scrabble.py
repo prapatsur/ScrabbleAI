@@ -223,13 +223,9 @@ class ScrabbleGame:
 		self.active = 1 - self.active
 		return self.players[self.active]	
 
-	'''
-	Composite function which redraws everything
-	'''	
-	def redrawEverything(self, board=None, currentPlayer=None, players=None, gameOver=None, gameMenu=None):
+	def redrawEverything(self):
+		"""Composite function which redraws everything"""
 		DISPLAYSURF.fill(BACKGROUND_COLOR)
-		# board.draw(DISPLAYSURF, ALPHASURF)
-		# currentPlayer.drawTray(DISPLAYSURF)	
 		self.the_board.draw(DISPLAYSURF, ALPHASURF)
 		self.current_player.drawTray(DISPLAYSURF)			
 		drawScore(self.players, self.gameOver)
@@ -345,18 +341,7 @@ def tileGrab(x, y, hand, theBoard, theHuman):
 			theBoard.askForLetter(blank, DISPLAYSURF, ALPHASURF)
 		theHuman.placeTentative()	#if it's successful place a tentative piece
 		return None					#empty the hand
-			
 
-# '''
-# Composite function which redraws everything
-# '''	
-# def redrawEverything(board, currentPlayer, players, gameOver, gameMenu):
-# 	DISPLAYSURF.fill(BACKGROUND_COLOR)
-# 	board.draw(DISPLAYSURF, ALPHASURF)
-# 	currentPlayer.drawTray(DISPLAYSURF)	
-# 	drawScore(players, gameOver)
-# 	gameMenu.redraw()
-	
 '''
 Function which redraws only animated elements
 '''	
