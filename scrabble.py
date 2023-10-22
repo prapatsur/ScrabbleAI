@@ -107,6 +107,7 @@ class ScrabbleGame:
 		self.gameOver = False
 		self.gameMenu = menu.GameMenu(useHintBox)
 		self.event_state = EventState()
+		self.still_playing = True
 
 	def runGame(self, USERDATA, useHintBox = False):
 		players = self.players
@@ -115,10 +116,10 @@ class ScrabbleGame:
 		self.redrawEverything()
 
 		inHand = None
-		stillPlaying = True
+		self.still_playing = True
 		AIstuck = False
 
-		while stillPlaying:
+		while self.still_playing:
 			self.current_player = players[self.active]
 			mouse_clicked, mouse_moved, actionKeyHit, shuffleKeyHit, hintKeyHit, mouseX, mouseY = self.handle_events().as_tuple()
 			#GAME MENU BUTTONS	
@@ -135,7 +136,7 @@ class ScrabbleGame:
 				elif SELECTION == menu.GameMenu.HINT_TURN:
 					hintKeyHit = True
 				elif SELECTION == menu.GameMenu.MAIN_MENU:
-					stillPlaying = False
+					self.stillPlaying = False
 
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
 			if (hintKeyHit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
@@ -201,7 +202,7 @@ class ScrabbleGame:
 				self.redrawEverything()	
 
 			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
-				stillPlaying = False
+				self.still_playing = False
 
 			redrawNecessary(self.the_board, players, self.gameOver)
 			pygame.display.update()
@@ -250,7 +251,7 @@ class ScrabbleGame:
 			elif SELECTION == menu.GameMenu.HINT_TURN:
 				self.event_state.hintKeyHit = True
 			elif SELECTION == menu.GameMenu.MAIN_MENU:
-				self.event_state.stillPlaying = False	
+				self.still_playing = False	
 
 	def is_computer_turn(self):
 		return isinstance(self.current_player, ai.AI)
