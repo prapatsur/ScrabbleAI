@@ -56,21 +56,6 @@ import menu
 
 # Event_state
 from dataclasses import dataclass
-
-# @dataclass
-# class EventState:
-# 	mouse_clicked: bool = False
-# 	mouse_moved: bool = False
-# 	action_key_hit: bool = False
-# 	shuffle_key_hit: bool = False
-# 	hint_key_hit: bool = False
-# 	mouse_x: int = None
-# 	mouse_y: int = None
-
-# 	def as_tuple(self):
-# 		return (self.mouse_clicked, self.mouse_moved, self.action_key_hit, 
-# 				self.shuffle_key_hit, self.hint_key_hit, self.mouse_x, self.mouse_y)
-
 @dataclass
 class EventState:
     mouse_clicked: bool = False
@@ -134,27 +119,13 @@ class ScrabbleGame:
 
 		while self.still_playing:
 			self.current_player = players[self.active]
-			# mouse_clicked, mouse_moved, actionKeyHit, shuffleKeyHit, hintKeyHit, mouseX, mouseY = self.handle_events().as_tuple()
 			self.handle_events()
 			#GAME MENU BUTTONS	
-			# if mouse_moved:
-			# 	self.gameMenu.update(mouseX, mouseY)
+			# if self.event_state.mouse_clicked:
+			# 	SELECTION = self.gameMenu.execute(self.event_state.mouse_x, self.event_state.mouse_y)	
+			# 	if SELECTION == menu.GameMenu.MAIN_MENU:
+			# 		self.stillPlaying = False
 
-			if self.event_state.mouse_clicked:
-				SELECTION = self.gameMenu.execute(self.event_state.mouse_x, self.event_state.mouse_y)	
-
-				# if SELECTION == menu.GameMenu.PLAY_TURN:
-				# 	actionKeyHit = True
-				# elif SELECTION == menu.GameMenu.RESHUFFLE:
-				# if SELECTION == menu.GameMenu.RESHUFFLE:
-				# 	shuffleKeyHit = True
-				# elif SELECTION == menu.GameMenu.HINT_TURN:
-				# 	hintKeyHit = True
-				# elif SELECTION == menu.GameMenu.MAIN_MENU:
-				if SELECTION == menu.GameMenu.MAIN_MENU:
-					self.stillPlaying = False
-
-			actionKeyHit = self.event_state.action_key_hit
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
 			if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
 				place_hinted_tiles(self.the_board, self.current_player, firstTurn)							
