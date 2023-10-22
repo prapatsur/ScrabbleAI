@@ -120,11 +120,6 @@ class ScrabbleGame:
 		while self.still_playing:
 			self.current_player = players[self.active]
 			self.handle_events()
-			#GAME MENU BUTTONS	
-			# if self.event_state.mouse_clicked:
-			# 	SELECTION = self.gameMenu.execute(self.event_state.mouse_x, self.event_state.mouse_y)	
-			# 	if SELECTION == menu.GameMenu.MAIN_MENU:
-			# 		self.stillPlaying = False
 
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
 			if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
