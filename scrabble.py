@@ -106,12 +106,12 @@ class ScrabbleGame:
 		self.active = 0
 		self.gameOver = False
 		self.gameMenu = menu.GameMenu(useHintBox)
+		self.event_state = EventState()
 
 	def runGame(self, USERDATA, useHintBox = False):
 		players = self.players
 		firstTurn = True
 		self.gameMenu = menu.GameMenu(useHintBox)
-		# redrawEverything(self.the_board, players[self.active], players, gameOver, gameMenu)
 		self.redrawEverything()
 
 		inHand = None
@@ -122,8 +122,8 @@ class ScrabbleGame:
 			self.current_player = players[self.active]
 			mouse_clicked, mouse_moved, actionKeyHit, shuffleKeyHit, hintKeyHit, mouseX, mouseY = self.handle_events().as_tuple()
 			#GAME MENU BUTTONS	
-			if mouse_moved:
-				self.gameMenu.update(mouseX, mouseY)
+			# if mouse_moved:
+			# 	self.gameMenu.update(mouseX, mouseY)
 
 			if mouse_clicked:
 				SELECTION = self.gameMenu.execute(mouseX, mouseY)	
@@ -208,33 +208,49 @@ class ScrabbleGame:
 
 
 	def handle_events(self):
-		# mouse_clicked = False
-		# mouse_moved = False
-		# action_key_hit = False
-		# shuffle_key_hit = False
-		# hint_key_hit = False
-		# mouse_x, mouse_y = None, None
-		event_state = EventState()
+		self.gather_events()
+		self.handle_mouse_move()
+		self.handle_mouse_click()
+		return self.event_state
+
+	def gather_events(self):
+		# initialize new event state every time
+		self.event_state = EventState()
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				sys.exit()
 			elif event.type == pygame.MOUSEMOTION:
-				event_state.mouse_x, event_state.mouse_y = event.pos
-				event_state.mouse_moved = True
+				self.event_state.mouse_x, self.event_state.mouse_y = event.pos
+				self.event_state.mouse_moved = True
 			elif event.type == pygame.MOUSEBUTTONUP:
-				event_state.mouse_x, event_state.mouse_y = event.pos
-				event_state.mouse_clicked = True
+				self.event_state.mouse_x, self.event_state.mouse_y = event.pos
+				self.event_state.mouse_clicked = True
 			elif event.type == pygame.KEYUP:
 				if event.key in [pygame.K_SPACE, pygame.K_RETURN]:
-					event_state.action_key_hit = True
+					self.event_state.action_key_hit = True
 				if event.key == pygame.K_r:
-					event_state.shuffle_key_hit = True
+					self.event_state.shuffle_key_hit = True
 				if event.key == pygame.K_h and self.game_menu.use_hint_box:
-					event_state.hint_key_hit = True
+					self.event_state.hint_key_hit = True
 
-		return event_state
+	def handle_mouse_move(self):
+		if self.event_state.mouse_moved:
+			self.gameMenu.update(self.event_state.mouse_x, self.event_state.mouse_y)
+
+	def handle_mouse_click(self):
+		if self.event_state.mouse_clicked:
+			SELECTION = self.gameMenu.execute(self.event_state.mouse_x, self.event_state.mouse_y)	
+
+			if SELECTION == menu.GameMenu.PLAY_TURN:
+				self.event_state.actionKeyHit = True
+			elif SELECTION == menu.GameMenu.RESHUFFLE:
+				self.event_state.shuffleKeyHit = True
+			elif SELECTION == menu.GameMenu.HINT_TURN:
+				self.event_state.hintKeyHit = True
+			elif SELECTION == menu.GameMenu.MAIN_MENU:
+				self.event_state.stillPlaying = False	
 
 	def is_computer_turn(self):
 		return isinstance(self.current_player, ai.AI)
