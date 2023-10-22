@@ -126,18 +126,20 @@ class ScrabbleGame:
 			# if mouse_moved:
 			# 	self.gameMenu.update(mouseX, mouseY)
 
-			if mouse_clicked:
+			if self.event_state.mouse_clicked:
 				SELECTION = self.gameMenu.execute(mouseX, mouseY)	
 
-				if SELECTION == menu.GameMenu.PLAY_TURN:
-					actionKeyHit = True
-				elif SELECTION == menu.GameMenu.RESHUFFLE:
+				# if SELECTION == menu.GameMenu.PLAY_TURN:
+				# 	actionKeyHit = True
+				# elif SELECTION == menu.GameMenu.RESHUFFLE:
+				if SELECTION == menu.GameMenu.RESHUFFLE:
 					shuffleKeyHit = True
 				elif SELECTION == menu.GameMenu.HINT_TURN:
 					hintKeyHit = True
 				elif SELECTION == menu.GameMenu.MAIN_MENU:
 					self.stillPlaying = False
 
+			actionKeyHit = self.event_state.action_key_hit
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
 			if (hintKeyHit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
 				place_hinted_tiles(self.the_board, self.current_player, firstTurn)							
@@ -245,11 +247,11 @@ class ScrabbleGame:
 			SELECTION = self.gameMenu.execute(self.event_state.mouse_x, self.event_state.mouse_y)	
 
 			if SELECTION == menu.GameMenu.PLAY_TURN:
-				self.event_state.actionKeyHit = True
+				self.event_state.action_key_hit = True
 			elif SELECTION == menu.GameMenu.RESHUFFLE:
-				self.event_state.shuffleKeyHit = True
+				self.event_state.shuffle_key_hit = True
 			elif SELECTION == menu.GameMenu.HINT_TURN:
-				self.event_state.hintKeyHit = True
+				self.event_state.hint_key_hit = True
 			elif SELECTION == menu.GameMenu.MAIN_MENU:
 				self.still_playing = False	
 
