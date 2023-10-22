@@ -1,5 +1,8 @@
 #This is the main scrabble program
 '''
+BUG
+	- if redraw when there are tiles in the board, error occurs
+
 Scrabble To-Do:
 
 	- Make processing time delay as a function
@@ -54,19 +57,29 @@ import menu
 # Event_state
 from dataclasses import dataclass
 
+# @dataclass
+# class EventState:
+# 	mouse_clicked: bool = False
+# 	mouse_moved: bool = False
+# 	action_key_hit: bool = False
+# 	shuffle_key_hit: bool = False
+# 	hint_key_hit: bool = False
+# 	mouse_x: int = None
+# 	mouse_y: int = None
+
+# 	def as_tuple(self):
+# 		return (self.mouse_clicked, self.mouse_moved, self.action_key_hit, 
+# 				self.shuffle_key_hit, self.hint_key_hit, self.mouse_x, self.mouse_y)
+
 @dataclass
 class EventState:
-	mouse_clicked: bool = False
-	mouse_moved: bool = False
-	action_key_hit: bool = False
-	shuffle_key_hit: bool = False
-	hint_key_hit: bool = False
-	mouse_x: int = None
-	mouse_y: int = None
-
-	def as_tuple(self):
-		return (self.mouse_clicked, self.mouse_moved, self.action_key_hit, 
-				self.shuffle_key_hit, self.hint_key_hit, self.mouse_x, self.mouse_y)
+    mouse_clicked: bool = False
+    mouse_moved: bool = False
+    action_key_hit: bool = False
+    shuffle_key_hit: bool = False
+    hint_key_hit: bool = False
+    mouse_x: int = None
+    mouse_y: int = None
 
 #font setup
 SCORE_FONT = pygame.font.Font('freesansbold.ttf', 20)
@@ -121,31 +134,33 @@ class ScrabbleGame:
 
 		while self.still_playing:
 			self.current_player = players[self.active]
-			mouse_clicked, mouse_moved, actionKeyHit, shuffleKeyHit, hintKeyHit, mouseX, mouseY = self.handle_events().as_tuple()
+			# mouse_clicked, mouse_moved, actionKeyHit, shuffleKeyHit, hintKeyHit, mouseX, mouseY = self.handle_events().as_tuple()
+			self.handle_events()
 			#GAME MENU BUTTONS	
 			# if mouse_moved:
 			# 	self.gameMenu.update(mouseX, mouseY)
 
 			if self.event_state.mouse_clicked:
-				SELECTION = self.gameMenu.execute(mouseX, mouseY)	
+				SELECTION = self.gameMenu.execute(self.event_state.mouse_x, self.event_state.mouse_y)	
 
 				# if SELECTION == menu.GameMenu.PLAY_TURN:
 				# 	actionKeyHit = True
 				# elif SELECTION == menu.GameMenu.RESHUFFLE:
-				if SELECTION == menu.GameMenu.RESHUFFLE:
-					shuffleKeyHit = True
-				elif SELECTION == menu.GameMenu.HINT_TURN:
-					hintKeyHit = True
-				elif SELECTION == menu.GameMenu.MAIN_MENU:
+				# if SELECTION == menu.GameMenu.RESHUFFLE:
+				# 	shuffleKeyHit = True
+				# elif SELECTION == menu.GameMenu.HINT_TURN:
+				# 	hintKeyHit = True
+				# elif SELECTION == menu.GameMenu.MAIN_MENU:
+				if SELECTION == menu.GameMenu.MAIN_MENU:
 					self.stillPlaying = False
 
 			actionKeyHit = self.event_state.action_key_hit
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
-			if (hintKeyHit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
+			if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
 				place_hinted_tiles(self.the_board, self.current_player, firstTurn)							
 
 			# Play action
-			if (actionKeyHit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
+			if (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
 				#If it's the computer turn, we need to process its move first!
 				if self.is_computer_turn():
 					playedMove = self.current_player.executeTurn(firstTurn, DISPLAYSURF)
@@ -189,7 +204,7 @@ class ScrabbleGame:
 
 				self.redrawEverything()	
 
-			if (shuffleKeyHit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
+			if (self.event_state.shuffle_key_hit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 				SCRIFFLE.play()
 				players[self.active].shuffle()
 				self.current_player = self.next_player()
@@ -199,8 +214,8 @@ class ScrabbleGame:
 					endGame(players, self.active, useHintBox, USERDATA, stuck = True)
 				self.redrawEverything()
 
-			if mouse_clicked and not self.is_computer_turn() and not self.gameOver:
-				inHand = tileGrab(mouseX, mouseY, inHand, self.the_board, players[self.active])
+			if self.event_state.mouse_clicked and not self.is_computer_turn() and not self.gameOver:
+				inHand = tileGrab(self.event_state.mouse_x, self.event_state.mouse_y, inHand, self.the_board, players[self.active])
 				self.redrawEverything()	
 
 			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
