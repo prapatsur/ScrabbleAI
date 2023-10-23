@@ -187,7 +187,7 @@ class ScrabbleGame:
 			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
 				self.still_playing = False
 
-			redrawNecessary(self.the_board, self.players, self.gameOver)
+			self.redrawNecessary()
 			pygame.display.update()
 
 
@@ -251,6 +251,13 @@ class ScrabbleGame:
 		self.current_player.drawTray(DISPLAYSURF)			
 		drawScore(self.players, self.gameOver)
 		self.gameMenu.redraw()
+
+	'''
+	Function which redraws only animated elements
+	'''	
+	def redrawNecessary(self):
+		self.the_board.drawDirty(DISPLAYSURF, ALPHASURF)
+		drawScore(self.players, self.gameOver)		
 
 def main():
 	USERDATA = loadUser()
@@ -357,12 +364,7 @@ def tileGrab(x, y, hand, theBoard, theHuman):
 		theHuman.placeTentative()	#if it's successful place a tentative piece
 		return None					#empty the hand
 
-'''
-Function which redraws only animated elements
-'''	
-def redrawNecessary(board, players, gameOver):
-	board.drawDirty(DISPLAYSURF, ALPHASURF)
-	drawScore(players, gameOver)
+
 		
 '''
 Draws the scores

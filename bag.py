@@ -26,7 +26,7 @@ class Bag:
 		# 	self.add(letter, score, count)
 
 		
-		DEBUG - Small bag for debugging total game states
+		# DEBUG - Small bag for debugging total game states
 		self.add('E', 1, 3)
 		self.add('S', 1, 3)
 		self.add('A', 1, 3)
