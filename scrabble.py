@@ -111,18 +111,15 @@ class ScrabbleGame:
 		firstTurn = True
 		self.gameMenu = menu.GameMenu(useHintBox)
 		self.redrawEverything()
-
 		inHand = None
-		self.still_playing = True
 		AIstuck = False
 
 		while self.still_playing:
-			self.current_player = self.players[self.active]
+			# self.current_player = self.players[self.active]
 			self.handle_events()
 
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
 			if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
-				# place_hinted_tiles(self.the_board, self.current_player, firstTurn)	
 				self.place_hinted_tiles(firstTurn)						
 
 			# Play action
@@ -143,11 +140,11 @@ class ScrabbleGame:
 						DINGDING.play()
 						self.current_player.pulseScore()
 						firstTurn = False
-						# self.current_player = next_player(players, active)
-						self.active += 1
-						if self.active >= len(self.players):
-							self.active = 0
-						self.current_player = self.players[self.active]
+						self.current_player = self.next_player()
+						# self.active += 1
+						# if self.active >= len(self.players):
+						# 	self.active = 0
+						# self.current_player = self.players[self.active]
 						#If we were stuck before, we aren't anymore
 						if self.is_computer_turn():
 							AIstuck = False					
@@ -172,7 +169,8 @@ class ScrabbleGame:
 
 			if (self.event_state.shuffle_key_hit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 				SCRIFFLE.play()
-				self.players[self.active].shuffle()
+				# self.players[self.active].shuffle()
+				self.current_player.shuffle()
 				self.current_player = self.next_player()
 				#If we're stuck AND the AI is stuck, end the game without subtracting points
 				if AIstuck:
@@ -304,12 +302,7 @@ def new_game(USERDATA, theMenu):
 	saveUser(USERDATA)
 	theMenu.resetAchievements(USERDATA)
 	ScrabbleGame().runGame(USERDATA)
-	theMenu.resetAchievements(USERDATA)
-
-def place_hinted_tiles(theBoard, player, firstTurn):
-	revert_played_tiles(theBoard, player)
-	player.executeTurn(firstTurn, DISPLAYSURF)
-	TICTIC.play()		
+	theMenu.resetAchievements(USERDATA)	
 
 def revert_played_tiles(theBoard, player):
 	tilesPulled = theBoard.removeTempTiles()
