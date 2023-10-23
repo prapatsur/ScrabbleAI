@@ -21,13 +21,20 @@ Heuristic ideas:
 	  letter and words scores accessible and subtract points
 
 '''
-
-
-import pygame, random, sys, time, itertools
+import itertools
+import pygame
+import sys
+import time
 from pygame.locals import *
 
-#local files
-import board, tile, bag, player, human, ai, heuristic
+# local files
+import ai
+import bag
+import board
+import heuristic
+import human
+import player
+import tile
 
 pygame.init()
 
@@ -80,7 +87,7 @@ if TRAINING_FLAG:
 def main():
 	USERDATA = loadUser()
 
-	theMenu = menu.MainMenu(USERDATA)
+	the_menu = menu.MainMenu(USERDATA)
 	while True:
 		mouseClicked = False
 		mouseMoved = False
@@ -97,20 +104,20 @@ def main():
 				mouseClicked = True
 
 		if mouseClicked:
-			SELECTION = theMenu.execute(mouseX, mouseY)
+			SELECTION = the_menu.execute(mouseX, mouseY)
 
 		if mouseMoved:
-			theMenu.update(mouseX, mouseY)
+			the_menu.update(mouseX, mouseY)
 
 		if SELECTION == menu.MainMenu.NEW_GAME:
-			new_game(USERDATA, theMenu)
+			new_game(USERDATA, the_menu)
 		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
 			runGame(USERDATA, useHintBox=True)
 			# theMenu.redraw()
 		elif SELECTION == menu.MainMenu.EXIT_GAME:
 			pygame.quit()
 			sys.exit()
-		theMenu.redraw()
+		the_menu.redraw()
 		pygame.display.update()
 
 
