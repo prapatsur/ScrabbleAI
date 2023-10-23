@@ -108,7 +108,6 @@ class ScrabbleGame:
 		self.still_playing = True
 
 	def runGame(self, USERDATA, useHintBox = False):
-		# players = self.players
 		firstTurn = True
 		self.gameMenu = menu.GameMenu(useHintBox)
 		self.redrawEverything()
@@ -123,7 +122,8 @@ class ScrabbleGame:
 
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
 			if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
-				place_hinted_tiles(self.the_board, self.current_player, firstTurn)							
+				# place_hinted_tiles(self.the_board, self.current_player, firstTurn)	
+				self.place_hinted_tiles(firstTurn)						
 
 			# Play action
 			if (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
@@ -252,12 +252,15 @@ class ScrabbleGame:
 		drawScore(self.players, self.gameOver)
 		self.gameMenu.redraw()
 
-	'''
-	Function which redraws only animated elements
-	'''	
 	def redrawNecessary(self):
+		"""Composite function which redraws only animated elements"""
 		self.the_board.drawDirty(DISPLAYSURF, ALPHASURF)
-		drawScore(self.players, self.gameOver)		
+		drawScore(self.players, self.gameOver)	
+
+	def place_hinted_tiles(self, firstTurn):
+		revert_played_tiles(self.the_board, self.current_player)
+		self.current_player.executeTurn(firstTurn, DISPLAYSURF)
+		TICTIC.play()			
 
 def main():
 	USERDATA = loadUser()
