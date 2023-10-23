@@ -58,13 +58,13 @@ import menu
 from dataclasses import dataclass
 @dataclass
 class EventState:
-    mouse_clicked: bool = False
-    mouse_moved: bool = False
-    action_key_hit: bool = False
-    shuffle_key_hit: bool = False
-    hint_key_hit: bool = False
-    mouse_x: int = None
-    mouse_y: int = None
+	mouse_clicked: bool = False
+	mouse_moved: bool = False
+	action_key_hit: bool = False
+	shuffle_key_hit: bool = False
+	hint_key_hit: bool = False
+	mouse_x: int = None
+	mouse_y: int = None
 
 #font setup
 SCORE_FONT = pygame.font.Font('freesansbold.ttf', 20)
@@ -108,72 +108,73 @@ class ScrabbleGame:
 		self.still_playing = True
 
 	def runGame(self, USERDATA, useHintBox = False):
-		firstTurn = True
+		self.firstTurn = True
 		self.gameMenu = menu.GameMenu(useHintBox)
 		self.redrawEverything()
 		inHand = None
-		AIstuck = False
+		self.AIstuck = False
+		self.useHintBox = useHintBox
 
 		while self.still_playing:
 			# self.current_player = self.players[self.active]
 			self.handle_events()
 
-			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
-			if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
-				self.place_hinted_tiles(firstTurn)						
+			if self.is_computer_turn() and not self.gameOver:
+				self.handle_computer_turn(self.firstTurn, self.AIstuck)
+			else:
+				self.handle_user_turn(self.firstTurn, self.AIstuck)
 
-			# Play action
-			if (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
-				#If it's the computer turn, we need to process its move first!
-				if self.is_computer_turn():
-					playedMove = self.current_player.executeTurn(firstTurn, DISPLAYSURF)
-				else:
-					playedMove = True
+			# # Play hint, put tiles on board and wait for user's action whether user want to play as hinted
+			# if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
+			# 	self.place_hinted_tiles(firstTurn)						
 
-				if playedMove:	
+			# # Play action
+			# if (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
+			# 	#If it's the computer turn, we need to process its move first!
+			# 	if self.is_computer_turn():
+			# 		playedMove = self.current_player.executeTurn(firstTurn, DISPLAYSURF)
+			# 	else:
+			# 		playedMove = True
 
-					success = self.current_player.play(firstTurn)
-					if success == "END":
-						self.gameOver = True
-						endGame(self.players, self.active, useHintBox, USERDATA)
-					elif success:
-						DINGDING.play()
-						self.current_player.pulseScore()
-						firstTurn = False
-						self.current_player = self.next_player()
-						# self.active += 1
-						# if self.active >= len(self.players):
-						# 	self.active = 0
-						# self.current_player = self.players[self.active]
-						#If we were stuck before, we aren't anymore
-						if self.is_computer_turn():
-							AIstuck = False					
-					else:
-						if TRAINING_FLAG:
-							AIstuck = True
-						TICTIC.play()
-						if self.is_computer_turn():
-							print ("AI thinks it has a good move, but it doesn't")
-				else:
-					# ???
-					print("shuffle")
-					self.current_player.shuffle()
-					#Let the player know the AI shuffled
-					self.current_player.lastScore = 0
-					self.current_player.pulseScore()
-					if self.the_bag.isEmpty():
-						AIstuck = True
-					self.current_player = self.next_player()
+			# 	if playedMove:	
 
-				self.redrawEverything()	
+			# 		success = self.current_player.play(firstTurn)
+			# 		if success == "END":
+			# 			self.gameOver = True
+			# 			endGame(self.players, self.active, useHintBox, USERDATA)
+			# 		elif success:
+			# 			DINGDING.play()
+			# 			self.current_player.pulseScore()
+			# 			firstTurn = False
+			# 			self.current_player = self.next_player()
+			# 			if self.is_computer_turn():
+			# 				AIstuck = False					
+			# 		else:
+			# 			if TRAINING_FLAG:
+			# 				AIstuck = True
+			# 			TICTIC.play()
+			# 			if self.is_computer_turn():
+			# 				print ("AI thinks it has a good move, but it doesn't")
+			# 	else:
+			# 		# ???
+			# 		print("shuffle")
+			# 		self.current_player.shuffle()
+			# 		#Let the player know the AI shuffled
+			# 		self.current_player.lastScore = 0
+			# 		self.current_player.pulseScore()
+			# 		if self.the_bag.isEmpty():
+			# 			AIstuck = True
+			# 		self.current_player = self.next_player()
 
-			if (self.event_state.shuffle_key_hit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
+			# 	self.redrawEverything()	
+
+			if (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 				SCRIFFLE.play()
 				# self.players[self.active].shuffle()
 				self.current_player.shuffle()
 				self.current_player = self.next_player()
 				#If we're stuck AND the AI is stuck, end the game without subtracting points
-				if AIstuck:
+				if self.AIstuck:
 					self.gameOver = True
 					endGame(self.players, self.active, useHintBox, USERDATA, stuck = True)
 				self.redrawEverything()
@@ -188,6 +189,90 @@ class ScrabbleGame:
 			self.redrawNecessary()
 			pygame.display.update()
 
+	def handle_user_turn(self, firstTurn=None, AIstuck=None):
+		# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
+		if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.gameOver:
+			self.place_hinted_tiles(firstTurn)
+			# Play action
+		if (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
+			#If it's the computer turn, we need to process its move first!
+			if self.is_computer_turn():
+				playedMove = self.current_player.executeTurn(firstTurn, DISPLAYSURF)
+			else:
+				playedMove = True
+
+			if playedMove:	
+
+				success = self.current_player.play(firstTurn)
+				if success == "END":
+					self.gameOver = True
+					endGame(self.players, self.active, self.useHintBox, USERDATA)
+				elif success:
+					DINGDING.play()
+					self.current_player.pulseScore()
+					self.firstTurn = False
+					self.current_player = self.next_player()
+					if self.is_computer_turn():
+						self.AIstuck = False					
+				else:
+					if TRAINING_FLAG:
+						self.AIstuck = True
+					TICTIC.play()
+					if self.is_computer_turn():
+						print ("AI thinks it has a good move, but it doesn't")
+			else:
+				self.current_player.shuffle()
+				#Let the player know the AI shuffled
+				self.current_player.lastScore = 0
+				self.current_player.pulseScore()
+				if self.the_bag.isEmpty():
+					self.AIstuck = True
+				self.current_player = self.next_player()
+
+			self.redrawEverything()	
+
+
+	def handle_computer_turn(self, firstTurn=None, AIstuck=None):
+		# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
+		if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.gameOver:
+			self.place_hinted_tiles(firstTurn)
+			# Play action
+		if (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
+			#If it's the computer turn, we need to process its move first!
+			if self.is_computer_turn():
+				playedMove = self.current_player.executeTurn(firstTurn, DISPLAYSURF)
+			else:
+				playedMove = True
+
+			if playedMove:	
+
+				success = self.current_player.play(firstTurn)
+				if success == "END":
+					self.gameOver = True
+					endGame(self.players, self.active, self.useHintBox, USERDATA)
+				elif success:
+					DINGDING.play()
+					self.current_player.pulseScore()
+					self.firstTurn = False
+					self.current_player = self.next_player()
+					if self.is_computer_turn():
+						self.AIstuck = False					
+				else:
+					if TRAINING_FLAG:
+						self.AIstuck = True
+					TICTIC.play()
+					if self.is_computer_turn():
+						print ("AI thinks it has a good move, but it doesn't")
+			else:
+				self.current_player.shuffle()
+				#Let the player know the AI shuffled
+				self.current_player.lastScore = 0
+				self.current_player.pulseScore()
+				if self.the_bag.isEmpty():
+					self.AIstuck = True
+				self.current_player = self.next_player()
+
+			self.redrawEverything()	
 
 	def handle_events(self):
 		self.gather_events()
