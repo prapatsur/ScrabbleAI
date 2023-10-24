@@ -46,15 +46,13 @@ pygame.display.set_caption('Wordsmith - Prapat edition')
 
 tile.Tile.initialize()
 
-#Simple sound effects
-TIC = pygame.mixer.Sound('media/tic.ogg')
-TICTIC = pygame.mixer.Sound('media/tictic.ogg')
-DINGDING = pygame.mixer.Sound('media/dingding.ogg')
-SCRIFFLE = pygame.mixer.Sound('media/scriffle.ogg')
-CLICK = pygame.mixer.Sound('media/click.ogg')
-
-#Achievements and data
-USERFILE = 'media/user.txt'
+# #Simple sound effects
+# TIC = pygame.mixer.Sound('media/tic.ogg')
+# TICTIC = pygame.mixer.Sound('media/tictic.ogg')
+# DINGDING = pygame.mixer.Sound('media/dingding.ogg')
+# SCRIFFLE = pygame.mixer.Sound('media/scriffle.ogg')
+# CLICK = pygame.mixer.Sound('media/click.ogg')
+from config import TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
 
 #IMPORT THE MENU
 import menu
