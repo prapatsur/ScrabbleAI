@@ -185,23 +185,24 @@ class Button:
 	FONT_COLOR = (55, 46, 40)
 	ON = "on"
 	OFF = "off"
-	initialized = False
-	FONT = None
+	# initialized = False
+	# FONT = None
 
-	@staticmethod
-	def initialize():
-		Button.FONT = pygame.font.Font('freesansbold.ttf', 18)
-		Button.initialized = True
+	# @staticmethod
+	# def initialize():
+	# 	Button.FONT = pygame.font.Font('freesansbold.ttf', 18)
+	# 	Button.initialized = True
 
 	def __init__(self, name, rect, textBox=None, color=None, backColor=None):
-		if not Button.initialized:
-			Button.initialize()
+		# if not Button.initialized:
+		# 	Button.initialize()
 		self.name = name
 		self.rect = rect
 		self.lastDrawn = Button.OFF
 		self.textBox = textBox
 		self.color = color or Button.HIGHLIGHT
 		self.backColor = backColor or Button.BACKGROUND
+		self.font = pygame.font.Font('freesansbold.ttf', 18)
 
 	def update(self, mouseX, mouseY):
 		if self.within(mouseX, mouseY):
@@ -222,7 +223,8 @@ class Button:
 	def draw(self, backColor):
 		pygame.draw.rect(DISPLAYSURF, backColor, self.rect)
 		left, top, width, height = self.rect
-		text = Button.FONT.render(self.name, True, Button.FONT_COLOR, backColor)
+		# text = Button.FONT.render(self.name, True, Button.FONT_COLOR, backColor)
+		text = self.font.render(self.name, True, Button.FONT_COLOR, backColor)
 		rect = text.get_rect(center=(left + width / 2, top + height / 2))
 		DISPLAYSURF.blit(text, rect)
 
