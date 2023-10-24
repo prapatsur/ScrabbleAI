@@ -47,7 +47,7 @@ from config import DISPLAYSURF, ALPHASURF
 
 #IMPORT THE MENU
 import menu
-
+from menu import MainMenu, GameMenu
 
 #font setup
 SCORE_FONT = pygame.font.Font('freesansbold.ttf', 20)
@@ -80,15 +80,15 @@ def quit_game():
 def main():
 	def execute_menu():
 		SELECTION = the_menu.get_selected_menu(*event.pos)
-		if SELECTION == menu.MainMenu.NEW_GAME: # menu Challenge
+		if SELECTION == MainMenu.NEW_GAME: # menu Challenge
 			new_game(user_data, the_menu)
-		elif SELECTION == menu.MainMenu.TRAINING: # menu Training
+		elif SELECTION == MainMenu.TRAINING: # menu Training
 			runGame(user_data, useHintBox=True)
-		elif SELECTION == menu.MainMenu.EXIT_GAME:
+		elif SELECTION == MainMenu.EXIT_GAME:
 			quit_game()
 
 	user_data = UserData().get_user_data()
-	the_menu = menu.MainMenu(user_data)
+	the_menu = MainMenu(user_data)
 	while True:
 		# if training, start a new game automatically
 		if TRAINING_FLAG:
