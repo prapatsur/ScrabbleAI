@@ -21,7 +21,6 @@ Heuristic ideas:
 	  letter and words scores accessible and subtract points
 
 '''
-import itertools
 import pygame
 import sys
 import time
@@ -38,21 +37,13 @@ import tile
 from userdata import UserData
 
 pygame.init()
-
-#window setup
-DISPLAYSURF = pygame.display.set_mode((800, 600))
-ALPHASURF = DISPLAYSURF.convert_alpha()
-pygame.display.set_caption('Wordsmith - Prapat edition')
-
 tile.Tile.initialize()
 
-# #Simple sound effects
-# TIC = pygame.mixer.Sound('media/tic.ogg')
-# TICTIC = pygame.mixer.Sound('media/tictic.ogg')
-# DINGDING = pygame.mixer.Sound('media/dingding.ogg')
-# SCRIFFLE = pygame.mixer.Sound('media/scriffle.ogg')
-# CLICK = pygame.mixer.Sound('media/click.ogg')
+# This part, I may have to import after pygame.init() in order to work
+# import sound
 from config import TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
+# import global variables
+from config import DISPLAYSURF, ALPHASURF
 
 #IMPORT THE MENU
 import menu
@@ -137,7 +128,6 @@ def runGame(USERDATA, useHintBox = False):
 		ai.AI(theBoard, theBag, theHeuristic=h, theDifficulty=10.0),
 	]
 	# Create an iterator that cycles through the list indefinitely
-	player_cycle = itertools.cycle(players)
 
 	active = 0
 	# computerTurn = isinstance(players[active], ai.AI)
