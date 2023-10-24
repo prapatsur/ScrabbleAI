@@ -4,10 +4,10 @@ update and execute. Update will change display based on cursor position, while
 execute will process button clicks.
 '''
 
-import pygame, ai
-from pygame.locals import *
-# from scrabble import DISPLAYSURF, CLICK
+import pygame
+
 from config import DISPLAYSURF, CLICK
+
 
 class Menu():
 	
