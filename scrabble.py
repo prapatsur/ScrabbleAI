@@ -86,39 +86,45 @@ if TRAINING_FLAG:
 
 ##=====================MAIN======================
 def main():
-	# USERDATA = loadUser()
-	USERDATA = UserData().get_user_data()
+	def quit_game():
+		pygame.quit()
+		sys.exit()
 
-	the_menu = menu.MainMenu(USERDATA)
+	user_data = UserData().get_user_data()
+
+	the_menu = menu.MainMenu(user_data)
 	while True:
-		mouseClicked = False
-		mouseMoved = False
+		# mouseClicked = False
+		# mouseMoved = False
 		SELECTION = ""
 		for event in pygame.event.get():
 			if event.type == QUIT:
-				pygame.quit()
-				sys.exit()
-			elif event.type == MOUSEMOTION:
+				quit_game()
+			elif event.type == MOUSEMOTION: # mouse move
 				mouseX, mouseY = event.pos
-				mouseMoved = True
-			elif event.type == MOUSEBUTTONUP:
+				# mouseMoved = True
+				the_menu.update(mouseX, mouseY)
+			elif event.type == MOUSEBUTTONUP: # mouse click
 				mouseX, mouseY = event.pos
-				mouseClicked = True
+				# mouseClicked = True
+				SELECTION = the_menu.execute(mouseX, mouseY)
 
-		if mouseClicked:
-			SELECTION = the_menu.execute(mouseX, mouseY)
 
-		if mouseMoved:
-			the_menu.update(mouseX, mouseY)
+		# if mouseClicked:
+		# 	SELECTION = the_menu.execute(mouseX, mouseY)
+
+		# if mouseMoved:
+		# 	the_menu.update(mouseX, mouseY)
 
 		if SELECTION == menu.MainMenu.NEW_GAME:
-			new_game(USERDATA, the_menu)
+			new_game(user_data, the_menu)
 		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
-			runGame(USERDATA, useHintBox=True)
+			runGame(user_data, useHintBox=True)
 			# theMenu.redraw()
 		elif SELECTION == menu.MainMenu.EXIT_GAME:
-			pygame.quit()
-			sys.exit()
+			quit_game()
+			# pygame.quit()
+			# sys.exit()
 		the_menu.redraw()
 		pygame.display.update()
 
@@ -444,53 +450,5 @@ def endGame(players, active, isPractice, userdata, stuck = False):
 		player.Player.aiStats.saveGame([p.score for p in players])
 		player.Player.aiStats.save()
 	
-	
-# def loadUser():
-# 	userFile = open(USERFILE, 'r')
-# 	i = 0
-# 	userdata = {}
-# 	userdata["name"] = "Guest"
-# 	userdata["bestScore"] = 0
-# 	userdata["numVictories"] = 0
-# 	userdata["numGames"] = 0
-# 	for line in userFile:
-# 		line = line.rstrip()
-# 		if i == 0:
-# 			userdata["name"] = line
-# 		elif i == 1:
-# 			userdata["bestScore"] = int(line)
-# 		elif i == 2:
-# 			userdata["numVictories"] = int(line)
-# 		elif i == 3:
-# 			userdata["numGames"] = int(line)
-			
-# 		i += 1
-			
-# 	return userdata
-	
-# def saveUser(USERDATA):
-# 	userFile = open(USERFILE, 'w')
-# 	if "name" in USERDATA:
-# 		userFile.write(str(USERDATA["name"])+"\n")
-# 	else:
-# 		userFile.write("Guest\n")
-	
-# 	if "bestScore" in USERDATA:
-# 		userFile.write(str(USERDATA["bestScore"])+"\n")
-# 	else:
-# 		userFile.write("0\n")	
-		
-# 	if "numVictories" in USERDATA:
-# 		userFile.write(str(USERDATA["numVictories"])+"\n")
-# 	else:
-# 		userFile.write("0\n")
-
-# 	if "numGames" in USERDATA:
-# 		userFile.write(str(USERDATA["numGames"])+"\n")
-# 	else:
-# 		userFile.write("0\n")	
-
-##===============================================
-##===============================================
 if __name__ == '__main__':
 	main()
