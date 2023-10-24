@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Python: Run Specific File",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/scrabble.py",
+        "console": "integratedTerminal"
+      }
+    ]
+  }
+  
