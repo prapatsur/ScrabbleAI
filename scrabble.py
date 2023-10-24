@@ -93,7 +93,7 @@ def main():
 		SELECTION = the_menu.get_selected_menu(*event.pos)
 		if SELECTION == menu.MainMenu.NEW_GAME:
 			new_game(user_data, the_menu)
-		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
+		elif SELECTION == menu.MainMenu.TRAINING:
 			runGame(user_data, useHintBox=True)
 		elif SELECTION == menu.MainMenu.EXIT_GAME:
 			quit_game()
@@ -101,6 +101,10 @@ def main():
 	user_data = UserData().get_user_data()
 	the_menu = menu.MainMenu(user_data)
 	while True:
+		# if training, start a new game automatically
+		if TRAINING_FLAG:
+			runGame(user_data, useHintBox=True)
+
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				quit_game()
