@@ -83,16 +83,12 @@ if TRAINING_FLAG:
 	CLICK.set_volume(0.0)
 
 
+def quit_game():
+	pygame.quit()
+	sys.exit()
 
 ##=====================MAIN======================
 def main():
-	def quit_game():
-		pygame.quit()
-		sys.exit()
-
-	def update_menu():
-		the_menu.update_menu(*event.pos)
-
 	def execute_menu():
 		SELECTION = the_menu.get_selected_menu(*event.pos)
 		if SELECTION == menu.MainMenu.NEW_GAME:
@@ -109,7 +105,7 @@ def main():
 			if event.type == QUIT:
 				quit_game()
 			elif event.type == MOUSEMOTION: # mouse move
-				update_menu()
+				the_menu.update_menu(*event.pos)
 			elif event.type == MOUSEBUTTONUP: # mouse click
 				execute_menu()
 
