@@ -90,41 +90,29 @@ def main():
 		pygame.quit()
 		sys.exit()
 
-	user_data = UserData().get_user_data()
+	def update_menu():
+		the_menu.update_menu(*event.pos)
 
-	the_menu = menu.MainMenu(user_data)
-	while True:
-		# mouseClicked = False
-		# mouseMoved = False
-		SELECTION = ""
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				quit_game()
-			elif event.type == MOUSEMOTION: # mouse move
-				mouseX, mouseY = event.pos
-				# mouseMoved = True
-				the_menu.update(mouseX, mouseY)
-			elif event.type == MOUSEBUTTONUP: # mouse click
-				mouseX, mouseY = event.pos
-				# mouseClicked = True
-				SELECTION = the_menu.execute(mouseX, mouseY)
-
-
-		# if mouseClicked:
-		# 	SELECTION = the_menu.execute(mouseX, mouseY)
-
-		# if mouseMoved:
-		# 	the_menu.update(mouseX, mouseY)
-
+	def execute_menu():
+		SELECTION = the_menu.get_selected_menu(*event.pos)
 		if SELECTION == menu.MainMenu.NEW_GAME:
 			new_game(user_data, the_menu)
 		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
 			runGame(user_data, useHintBox=True)
-			# theMenu.redraw()
 		elif SELECTION == menu.MainMenu.EXIT_GAME:
 			quit_game()
-			# pygame.quit()
-			# sys.exit()
+
+	user_data = UserData().get_user_data()
+	the_menu = menu.MainMenu(user_data)
+	while True:
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				quit_game()
+			elif event.type == MOUSEMOTION: # mouse move
+				update_menu()
+			elif event.type == MOUSEBUTTONUP: # mouse click
+				execute_menu()
+
 		the_menu.redraw()
 		pygame.display.update()
 
@@ -196,10 +184,10 @@ def runGame(USERDATA, useHintBox = False):
 
 		#GAME MENU BUTTONS	
 		if mouseMoved:
-			gameMenu.update(mouseX, mouseY)
+			gameMenu.update_menu(mouseX, mouseY)
 
 		if mouseClicked:
-			SELECTION = gameMenu.execute(mouseX, mouseY)	
+			SELECTION = gameMenu.get_selected_menu(mouseX, mouseY)	
 
 			if SELECTION == menu.GameMenu.PLAY_TURN:
 				actionKeyHit = True

@@ -18,7 +18,7 @@ class Menu():
 	'''
 	Goes through all buttons and returns the name of the button, if it was clicked
 	'''
-	def execute(self, mouseX, mouseY):
+	def get_selected_menu(self, mouseX, mouseY):
 		if self.within(mouseX, mouseY):
 			theKey = ""
 			for key in list(self.buttons.keys()):
@@ -33,7 +33,7 @@ class Menu():
 	'''
 	Goes through and updates all buttons, redrawing them if they are hovered
 	'''	
-	def update(self, mouseX, mouseY):
+	def update_menu(self, mouseX, mouseY):
 		for button in list(self.buttons.values()):
 			button.update(mouseX, mouseY)
 			
