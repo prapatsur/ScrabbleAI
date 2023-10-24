@@ -35,6 +35,7 @@ import heuristic
 import human
 import player
 import tile
+from userdata import UserData
 
 pygame.init()
 
@@ -85,7 +86,8 @@ if TRAINING_FLAG:
 
 ##=====================MAIN======================
 def main():
-	USERDATA = loadUser()
+	# USERDATA = loadUser()
+	USERDATA = UserData().get_user_data()
 
 	the_menu = menu.MainMenu(USERDATA)
 	while True:
@@ -123,7 +125,8 @@ def main():
 
 def new_game(USERDATA, theMenu):
 	USERDATA["numGames"] += 1
-	saveUser(USERDATA)
+	# saveUser(USERDATA)
+	UserData().save_user_data(USERDATA)
 	theMenu.resetAchievements(USERDATA)
 	runGame(USERDATA)
 	theMenu.resetAchievements(USERDATA)
@@ -434,57 +437,58 @@ def endGame(players, active, isPractice, userdata, stuck = False):
 			if "numVictories" in userdata:
 				userdata["numVictories"] += 1
 			
-		saveUser(userdata)
+		# saveUser(userdata)
+		UserData().save_user_data(userdata)
 	
 	if TRAINING_FLAG:
 		player.Player.aiStats.saveGame([p.score for p in players])
 		player.Player.aiStats.save()
 	
 	
-def loadUser():
-	userFile = open(USERFILE, 'r')
-	i = 0
-	userdata = {}
-	userdata["name"] = "Guest"
-	userdata["bestScore"] = 0
-	userdata["numVictories"] = 0
-	userdata["numGames"] = 0
-	for line in userFile:
-		line = line.rstrip()
-		if i == 0:
-			userdata["name"] = line
-		elif i == 1:
-			userdata["bestScore"] = int(line)
-		elif i == 2:
-			userdata["numVictories"] = int(line)
-		elif i == 3:
-			userdata["numGames"] = int(line)
+# def loadUser():
+# 	userFile = open(USERFILE, 'r')
+# 	i = 0
+# 	userdata = {}
+# 	userdata["name"] = "Guest"
+# 	userdata["bestScore"] = 0
+# 	userdata["numVictories"] = 0
+# 	userdata["numGames"] = 0
+# 	for line in userFile:
+# 		line = line.rstrip()
+# 		if i == 0:
+# 			userdata["name"] = line
+# 		elif i == 1:
+# 			userdata["bestScore"] = int(line)
+# 		elif i == 2:
+# 			userdata["numVictories"] = int(line)
+# 		elif i == 3:
+# 			userdata["numGames"] = int(line)
 			
-		i += 1
+# 		i += 1
 			
-	return userdata
+# 	return userdata
 	
-def saveUser(USERDATA):
-	userFile = open(USERFILE, 'w')
-	if "name" in USERDATA:
-		userFile.write(str(USERDATA["name"])+"\n")
-	else:
-		userFile.write("Guest\n")
+# def saveUser(USERDATA):
+# 	userFile = open(USERFILE, 'w')
+# 	if "name" in USERDATA:
+# 		userFile.write(str(USERDATA["name"])+"\n")
+# 	else:
+# 		userFile.write("Guest\n")
 	
-	if "bestScore" in USERDATA:
-		userFile.write(str(USERDATA["bestScore"])+"\n")
-	else:
-		userFile.write("0\n")	
+# 	if "bestScore" in USERDATA:
+# 		userFile.write(str(USERDATA["bestScore"])+"\n")
+# 	else:
+# 		userFile.write("0\n")	
 		
-	if "numVictories" in USERDATA:
-		userFile.write(str(USERDATA["numVictories"])+"\n")
-	else:
-		userFile.write("0\n")
+# 	if "numVictories" in USERDATA:
+# 		userFile.write(str(USERDATA["numVictories"])+"\n")
+# 	else:
+# 		userFile.write("0\n")
 
-	if "numGames" in USERDATA:
-		userFile.write(str(USERDATA["numGames"])+"\n")
-	else:
-		userFile.write("0\n")	
+# 	if "numGames" in USERDATA:
+# 		userFile.write(str(USERDATA["numGames"])+"\n")
+# 	else:
+# 		userFile.write("0\n")	
 
 ##===============================================
 ##===============================================
