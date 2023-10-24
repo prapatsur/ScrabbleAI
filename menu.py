@@ -181,64 +181,117 @@ class TextBox():
 		
 #==================== BUTTON ========================
 
-class Button():
+# class Button():
 	
+# 	BACKGROUND = (125, 125, 170)
+# 	HIGHLIGHT = (200, 200, 255)
+# 	FONT_COLOR = (55, 46, 40)
+	
+# 	ON = "on"
+# 	OFF = "off"
+	
+# 	initialized = False
+
+# 	@staticmethod
+# 	def initialize():
+# 		Button.FONT = pygame.font.Font('freesansbold.ttf', 18)
+# 		Button.initialized = True
+	
+# 	def __init__(self, name, rect, textBox = None, color = None, backColor = None):
+# 		#Make sure the fonts are set up
+# 		if not Button.initialized:
+# 			Button.initialize()
+			
+# 		if color == None:
+# 			color = Button.HIGHLIGHT
+# 		if backColor == None:
+# 			backColor = Button.BACKGROUND
+		
+# 		self.name = name
+# 		self.rect = rect
+# 		self.lastDrawn = Button.OFF
+# 		self.textBox = textBox
+# 		self.color = color
+# 		self.backColor = backColor
+	
+# 	def update(self, mouseX, mouseY):
+		
+# 		if self.within(mouseX, mouseY):
+# 			self.draw(self.color)
+# 			self.lastDrawn = Button.ON
+# 			if self.textBox != None:
+# 				self.textBox.draw()
+# 		else:
+# 			self.draw(self.backColor)
+# 			if self.lastDrawn == Button.ON and self.textBox != None:
+# 				self.textBox.undraw()
+# 			self.lastDrawn = Button.OFF
+			
+# 	def within(self, mouseX, mouseY):
+# 		(left, top, width, height) = self.rect
+# 		return mouseX >= left and mouseX <= left+width and mouseY >= top and mouseY <= top+height
+		
+# 	def draw(self, backColor):
+# 		pygame.draw.rect(DISPLAYSURF, backColor, self.rect)
+# 		(left, top, width, height) = self.rect	
+# 		text = Button.FONT.render(self.name, True, Button.FONT_COLOR, backColor)
+# 		rect = text.get_rect()
+# 		rect.center = (left+width/2, top+height/2)
+# 		DISPLAYSURF.blit(text, rect)
+		
+# 	def redraw(self):
+# 		if self.lastDrawn == Button.ON:
+# 			self.draw(self.color)
+# 		elif self.lastDrawn == Button.OFF:
+# 			self.draw(self.backColor)
+
+class Button:
 	BACKGROUND = (125, 125, 170)
 	HIGHLIGHT = (200, 200, 255)
 	FONT_COLOR = (55, 46, 40)
-	
 	ON = "on"
 	OFF = "off"
-	
 	initialized = False
+	FONT = None
 
 	@staticmethod
 	def initialize():
 		Button.FONT = pygame.font.Font('freesansbold.ttf', 18)
 		Button.initialized = True
-	
-	def __init__(self, name, rect, textBox = None, color = None, backColor = None):
-		#Make sure the fonts are set up
+
+	def __init__(self, name, rect, textBox=None, color=None, backColor=None):
 		if not Button.initialized:
 			Button.initialize()
-			
-		if color == None:
-			color = Button.HIGHLIGHT
-		if backColor == None:
-			backColor = Button.BACKGROUND
-		
 		self.name = name
 		self.rect = rect
 		self.lastDrawn = Button.OFF
 		self.textBox = textBox
-		self.color = color
-		self.backColor = backColor
-	
+		self.color = color or Button.HIGHLIGHT
+		self.backColor = backColor or Button.BACKGROUND
+
 	def update(self, mouseX, mouseY):
-		
 		if self.within(mouseX, mouseY):
 			self.draw(self.color)
 			self.lastDrawn = Button.ON
-			if self.textBox != None:
+			if self.textBox:
 				self.textBox.draw()
 		else:
 			self.draw(self.backColor)
-			if self.lastDrawn == Button.ON and self.textBox != None:
+			if self.lastDrawn == Button.ON and self.textBox:
 				self.textBox.undraw()
 			self.lastDrawn = Button.OFF
-			
+
 	def within(self, mouseX, mouseY):
-		(left, top, width, height) = self.rect
-		return mouseX >= left and mouseX <= left+width and mouseY >= top and mouseY <= top+height
-		
+		left, top, width, height = self.rect
+		return left <= mouseX <= left + width and top <= mouseY <= top + height
+
 	def draw(self, backColor):
 		pygame.draw.rect(DISPLAYSURF, backColor, self.rect)
-		(left, top, width, height) = self.rect	
+		left, top, width, height = self.rect
 		text = Button.FONT.render(self.name, True, Button.FONT_COLOR, backColor)
-		rect = text.get_rect()
-		rect.center = (left+width/2, top+height/2)
+		rect = text.get_rect(center=(left + width / 2, top + height / 2))
 		DISPLAYSURF.blit(text, rect)
-		
+
 	def redraw(self):
 		if self.lastDrawn == Button.ON:
 			self.draw(self.color)
