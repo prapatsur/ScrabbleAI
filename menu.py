@@ -25,6 +25,7 @@ class Menu():
 				if self.buttons[key].within(mouseX, mouseY):
 					theKey = key
 		
+			# if a menu button was clicked, play the click sound
 			if theKey != "":
 				CLICK.play()
 					
@@ -72,7 +73,7 @@ class MainMenu(Menu):
 		self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50))
 		DISPLAYSURF.fill((255,255,255))
 		
-	def resetAchievements(self, userdata):
+	def update_achievement(self, userdata):
 		self.buttons[MainMenu.ACHIEVEMENT].textBox.text = self.createAchievementText(userdata)
 		
 	def createAchievementText(self, userdata):

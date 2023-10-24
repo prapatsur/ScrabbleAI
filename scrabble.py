@@ -91,9 +91,9 @@ def quit_game():
 def main():
 	def execute_menu():
 		SELECTION = the_menu.get_selected_menu(*event.pos)
-		if SELECTION == menu.MainMenu.NEW_GAME:
+		if SELECTION == menu.MainMenu.NEW_GAME: # menu Challenge
 			new_game(user_data, the_menu)
-		elif SELECTION == menu.MainMenu.TRAINING:
+		elif SELECTION == menu.MainMenu.TRAINING: # menu Training
 			runGame(user_data, useHintBox=True)
 		elif SELECTION == menu.MainMenu.EXIT_GAME:
 			quit_game()
@@ -121,9 +121,9 @@ def new_game(USERDATA, theMenu):
 	USERDATA["numGames"] += 1
 	# saveUser(USERDATA)
 	UserData().save_user_data(USERDATA)
-	theMenu.resetAchievements(USERDATA)
+	theMenu.update_achievement(USERDATA)
 	runGame(USERDATA)
-	theMenu.resetAchievements(USERDATA)
+	theMenu.update_achievement(USERDATA)
 
 
 
