@@ -79,12 +79,12 @@ def quit_game():
 ##=====================MAIN======================
 def main():
 	def execute_menu():
-		SELECTION = the_menu.get_selected_menu(*event.pos)
-		if SELECTION == MainMenu.NEW_GAME: # menu Challenge
+		select = the_menu.get_selected_menu(*event.pos)
+		if select == MainMenu.NEW_GAME: # menu Challenge
 			new_game(user_data, the_menu)
-		elif SELECTION == MainMenu.TRAINING: # menu Training
+		elif select == MainMenu.TRAINING: # menu Training
 			runGame(user_data, useHintBox=True)
-		elif SELECTION == MainMenu.EXIT_GAME:
+		elif select == MainMenu.EXIT_GAME:
 			quit_game()
 
 	user_data = UserData().get_user_data()
