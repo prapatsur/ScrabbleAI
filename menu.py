@@ -76,7 +76,7 @@ class MainMenu(Menu):
 		DISPLAYSURF.fill((255,255,255))
 		
 	def update_achievement(self, userdata):
-		self.buttons[MainMenu.ACHIEVEMENT].textBox.text = self.createAchievementText(userdata)
+		self.buttons[MainMenu.ACHIEVEMENT].text_box.text = self.createAchievementText(userdata)
 		
 	def createAchievementText(self, userdata):
 		text = []
@@ -156,76 +156,97 @@ class TextBox():
 			TextBox.initialize()
 		
 	def draw(self):	
-		i = 0
-		for	line in self.text:
-			left = self.pos[0]
-			top = self.pos[1] + TextBox.MARGIN * i
+		# print("draw")
+		for i, line in enumerate(self.text):
+			left, top = self.pos
+			top += TextBox.MARGIN * i
 			text = TextBox.FONT.render(line, True, self.color, self.backColor)
 			rect = text.get_rect()
-			if self.horzCentered:
-				rect.centerx = left
-			else:
-				rect.left = left
-			rect.top = top
-			if rect.width > self.width:
-				self.width = rect.width
-			DISPLAYSURF.blit(text, rect)		
-			i+=1
+			# if self.horzCentered:
+			# 	rect.centerx = left
+			# else:
+			# 	rect.left = left
+			# rect.top = top
+			# if rect.width > self.width:
+			# 	self.width = rect.width
+			DISPLAYSURF.blit(text, (left, top))
+		# i = 0
+		# for	line in self.text:
+		# 	left = self.pos[0]
+		# 	top = self.pos[1] + TextBox.MARGIN * i
+		# 	text = TextBox.FONT.render(line, True, self.color, self.backColor)
+		# 	rect = text.get_rect()
+		# 	if self.horzCentered:
+		# 		rect.centerx = left
+		# 	else:
+		# 		rect.left = left
+		# 	rect.top = top
+		# 	if rect.width > self.width:
+		# 		self.width = rect.width
+		# 	DISPLAYSURF.blit(text, rect)		
+		# 	i+=1
+		# text = TextBox.FONT.render("HI", True, self.color, self.backColor)
+		# rect = text.get_rect()
+		# rect.top = 480
+		# rect.left = 570
+		# DISPLAYSURF.blit(text, rect)
+
 			
 	def undraw(self):
+		# print("undraw")
 		height = TextBox.MARGIN * len(self.text)
 		if self.horzCentered:
 			rect = (self.pos[0]-self.width/2, self.pos[1], self.width, height)
 		else:
 			rect = (self.pos[0], self.pos[1], self.width, height)
+		# rect = self.pos + (200, 21*4)
 		pygame.draw.rect(DISPLAYSURF, self.backColor, rect)	
 
 # class Button:
-# 	BACKGROUND = (125, 125, 170)
-# 	HIGHLIGHT = (200, 200, 255)
+# 	BACKGROUND_COLOR = (125, 125, 170)
+# 	HIGHLIGHT_COLOR = (200, 200, 255)
 # 	FONT_COLOR = (55, 46, 40)
+# 	FONT_SIZE = 18
+# 	FONT = 'freesansbold.ttf'
+	
 # 	ON = "on"
 # 	OFF = "off"
 
-# 	def __init__(self, name, rect, textBox=None, color=None, backColor=None):
+# 	def __init__(self, name, rect, text_box=None, color=None, back_color=None):
 # 		self.name = name
-# 		self.rect = rect
-# 		self.lastDrawn = Button.OFF
-# 		self.textBox = textBox
-# 		self.color = color or Button.HIGHLIGHT
-# 		self.backColor = backColor or Button.BACKGROUND
-# 		self.font = pygame.font.Font('freesansbold.ttf', 18)
+# 		self.rect = pygame.Rect(rect)
+# 		self.last_drawn = Button.OFF
+# 		self.text_box = text_box
+# 		self.color = color or Button.HIGHLIGHT_COLOR
+# 		self.back_color = back_color or Button.BACKGROUND_COLOR
+# 		self.font = pygame.font.Font(Button.FONT, Button.FONT_SIZE)
 
-# 	def update(self, mouseX, mouseY):
-# 		if self.within(mouseX, mouseY):
+# 	def update(self, mouse_pos):
+# 		if self.within(mouse_pos):
 # 			self.draw(self.color)
-# 			self.lastDrawn = Button.ON
-# 			if self.textBox:
-# 				self.textBox.draw()
+# 			self.last_drawn = Button.ON
+# 			if self.text_box:
+# 				self.text_box.draw()
 # 		else:
-# 			self.draw(self.backColor)
-# 			if self.lastDrawn == Button.ON and self.textBox:
-# 				self.textBox.undraw()
-# 			self.lastDrawn = Button.OFF
+# 			self.draw(self.back_color)
+# 			if self.last_drawn == Button.ON and self.text_box:
+# 				self.text_box.undraw()
+# 			self.last_drawn = Button.OFF
 
-# 	def within(self, mouseX, mouseY):
-# 		left, top, width, height = self.rect
-# 		return left <= mouseX <= left + width and top <= mouseY <= top + height
+# 	def within(self,mouse_pos):
+# 		return self.rect.collidepoint(mouse_pos)
 
-# 	def draw(self, backColor):
-# 		pygame.draw.rect(DISPLAYSURF, backColor, self.rect)
-# 		left, top, width, height = self.rect
-# 		text = self.font.render(self.name, True, Button.FONT_COLOR, backColor)
-# 		rect = text.get_rect(center=(left + width / 2, top + height / 2))
-# 		DISPLAYSURF.blit(text, rect)
+# 	def draw(self, back_color):
+# 		pygame.draw.rect(DISPLAYSURF, back_color, self.rect)
+# 		text_surface = self.font.render(self.name, True, Button.FONT_COLOR, back_color)
+# 		text_rect = text_surface.get_rect(center=self.rect.center)
+# 		DISPLAYSURF.blit(text_surface, text_rect)
 
 # 	def redraw(self):
-# 		if self.lastDrawn == Button.ON:
+# 		if self.last_drawn == Button.ON:
 # 			self.draw(self.color)
-# 		elif self.lastDrawn == Button.OFF:
-# 			self.draw(self.backColor)
-			
-
+# 		elif self.last_drawn == Button.OFF:
+# 			self.draw(self.back_color)
 class Button:
 	BACKGROUND_COLOR = (125, 125, 170)
 	HIGHLIGHT_COLOR = (200, 200, 255)
@@ -233,41 +254,72 @@ class Button:
 	FONT_SIZE = 18
 	FONT = 'freesansbold.ttf'
 	
-	ON = "on"
-	OFF = "off"
-
 	def __init__(self, name, rect, text_box=None, color=None, back_color=None):
 		self.name = name
-		self.rect = pygame.Rect(rect)
-		self.last_drawn = Button.OFF
+		self.rect = rect #pygame.Rect(rect)
+		self.is_mouse_over = False
 		self.text_box = text_box
-		self.color = color or Button.HIGHLIGHT_COLOR
-		self.back_color = back_color or Button.BACKGROUND_COLOR
-		self.font = pygame.font.Font(Button.FONT, Button.FONT_SIZE)
+		self.color = color or self.HIGHLIGHT_COLOR
+		self.back_color = back_color or self.BACKGROUND_COLOR
+		self.font = pygame.font.Font(self.FONT, self.FONT_SIZE)
 
+	# def is_button_status_changed(self, mouse_pos):
+	# 	# change from not in the area to inside the area
+	# 	if self.within(mouse_pos) and not self.is_mouse_over:
+	# 		return True
+	# 	# change from inside the area to not in the area
+	# 	if not self.within(mouse_pos) and self.is_mouse_over:
+	# 		return True
+	# 	return False
+	
 	def update(self, mouse_pos):
+		# update textbox only when the button status is changed
+		# have to update it, before changing the self.is_mouse_over
+		# if self.is_button_status_changed(mouse_pos):
+		# 	self.update_textbox()
+
 		if self.within(mouse_pos):
+			self.is_mouse_over = True
+		else:
+			self.is_mouse_over = False
+
+		# print(self.is_mouse_over)
+		self.update_textbox()
+
+	def update_textbox(self):
+		if self.is_mouse_over:
 			self.draw(self.color)
-			self.last_drawn = Button.ON
 			if self.text_box:
 				self.text_box.draw()
 		else:
 			self.draw(self.back_color)
-			if self.last_drawn == Button.ON and self.text_box:
+			if self.text_box:
 				self.text_box.undraw()
-			self.last_drawn = Button.OFF
 
 	def within(self,mouse_pos):
-		return self.rect.collidepoint(mouse_pos)
+		# print(self.name, self.rect, mouse_pos, self.is_mouse_over)
+		x, y = mouse_pos
+		left, top, width, height = self.rect
+		return (left<=x<=left+width) and (top<=y<=top+height)
+		# return self.rect.collidepoint(mouse_pos)
 
-	def draw(self, back_color):
-		pygame.draw.rect(DISPLAYSURF, back_color, self.rect)
-		text_surface = self.font.render(self.name, True, Button.FONT_COLOR, back_color)
-		text_rect = text_surface.get_rect(center=self.rect.center)
-		DISPLAYSURF.blit(text_surface, text_rect)
+	# def draw(self, back_color):
+	# 	pygame.draw.rect(DISPLAYSURF, back_color, self.rect)
+	# 	text_surface = self.font.render(self.name, True, self.FONT_COLOR, back_color)
+	# 	top, left, width, height = self.rect
+	# 	center = (left+width/2, top+height/2)
+	# 	text_rect = text_surface.get_rect(center=center)
+	# 	DISPLAYSURF.blit(text_surface, text_rect)
+	def draw(self, backColor):
+		pygame.draw.rect(DISPLAYSURF, backColor, self.rect)
+		(left, top, width, height) = self.rect	
+		text = self.font.render(self.name, True, Button.FONT_COLOR, backColor)
+		rect = text.get_rect()
+		rect.center = (left+width/2, top+height/2)
+		DISPLAYSURF.blit(text, rect)
 
 	def redraw(self):
-		if self.last_drawn == Button.ON:
+		if self.is_mouse_over:
 			self.draw(self.color)
-		elif self.last_drawn == Button.OFF:
+		else:
 			self.draw(self.back_color)
