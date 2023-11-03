@@ -108,7 +108,6 @@ class ScrabbleGame:
 		self.still_playing = True
 
 	def setup_game(self, useHintBox):
-		self.players = self.players
 		self.firstTurn = True
 		self.gameMenu = menu.GameMenu(useHintBox)
 		self.redrawEverything()
@@ -116,14 +115,20 @@ class ScrabbleGame:
 		self.still_playing = True
 		self.AIstuck = False
 
+	def prepare_turn(self):
+		self.current_player = self.players[self.active]
+		self.handle_events()
+
+	def should_place_hinted_tiles(self):
+		return (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver
+	
 	def runGame(self, USERDATA, useHintBox = False):
 		self.setup_game(useHintBox)
 		while self.still_playing:
-			self.current_player = self.players[self.active]
-			self.handle_events()
+			self.prepare_turn()
 
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
-			if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
+			if self.should_place_hinted_tiles():
 				place_hinted_tiles(self.the_board, self.current_player, self.firstTurn)							
 
 			# Play action
@@ -135,7 +140,6 @@ class ScrabbleGame:
 					playedMove = True
 
 				if playedMove:	
-
 					success = self.current_player.play(self.firstTurn)
 					if success == "END":
 						self.gameOver = True
