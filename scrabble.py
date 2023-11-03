@@ -114,9 +114,6 @@ def new_game(USERDATA, theMenu):
 	runGame(USERDATA)
 	theMenu.update_achievement(USERDATA)
 
-
-
-	
 def runGame(USERDATA, useHintBox = False):	
 	theBag = bag.Bag()
 	theBoard = board.Board()

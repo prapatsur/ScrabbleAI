@@ -7,7 +7,7 @@ execute will process button clicks.
 import pygame
 
 from config import DISPLAYSURF, CLICK
-
+from userdata import UserData
 
 class Menu():
 	
@@ -67,7 +67,7 @@ class MainMenu(Menu):
 		newGameText = TextBox(["Play one-on-one against Wordsmith, the Scrabble AI.",
 								"No hints allowed, try to beat your best score!"], (400, 400), 
 							(55, 46, 40), (255, 255, 255), horzCenter = True)
-		achieveText = TextBox(self.createAchievementText(userdata), (400, 400), 
+		achieveText = TextBox(self.createAchievementText(), (400, 400), 
 							(55, 46, 40), (255, 255, 255), horzCenter = True)
 		self.buttons[MainMenu.TRAINING] = Button("Training", (250, 135, 300, 50), trainerText)
 		self.buttons[MainMenu.NEW_GAME] = Button("Challenge", (250, 190, 300, 50), newGameText)
@@ -76,9 +76,14 @@ class MainMenu(Menu):
 		DISPLAYSURF.fill((255,255,255))
 		
 	def update_achievement(self, userdata):
+		""" display the achievement on screen """
+		print("update_achievement")
+		userdata = UserData().get_user_data()
 		self.buttons[MainMenu.ACHIEVEMENT].text_box.text = self.createAchievementText(userdata)
 		
-	def createAchievementText(self, userdata):
+	def createAchievementText(self):
+		print("createAchievementText")
+		userdata = UserData().get_user_data()
 		text = []
 		if "name" in userdata:
 			text.append(userdata["name"]+"'s Achievements")
@@ -99,7 +104,8 @@ class MainMenu(Menu):
 			text.append("Games Played: "+str(userdata["numGames"]))
 		else:
 			text.append("Games Played: 0")	
-			
+
+		print(text)	
 		return text
 		
 		
