@@ -107,7 +107,7 @@ class ScrabbleGame:
 		self.event_state = EventState()
 		self.still_playing = True
 
-	def setupGame(self, useHintBox):
+	def setup_game(self, useHintBox):
 		self.players = self.players
 		self.firstTurn = True
 		self.gameMenu = menu.GameMenu(useHintBox)
@@ -117,16 +117,7 @@ class ScrabbleGame:
 		self.AIstuck = False
 
 	def runGame(self, USERDATA, useHintBox = False):
-		# self.players = self.players
-		# self.firstTurn = True
-		# self.gameMenu = menu.GameMenu(useHintBox)
-		# self.redrawEverything()
-
-		# self.inHand = None
-		# self.still_playing = True
-		# self.AIstuck = False
-
-		self.setupGame(useHintBox)
+		self.setup_game(useHintBox)
 		while self.still_playing:
 			self.current_player = self.players[self.active]
 			self.handle_events()
