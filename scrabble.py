@@ -166,6 +166,26 @@ class ScrabbleGame:
 			self.AIstuck = True
 		self.change_current_player()
 
+	def handle_played_move(self, useHintBox, USERDATA):
+		success = self.current_player.play(self.firstTurn)
+		if success == "END":
+			self.gameOver = True
+			endGame(self.players, self.active, useHintBox, USERDATA)
+		elif success:
+			DINGDING.play()
+			self.current_player.pulseScore()
+			self.firstTurn = False
+			self.change_current_player()
+			#If we were stuck before, we aren't anymore
+			if self.is_computer_turn():
+				self.AIstuck = False					
+		else:
+			if TRAINING_FLAG:
+				self.AIstuck = True
+			TICTIC.play()
+			if self.is_computer_turn():
+				print ("AI thinks it has a good move, but it doesn't")
+					
 	def play_action(self, useHintBox, USERDATA):
 		#If it's the computer turn, we need to process its move first!
 		if self.is_computer_turn():
@@ -174,37 +194,11 @@ class ScrabbleGame:
 			playedMove = True
 
 		if playedMove:	
-			success = self.current_player.play(self.firstTurn)
-			if success == "END":
-				self.gameOver = True
-				endGame(self.players, self.active, useHintBox, USERDATA)
-			elif success:
-				DINGDING.play()
-				self.current_player.pulseScore()
-				self.firstTurn = False
-				self.change_current_player()
-				#If we were stuck before, we aren't anymore
-				if self.is_computer_turn():
-					self.AIstuck = False					
-			else:
-				if TRAINING_FLAG:
-					self.AIstuck = True
-				TICTIC.play()
-				if self.is_computer_turn():
-					print ("AI thinks it has a good move, but it doesn't")
+			self.handle_played_move(useHintBox, USERDATA)
 		else:
 			# this one is not called when it's player turn
 			# I think it's for AI turn
 			self.handle_computer_cannot_play_move()
-			# ???
-			# print("shuffle")
-			# self.current_player.shuffle()
-			# #Let the player know the AI shuffled
-			# self.current_player.lastScore = 0
-			# self.current_player.pulseScore()
-			# if self.the_bag.isEmpty():
-			# 	self.AIstuck = True
-			# self.change_current_player()
 
 		self.redrawEverything()	
 
