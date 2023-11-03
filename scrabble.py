@@ -316,57 +316,42 @@ class ScrabbleGame:
 		self.current_player.drawTray(DISPLAYSURF)			
 		drawScore(self.players, self.gameOver)
 		self.gameMenu.redraw()
-def handle_pygame_events(theMenu):
-	mouseClicked = False
-	mouseMoved = False
-	SELECTION = ""
-	mouseX, mouseY = 0, 0  # Initialize mouseX and mouseY
-	for event in pygame.event.get():
-		if event.type == QUIT:
-			pygame.quit()
-			sys.exit()
-		elif event.type == MOUSEMOTION:
-			mouseX, mouseY = event.pos
-			mouseMoved = True
-		elif event.type == MOUSEBUTTONUP:
-			mouseX, mouseY = event.pos
-			mouseClicked = True
 
-	if mouseClicked:
-		SELECTION = theMenu.execute(mouseX, mouseY)
-
-	if mouseMoved:
-		theMenu.update(mouseX, mouseY)
-
-	return SELECTION, mouseX, mouseY
-
-# def handle_menu_selections(SELECTION, mouseX, mouseY, USERDATA, theMenu):
-#     if SELECTION == menu.MainMenu.NEW_GAME:
-#         new_game(USERDATA, theMenu)
-#     elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
-#         ScrabbleGame().runGame(USERDATA, useHintBox=True)
-#     elif SELECTION == menu.MainMenu.EXIT_GAME:
-#         pygame.quit()
-#         sys.exit()
 
 class MainScreen:
 	def __init__(self):
 		self.user_data = loadUser()
 		self.menu = menu.MainMenu(self.user_data)
+		self.selection = ""
 
-	def handle_menu_selections(self, SELECTION, mouseX, mouseY, USERDATA, theMenu):
-		if SELECTION == menu.MainMenu.NEW_GAME:
-			new_game(USERDATA, theMenu)
-		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
-			ScrabbleGame().runGame(USERDATA, useHintBox=True)
-		elif SELECTION == menu.MainMenu.EXIT_GAME:
+	def handle_menu_selections(self, mouseX, mouseY):
+		if self.selection == menu.MainMenu.NEW_GAME:
+			new_game(self.user_data, self.menu)
+		elif self.selection == menu.MainMenu.TRAINING or TRAINING_FLAG:
+			ScrabbleGame().runGame(self.user_data, useHintBox=True)
+		elif self.selection == menu.MainMenu.EXIT_GAME:
 			pygame.quit()
 			sys.exit()
 
+	def handle_pygame_events(self):
+		self.selection = ""
+		mouseX, mouseY = 0, 0  # Initialize mouseX and mouseY
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				pygame.quit()
+				sys.exit()
+			elif event.type == MOUSEMOTION:
+				mouseX, mouseY = event.pos
+				self.menu.update(mouseX, mouseY)
+			elif event.type == MOUSEBUTTONUP:
+				mouseX, mouseY = event.pos
+				self.selection = self.menu.execute(mouseX, mouseY)
+		return mouseX, mouseY
+
 	def run(self):
 		while True:
-			SELECTION, mouseX, mouseY = handle_pygame_events(self.menu)
-			self.handle_menu_selections(SELECTION, mouseX, mouseY, self.user_data, self.menu)
+			mouseX, mouseY = self.handle_pygame_events()
+			self.handle_menu_selections(mouseX, mouseY)
 			self.menu.redraw()
 			pygame.display.update()
 
