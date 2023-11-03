@@ -58,13 +58,13 @@ import menu
 from dataclasses import dataclass
 @dataclass
 class EventState:
-    mouse_clicked: bool = False
-    mouse_moved: bool = False
-    action_key_hit: bool = False
-    shuffle_key_hit: bool = False
-    hint_key_hit: bool = False
-    mouse_x: int = None
-    mouse_y: int = None
+	mouse_clicked: bool = False
+	mouse_moved: bool = False
+	action_key_hit: bool = False
+	shuffle_key_hit: bool = False
+	hint_key_hit: bool = False
+	mouse_x: int = None
+	mouse_y: int = None
 
 #font setup
 SCORE_FONT = pygame.font.Font('freesansbold.ttf', 20)
@@ -316,39 +316,45 @@ class ScrabbleGame:
 		self.current_player.drawTray(DISPLAYSURF)			
 		drawScore(self.players, self.gameOver)
 		self.gameMenu.redraw()
+def handle_pygame_events(theMenu):
+	mouseClicked = False
+	mouseMoved = False
+	SELECTION = ""
+	mouseX, mouseY = 0, 0  # Initialize mouseX and mouseY
+	for event in pygame.event.get():
+		if event.type == QUIT:
+			pygame.quit()
+			sys.exit()
+		elif event.type == MOUSEMOTION:
+			mouseX, mouseY = event.pos
+			mouseMoved = True
+		elif event.type == MOUSEBUTTONUP:
+			mouseX, mouseY = event.pos
+			mouseClicked = True
+
+	if mouseClicked:
+		SELECTION = theMenu.execute(mouseX, mouseY)
+
+	if mouseMoved:
+		theMenu.update(mouseX, mouseY)
+
+	return SELECTION, mouseX, mouseY
+
+def handle_menu_selections(SELECTION, mouseX, mouseY, USERDATA, theMenu):
+    if SELECTION == menu.MainMenu.NEW_GAME:
+        new_game(USERDATA, theMenu)
+    elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
+        ScrabbleGame().runGame(USERDATA, useHintBox=True)
+    elif SELECTION == menu.MainMenu.EXIT_GAME:
+        pygame.quit()
+        sys.exit()
 
 def main():
 	USERDATA = loadUser()
 	theMenu = menu.MainMenu(USERDATA)
 	while True:
-		mouseClicked = False
-		mouseMoved = False
-		SELECTION = ""
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				pygame.quit()
-				sys.exit()
-			elif event.type == MOUSEMOTION:
-				mouseX, mouseY = event.pos
-				mouseMoved = True
-			elif event.type == MOUSEBUTTONUP:
-				mouseX, mouseY = event.pos
-				mouseClicked = True
-
-		if mouseClicked:
-			SELECTION = theMenu.execute(mouseX, mouseY)
-
-		if mouseMoved:
-			theMenu.update(mouseX, mouseY)
-
-		if SELECTION == menu.MainMenu.NEW_GAME:
-			new_game(USERDATA, theMenu)
-		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
-			ScrabbleGame().runGame(USERDATA, useHintBox=True)
-			# theMenu.redraw()
-		elif SELECTION == menu.MainMenu.EXIT_GAME:
-			pygame.quit()
-			sys.exit()
+		SELECTION, mouseX, mouseY = handle_pygame_events(theMenu)
+		handle_menu_selections(SELECTION, mouseX, mouseY, USERDATA, theMenu)
 		theMenu.redraw()
 		pygame.display.update()
 
