@@ -340,31 +340,39 @@ def handle_pygame_events(theMenu):
 
 	return SELECTION, mouseX, mouseY
 
-def handle_menu_selections(SELECTION, mouseX, mouseY, USERDATA, theMenu):
-    if SELECTION == menu.MainMenu.NEW_GAME:
-        new_game(USERDATA, theMenu)
-    elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
-        ScrabbleGame().runGame(USERDATA, useHintBox=True)
-    elif SELECTION == menu.MainMenu.EXIT_GAME:
-        pygame.quit()
-        sys.exit()
+# def handle_menu_selections(SELECTION, mouseX, mouseY, USERDATA, theMenu):
+#     if SELECTION == menu.MainMenu.NEW_GAME:
+#         new_game(USERDATA, theMenu)
+#     elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
+#         ScrabbleGame().runGame(USERDATA, useHintBox=True)
+#     elif SELECTION == menu.MainMenu.EXIT_GAME:
+#         pygame.quit()
+#         sys.exit()
 
 class MainScreen:
 	def __init__(self):
-		USERDATA = loadUser()
-		self.menu = menu.MainMenu(USERDATA)
+		self.user_data = loadUser()
+		self.menu = menu.MainMenu(self.user_data)
+
+	def handle_menu_selections(self, SELECTION, mouseX, mouseY, USERDATA, theMenu):
+		if SELECTION == menu.MainMenu.NEW_GAME:
+			new_game(USERDATA, theMenu)
+		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
+			ScrabbleGame().runGame(USERDATA, useHintBox=True)
+		elif SELECTION == menu.MainMenu.EXIT_GAME:
+			pygame.quit()
+			sys.exit()
+
+	def run(self):
+		while True:
+			SELECTION, mouseX, mouseY = handle_pygame_events(self.menu)
+			self.handle_menu_selections(SELECTION, mouseX, mouseY, self.user_data, self.menu)
+			self.menu.redraw()
+			pygame.display.update()
 
 
 def main():
-	main_screen = MainScreen()
-	USERDATA = loadUser()
-	theMenu = menu.MainMenu(USERDATA)
-	while True:
-		SELECTION, mouseX, mouseY = handle_pygame_events(theMenu)
-		handle_menu_selections(SELECTION, mouseX, mouseY, USERDATA, theMenu)
-		theMenu.redraw()
-		pygame.display.update()
-
+	main_screen = MainScreen().run()
 
 def new_game(USERDATA, theMenu):
 	USERDATA["numGames"] += 1
