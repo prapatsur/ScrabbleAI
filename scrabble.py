@@ -107,53 +107,63 @@ class ScrabbleGame:
 		self.event_state = EventState()
 		self.still_playing = True
 
+	# def setupGame(self, useHintBox):
+	# 	self.players = self.players
+	# 	self.firstTurn = True
+	# 	self.gameMenu = menu.GameMenu(useHintBox)
+	# 	self.redrawEverything()
+	# 	self.inHand = None
+	# 	self.still_playing = True
+	# 	self.AIstuck = False
+
 	def runGame(self, USERDATA, useHintBox = False):
-		players = self.players
-		firstTurn = True
+		self.players = self.players
+		self.firstTurn = True
 		self.gameMenu = menu.GameMenu(useHintBox)
 		self.redrawEverything()
 
-		inHand = None
+		self.inHand = None
 		self.still_playing = True
-		AIstuck = False
+		self.AIstuck = False
 
+		# self.setupGame(useHintBox)
 		while self.still_playing:
-			self.current_player = players[self.active]
+			self.current_player = self.players[self.active]
 			self.handle_events()
 
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
 			if (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver:
-				place_hinted_tiles(self.the_board, self.current_player, firstTurn)							
+				place_hinted_tiles(self.the_board, self.current_player, self.firstTurn)							
 
 			# Play action
 			if (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
 				#If it's the computer turn, we need to process its move first!
 				if self.is_computer_turn():
-					playedMove = self.current_player.executeTurn(firstTurn, DISPLAYSURF)
+					playedMove = self.current_player.executeTurn(self.firstTurn, DISPLAYSURF)
 				else:
 					playedMove = True
 
 				if playedMove:	
 
-					success = self.current_player.play(firstTurn)
+					success = self.current_player.play(self.firstTurn)
 					if success == "END":
 						self.gameOver = True
-						endGame(players, self.active, useHintBox, USERDATA)
+						endGame(self.players, self.active, useHintBox, USERDATA)
 					elif success:
 						DINGDING.play()
 						self.current_player.pulseScore()
-						firstTurn = False
-						# self.current_player = next_player(players, active)
+						self.firstTurn = False
+						# self.current_player = next_player(self.players, active)
 						self.active += 1
-						if self.active >= len(players):
+						if self.active >= len(self.players):
 							self.active = 0
-						self.current_player = players[self.active]
+						self.current_player = self.players[self.active]
 						#If we were stuck before, we aren't anymore
 						if self.is_computer_turn():
-							AIstuck = False					
+							self.AIstuck = False					
 					else:
 						if TRAINING_FLAG:
-							AIstuck = True
+							self.AIstuck = True
 						TICTIC.play()
 						if self.is_computer_turn():
 							print ("AI thinks it has a good move, but it doesn't")
@@ -165,29 +175,29 @@ class ScrabbleGame:
 					self.current_player.lastScore = 0
 					self.current_player.pulseScore()
 					if self.the_bag.isEmpty():
-						AIstuck = True
+						self.AIstuck = True
 					self.current_player = self.next_player()
 
 				self.redrawEverything()	
 
-			if (self.event_state.shuffle_key_hit or (AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
+			if (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 				SCRIFFLE.play()
-				players[self.active].shuffle()
+				self.players[self.active].shuffle()
 				self.current_player = self.next_player()
 				#If we're stuck AND the AI is stuck, end the game without subtracting points
-				if AIstuck:
+				if self.AIstuck:
 					self.gameOver = True
-					endGame(players, self.active, useHintBox, USERDATA, stuck = True)
+					endGame(self.players, self.active, useHintBox, USERDATA, stuck = True)
 				self.redrawEverything()
 
 			if self.event_state.mouse_clicked and not self.is_computer_turn() and not self.gameOver:
-				inHand = tileGrab(self.event_state.mouse_x, self.event_state.mouse_y, inHand, self.the_board, players[self.active])
+				self.inHand = tileGrab(self.event_state.mouse_x, self.event_state.mouse_y, self.inHand, self.the_board, self.players[self.active])
 				self.redrawEverything()	
 
 			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
 				self.still_playing = False
 
-			redrawNecessary(self.the_board, players, self.gameOver)
+			redrawNecessary(self.the_board, self.players, self.gameOver)
 			pygame.display.update()
 
 
