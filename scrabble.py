@@ -195,16 +195,19 @@ class ScrabbleGame:
 
 		self.redrawEverything()	
 
+	def handle_no_tile_in_hand(self):
+		tile = self.the_board.remove(self.event_state.mouse_x, self.event_state.mouse_y)
+		if tile is None:
+			tile = self.players[self.active].pickup(self.event_state.mouse_x, self.event_state.mouse_y)
+			return tile if tile is not None else None
+		else:
+			TIC.play()
+			self.players[self.active].take(tile)
+			return None		
+		
 	def tileGrab(self):
 		if self.inHand is None:
-			tile = self.the_board.remove(self.event_state.mouse_x, self.event_state.mouse_y)
-			if tile is None:
-				tile = self.players[self.active].pickup(self.event_state.mouse_x, self.event_state.mouse_y)
-				return tile if tile != None else None
-			else:
-				TIC.play()
-				self.players[self.active].take(tile)
-				return None
+			return self.handle_no_tile_in_hand()
 		else:
 			(success, blank) = self.the_board.placeTentative(self.event_state.mouse_x, self.event_state.mouse_y, self.inHand)
 			if success == False:
