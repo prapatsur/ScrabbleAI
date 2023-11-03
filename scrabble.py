@@ -127,7 +127,10 @@ class ScrabbleGame:
 	
 	def should_redraw(self):
 		return (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver
-				
+
+	def should_handle_mouse_clicked(self):
+		return self.event_state.mouse_clicked and not self.is_computer_turn() and not self.gameOver
+					
 	def place_hinted_tiles(self):
 		"""	Play hint, put tiles on board and wait for user's action whether user want to play as hinted """
 		revert_played_tiles(self.the_board, self.current_player)
@@ -207,7 +210,8 @@ class ScrabbleGame:
 				# FIXME: error when redraw when there are tentatives on the board
 				self.redraw_tiles()
 
-			if self.event_state.mouse_clicked and not self.is_computer_turn() and not self.gameOver:
+			# if self.event_state.mouse_clicked and not self.is_computer_turn() and not self.gameOver:
+			if self.should_handle_mouse_clicked():
 				self.inHand = tileGrab(self.event_state.mouse_x, self.event_state.mouse_y, self.inHand, self.the_board, self.players[self.active])
 				self.redrawEverything()	
 
