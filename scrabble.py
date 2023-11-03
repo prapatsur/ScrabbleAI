@@ -184,14 +184,15 @@ class ScrabbleGame:
 					self.current_player.pulseScore()
 					if self.the_bag.isEmpty():
 						self.AIstuck = True
-					self.current_player = self.next_player()
+					self.change_current_player()
 
 				self.redrawEverything()	
 
 			if (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 				SCRIFFLE.play()
 				self.players[self.active].shuffle()
-				self.current_player = self.next_player()
+				# self.current_player = self.next_player()
+				self.change_current_player()
 				#If we're stuck AND the AI is stuck, end the game without subtracting points
 				if self.AIstuck:
 					self.gameOver = True
@@ -255,12 +256,7 @@ class ScrabbleGame:
 				self.still_playing = False	
 
 	def is_computer_turn(self):
-		return isinstance(self.current_player, ai.AI)
-	
-	def next_player(self):
-		# toggle active player
-		self.active = 1 - self.active
-		return self.players[self.active]	
+		return isinstance(self.current_player, ai.AI)	
 
 	def redrawEverything(self):
 		"""Composite function which redraws everything"""
