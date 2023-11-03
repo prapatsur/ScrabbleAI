@@ -326,7 +326,7 @@ class MainScreen:
 
 	def handle_menu_selections(self):
 		if self.selection == menu.MainMenu.NEW_GAME:
-			new_game(self.user_data, self.menu)
+			self.new_game(self.user_data, self.menu)
 		elif self.selection == menu.MainMenu.TRAINING or TRAINING_FLAG:
 			ScrabbleGame().runGame(self.user_data, useHintBox=True)
 		elif self.selection == menu.MainMenu.EXIT_GAME:
@@ -344,6 +344,13 @@ class MainScreen:
 			elif event.type == MOUSEBUTTONUP:
 				self.selection = self.menu.execute(*event.pos)
 
+	def new_game(self, USERDATA, theMenu):
+		USERDATA["numGames"] += 1
+		saveUser(USERDATA)
+		theMenu.resetAchievements(USERDATA)
+		ScrabbleGame().runGame(USERDATA)
+		theMenu.resetAchievements(USERDATA)
+
 	def run(self):
 		while True:
 			self.handle_pygame_events()
@@ -353,14 +360,7 @@ class MainScreen:
 
 
 def main():
-	main_screen = MainScreen().run()
-
-def new_game(USERDATA, theMenu):
-	USERDATA["numGames"] += 1
-	saveUser(USERDATA)
-	theMenu.resetAchievements(USERDATA)
-	ScrabbleGame().runGame(USERDATA)
-	theMenu.resetAchievements(USERDATA)		
+	main_screen = MainScreen().run()		
 
 def revert_played_tiles(theBoard, player):
 	tilesPulled = theBoard.removeTempTiles()
