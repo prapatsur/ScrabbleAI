@@ -335,22 +335,18 @@ class MainScreen:
 
 	def handle_pygame_events(self):
 		self.selection = ""
-		mouseX, mouseY = 0, 0  # Initialize mouseX and mouseY
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.quit()
 				sys.exit()
 			elif event.type == MOUSEMOTION:
-				mouseX, mouseY = event.pos
-				self.menu.update(mouseX, mouseY)
+				self.menu.update(*event.pos)
 			elif event.type == MOUSEBUTTONUP:
-				mouseX, mouseY = event.pos
-				self.selection = self.menu.execute(mouseX, mouseY)
-		return mouseX, mouseY
+				self.selection = self.menu.execute(*event.pos)
 
 	def run(self):
 		while True:
-			mouseX, mouseY = self.handle_pygame_events()
+			self.handle_pygame_events()
 			self.handle_menu_selections()
 			self.menu.redraw()
 			pygame.display.update()
