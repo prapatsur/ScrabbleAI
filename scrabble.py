@@ -124,8 +124,14 @@ class ScrabbleGame:
 
 	def place_hinted_tiles(self):
 		revert_played_tiles(self.the_board, self.current_player)
-		self.current_player.executeTurn(self.firstTurn, DISPLAYSURF)
+		self.execute_current_player_turn()
 		TICTIC.play()
+
+	def execute_current_player_turn(self):
+		return self.current_player.executeTurn(self.firstTurn, DISPLAYSURF)
+	
+	def should_play_action(self):
+		return (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver
 
 	def runGame(self, USERDATA, useHintBox = False):
 		self.setup_game(useHintBox)
@@ -137,10 +143,10 @@ class ScrabbleGame:
 				self.place_hinted_tiles()						
 
 			# Play action
-			if (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
+			if self.should_play_action():
 				#If it's the computer turn, we need to process its move first!
 				if self.is_computer_turn():
-					playedMove = self.current_player.executeTurn(self.firstTurn, DISPLAYSURF)
+					playedMove = self.execute_current_player_turn()
 				else:
 					playedMove = True
 
