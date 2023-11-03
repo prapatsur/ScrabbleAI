@@ -349,7 +349,14 @@ def handle_menu_selections(SELECTION, mouseX, mouseY, USERDATA, theMenu):
         pygame.quit()
         sys.exit()
 
+class MainScreen:
+	def __init__(self):
+		USERDATA = loadUser()
+		self.menu = menu.MainMenu(USERDATA)
+
+
 def main():
+	main_screen = MainScreen()
 	USERDATA = loadUser()
 	theMenu = menu.MainMenu(USERDATA)
 	while True:
