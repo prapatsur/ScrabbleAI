@@ -204,19 +204,22 @@ class ScrabbleGame:
 			TIC.play()
 			self.players[self.active].take(tile)
 			return None		
-		
+
+	def handle_tile_in_hand(self):
+		(success, blank) = self.the_board.placeTentative(self.event_state.mouse_x, self.event_state.mouse_y, self.inHand)
+		if success == False:
+			return self.players[self.active].pickup(self.event_state.mouse_x, self.event_state.mouse_y)
+		TIC.play()
+		if success == "ASK":
+			self.the_board.askForLetter(blank, DISPLAYSURF, ALPHASURF)
+		self.players[self.active].placeTentative()
+		return None
+	
 	def tileGrab(self):
 		if self.inHand is None:
 			return self.handle_no_tile_in_hand()
 		else:
-			(success, blank) = self.the_board.placeTentative(self.event_state.mouse_x, self.event_state.mouse_y, self.inHand)
-			if success == False:
-				return self.players[self.active].pickup(self.event_state.mouse_x, self.event_state.mouse_y)
-			TIC.play()
-			if success == "ASK":
-				self.the_board.askForLetter(blank, DISPLAYSURF, ALPHASURF)
-			self.players[self.active].placeTentative()
-			return None
+			return self.handle_tile_in_hand()
 
 	def runGame(self, USERDATA, useHintBox = False):
 		self.setup_game(useHintBox)
