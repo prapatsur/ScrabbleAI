@@ -324,7 +324,7 @@ class MainScreen:
 		self.menu = menu.MainMenu(self.user_data)
 		self.selection = ""
 
-	def handle_menu_selections(self, mouseX, mouseY):
+	def handle_menu_selections(self):
 		if self.selection == menu.MainMenu.NEW_GAME:
 			new_game(self.user_data, self.menu)
 		elif self.selection == menu.MainMenu.TRAINING or TRAINING_FLAG:
@@ -351,7 +351,7 @@ class MainScreen:
 	def run(self):
 		while True:
 			mouseX, mouseY = self.handle_pygame_events()
-			self.handle_menu_selections(mouseX, mouseY)
+			self.handle_menu_selections()
 			self.menu.redraw()
 			pygame.display.update()
 

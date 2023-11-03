@@ -18,17 +18,27 @@ class Menu():
 	'''
 	Goes through all buttons and returns the name of the button, if it was clicked
 	'''
-	def execute(self, mouseX, mouseY):
-		if self.within(mouseX, mouseY):
-			theKey = ""
-			for key in list(self.buttons.keys()):
-				if self.buttons[key].within(mouseX, mouseY):
-					theKey = key
+	# def execute(self, mouseX, mouseY):
+	# 	if self.within(mouseX, mouseY):
+	# 		theKey = ""
+	# 		for key in list(self.buttons.keys()):
+	# 			if self.buttons[key].within(mouseX, mouseY):
+	# 				theKey = key
 		
-			if theKey != "":
-				CLICK.play()
+	# 		if theKey != "":
+	# 			CLICK.play()
 					
-			return theKey
+	# 		return theKey
+	def execute(self, mouseX, mouseY):
+		if not self.within(mouseX, mouseY):
+			return ""
+
+		for key, button in self.buttons.items():
+			if button.within(mouseX, mouseY):
+				CLICK.play()
+				return key
+
+		return ""
 	
 	'''
 	Goes through and updates all buttons, redrawing them if they are hovered
