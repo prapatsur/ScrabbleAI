@@ -156,6 +156,16 @@ class ScrabbleGame:
 			endGame(self.players, self.active, useHintBox, USERDATA, stuck = True)
 		self.redrawEverything()
 	
+	def handle_computer_cannot_play_move(self):
+		print("shuffle")
+		self.current_player.shuffle()
+		#Let the player know the AI shuffled
+		self.current_player.lastScore = 0
+		self.current_player.pulseScore()
+		if self.the_bag.isEmpty():
+			self.AIstuck = True
+		self.change_current_player()
+
 	def play_action(self, useHintBox, USERDATA):
 		#If it's the computer turn, we need to process its move first!
 		if self.is_computer_turn():
@@ -183,15 +193,18 @@ class ScrabbleGame:
 				if self.is_computer_turn():
 					print ("AI thinks it has a good move, but it doesn't")
 		else:
+			# this one is not called when it's player turn
+			# I think it's for AI turn
+			self.handle_computer_cannot_play_move()
 			# ???
-			print("shuffle")
-			self.current_player.shuffle()
-			#Let the player know the AI shuffled
-			self.current_player.lastScore = 0
-			self.current_player.pulseScore()
-			if self.the_bag.isEmpty():
-				self.AIstuck = True
-			self.change_current_player()
+			# print("shuffle")
+			# self.current_player.shuffle()
+			# #Let the player know the AI shuffled
+			# self.current_player.lastScore = 0
+			# self.current_player.pulseScore()
+			# if self.the_bag.isEmpty():
+			# 	self.AIstuck = True
+			# self.change_current_player()
 
 		self.redrawEverything()	
 
