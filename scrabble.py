@@ -191,7 +191,6 @@ class ScrabbleGame:
 			if (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 				SCRIFFLE.play()
 				self.players[self.active].shuffle()
-				# self.current_player = self.next_player()
 				self.change_current_player()
 				#If we're stuck AND the AI is stuck, end the game without subtracting points
 				if self.AIstuck:
@@ -294,7 +293,8 @@ def main():
 		if SELECTION == menu.MainMenu.NEW_GAME:
 			new_game(USERDATA, theMenu)
 		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
-			game.runGame(USERDATA, useHintBox=True)
+			# game.runGame(USERDATA, useHintBox=True)
+			ScrabbleGame().runGame(USERDATA, useHintBox=True)
 			# theMenu.redraw()
 		elif SELECTION == menu.MainMenu.EXIT_GAME:
 			pygame.quit()
