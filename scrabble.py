@@ -147,13 +147,17 @@ class ScrabbleGame:
 		self.current_player = self.players[self.active]	
 
 	def redraw_tiles(self):
+		"""
+		Redraws the tiles for the current player, shuffles their tile rack, and changes the active player.
+		If the AI is stuck and the player is also stuck, the game ends without subtracting points.
+		"""
 		SCRIFFLE.play()
 		self.players[self.active].shuffle()
 		self.change_current_player()
 		#If we're stuck AND the AI is stuck, end the game without subtracting points
 		if self.AIstuck:
 			self.gameOver = True
-			endGame(self.players, self.active, useHintBox, USERDATA, stuck = True)
+			self.endGame(self.players, self.active, useHintBox, USERDATA, stuck = True)
 		self.redrawEverything()
 	
 	def handle_computer_cannot_play_move(self):
@@ -168,7 +172,7 @@ class ScrabbleGame:
 
 	def handle_end_game(self, useHintBox, USERDATA):
 		self.gameOver = True
-		endGame(self.players, self.active, useHintBox, USERDATA)
+		self.endGame(self.players, self.active, useHintBox, USERDATA)
 
 	def handle_successful_move(self):
 		DINGDING.play()
@@ -317,7 +321,42 @@ class ScrabbleGame:
 		drawScore(self.players, self.gameOver)
 		self.gameMenu.redraw()
 
-
+	'''
+	Ends the game, taking the tray value from all unfinished players, subtracting the value
+	from their score and giving it to the active player (who just finished)
+	'''
+	def endGame(self, players, active, isPractice, userdata, stuck = False):		
+		#Do points swaps only if someone could finish
+		if not stuck:
+			i = 0
+			surplus = 0
+			for p in players:
+				if i != active:
+					value = p.trayValue()
+					p.givePoints(-value)
+					surplus += value
+			players[active].givePoints(surplus)	
+		
+		if not isPractice:
+			maxScore = -1
+			maxPlayer = players[0]
+			for p in players:
+				if isinstance(p, human.Human):
+					if "bestScore" in userdata and p.score > userdata["bestScore"]:
+						userdata["bestScore"] = p.score
+				if p.score > maxScore:
+					maxPlayer = p
+					maxScore = p.score
+				
+			if isinstance(maxPlayer, human.Human):
+				if "numVictories" in userdata:
+					userdata["numVictories"] += 1
+				
+			saveUser(userdata)
+		
+		if TRAINING_FLAG:
+			player.Player.aiStats.saveGame([p.score for p in players])
+			player.Player.aiStats.save()
 class MainScreen:
 	def __init__(self):
 		# self.user_data = loadUser()
@@ -360,6 +399,8 @@ class MainScreen:
 			self.handle_menu_selections()
 			self.menu.redraw()
 			pygame.display.update()
+
+			
 
 def revert_played_tiles(theBoard, player):
 	tilesPulled = theBoard.removeTempTiles()
@@ -425,68 +466,7 @@ def drawScore(players, gameOver):
 		scoreRect.left = left
 		scoreRect.top = SCORE_TOP + SCORE_MARGIN * i
 		DISPLAYSURF.blit(scoreText, scoreRect)		
-		
-'''
-Ends the game, taking the tray value from all unfinished players, subtracting the value
-from their score and giving it to the active player (who just finished)
-'''
-def endGame(players, active, isPractice, userdata, stuck = False):
 	
-	#Do points swaps only if someone could finish
-	if not stuck:
-		i = 0
-		surplus = 0
-		for p in players:
-			if i != active:
-				value = p.trayValue()
-				p.givePoints(-value)
-				surplus += value
-		players[active].givePoints(surplus)	
-	
-	if not isPractice:
-		maxScore = -1
-		maxPlayer = players[0]
-		for p in players:
-			if isinstance(p, human.Human):
-				if "bestScore" in userdata and p.score > userdata["bestScore"]:
-					userdata["bestScore"] = p.score
-			if p.score > maxScore:
-				maxPlayer = p
-				maxScore = p.score
-			
-		if isinstance(maxPlayer, human.Human):
-			if "numVictories" in userdata:
-				userdata["numVictories"] += 1
-			
-		saveUser(userdata)
-	
-	if TRAINING_FLAG:
-		player.Player.aiStats.saveGame([p.score for p in players])
-		player.Player.aiStats.save()
-	
-	
-# def loadUser():
-# 	userFile = open(USERFILE, 'r')
-# 	i = 0
-# 	userdata = {}
-# 	userdata["name"] = "Guest"
-# 	userdata["bestScore"] = 0
-# 	userdata["numVictories"] = 0
-# 	userdata["numGames"] = 0
-# 	for line in userFile:
-# 		line = line.rstrip()
-# 		if i == 0:
-# 			userdata["name"] = line
-# 		elif i == 1:
-# 			userdata["bestScore"] = int(line)
-# 		elif i == 2:
-# 			userdata["numVictories"] = int(line)
-# 		elif i == 3:
-# 			userdata["numGames"] = int(line)
-			
-# 		i += 1
-			
-# 	return userdata
 	
 def saveUser(USERDATA):
 	userFile = open(USERFILE, 'w')
