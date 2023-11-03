@@ -122,6 +122,12 @@ class ScrabbleGame:
 	def should_place_hinted_tiles(self):
 		return (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver
 
+	def should_play_action(self):
+		return (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver
+	
+	def should_redraw(self):
+		return (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver
+				
 	def place_hinted_tiles(self):
 		"""	Play hint, put tiles on board and wait for user's action whether user want to play as hinted """
 		revert_played_tiles(self.the_board, self.current_player)
@@ -130,9 +136,6 @@ class ScrabbleGame:
 
 	def execute_current_player_turn(self):
 		return self.current_player.executeTurn(self.firstTurn, DISPLAYSURF)
-	
-	def should_play_action(self):
-		return (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver
 
 	def change_current_player(self):
 		self.active += 1
@@ -190,7 +193,8 @@ class ScrabbleGame:
 			if self.should_play_action():
 				self.play_action(useHintBox, USERDATA)
 
-			if (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
+			# if (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
+			if self.should_redraw():
 				SCRIFFLE.play()
 				self.players[self.active].shuffle()
 				self.change_current_player()
