@@ -195,6 +195,26 @@ class ScrabbleGame:
 
 		self.redrawEverything()	
 
+	def tileGrab(self):
+		if self.inHand is None:
+			tile = self.the_board.remove(self.event_state.mouse_x, self.event_state.mouse_y)
+			if tile is None:
+				tile = self.players[self.active].pickup(self.event_state.mouse_x, self.event_state.mouse_y)
+				return tile if tile != None else None
+			else:
+				TIC.play()
+				self.players[self.active].take(tile)
+				return None
+		else:
+			(success, blank) = self.the_board.placeTentative(self.event_state.mouse_x, self.event_state.mouse_y, self.inHand)
+			if success == False:
+				return self.players[self.active].pickup(self.event_state.mouse_x, self.event_state.mouse_y)
+			TIC.play()
+			if success == "ASK":
+				self.the_board.askForLetter(blank, DISPLAYSURF, ALPHASURF)
+			self.players[self.active].placeTentative()
+			return None
+
 	def runGame(self, USERDATA, useHintBox = False):
 		self.setup_game(useHintBox)
 		while self.still_playing:
@@ -210,9 +230,8 @@ class ScrabbleGame:
 				# FIXME: error when redraw when there are tentatives on the board
 				self.redraw_tiles()
 
-			# if self.event_state.mouse_clicked and not self.is_computer_turn() and not self.gameOver:
 			if self.should_handle_mouse_clicked():
-				self.inHand = tileGrab(self.event_state.mouse_x, self.event_state.mouse_y, self.inHand, self.the_board, self.players[self.active])
+				self.inHand = self.tileGrab()
 				self.redrawEverything()	
 
 			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
@@ -340,42 +359,42 @@ This resolves the action of the player to try to pick up a tile. Two situations:
 	-If it's on the tray, highlight that piece and put it in hand.
 '''
 
-def tileGrab(x, y, hand, theBoard, theHuman):
-	"""
-	Grab a tile from the board or the player's hand.
+# def tileGrab(x, y, hand, theBoard, theHuman):
+# 	"""
+# 	Grab a tile from the board or the player's hand.
 
-	Args:
-		x (int): The x-coordinate of the tile.
-		y (int): The y-coordinate of the tile.
-		hand (list): The player's hand.
-		theBoard (Board): The game board.
-		theHuman (Player): The player.
+# 	Args:
+# 		x (int): The x-coordinate of the tile.
+# 		y (int): The y-coordinate of the tile.
+# 		hand (list): The player's hand.
+# 		theBoard (Board): The game board.
+# 		theHuman (Player): The player.
 
-	Returns:
-		Tile or None: The grabbed tile, or None if no tile was grabbed.
+# 	Returns:
+# 		Tile or None: The grabbed tile, or None if no tile was grabbed.
 
-	If the player's hand is empty, try to remove a tile from the board. If that fails, try to remove a tile from the tray.
-	If the player's hand is not empty, try to place the tile on the board. If successful, place a tentative piece on the board.
-	"""
+# 	If the player's hand is empty, try to remove a tile from the board. If that fails, try to remove a tile from the tray.
+# 	If the player's hand is not empty, try to place the tile on the board. If successful, place a tentative piece on the board.
+# 	"""
 
-	if hand is None:
-		tile = theBoard.remove(x, y) # try to remove a piece from the board
-		if tile is None:
-			tile = theHuman.pickup(x, y) # if it didn't, try to remove from the tray
-			return tile if tile != None else None
-		else:
-			TIC.play()
-			theHuman.take(tile)		# if it worked, put it back on our tray
-			return None
-	else:
-		(success, blank) = theBoard.placeTentative(x, y, hand) #try to place the tile on the board
-		if success == False:
-			return theHuman.pickup(x, y)
-		TIC.play()
-		if success == "ASK":
-			theBoard.askForLetter(blank, DISPLAYSURF, ALPHASURF)
-		theHuman.placeTentative()	#if it's successful place a tentative piece
-		return None					#empty the hand
+# 	if hand is None:
+# 		tile = theBoard.remove(x, y) # try to remove a piece from the board
+# 		if tile is None:
+# 			tile = theHuman.pickup(x, y) # if it didn't, try to remove from the tray
+# 			return tile if tile != None else None
+# 		else:
+# 			TIC.play()
+# 			theHuman.take(tile)		# if it worked, put it back on our tray
+# 			return None
+# 	else:
+# 		(success, blank) = theBoard.placeTentative(x, y, hand) #try to place the tile on the board
+# 		if success == False:
+# 			return theHuman.pickup(x, y)
+# 		TIC.play()
+# 		if success == "ASK":
+# 			theBoard.askForLetter(blank, DISPLAYSURF, ALPHASURF)
+# 		theHuman.placeTentative()	#if it's successful place a tentative piece
+# 		return None					#empty the hand
 
 '''
 Function which redraws only animated elements
