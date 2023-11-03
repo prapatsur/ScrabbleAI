@@ -166,32 +166,39 @@ class ScrabbleGame:
 			self.AIstuck = True
 		self.change_current_player()
 
+	def handle_end_game(self, useHintBox, USERDATA):
+		self.gameOver = True
+		endGame(self.players, self.active, useHintBox, USERDATA)
+
+	def handle_successful_move(self):
+		DINGDING.play()
+		self.current_player.pulseScore()
+		self.firstTurn = False
+		self.change_current_player()
+		if self.is_computer_turn():
+			self.AIstuck = False
+
+	def handle_unsuccessful_move(self):
+		if TRAINING_FLAG:
+			self.AIstuck = True
+		TICTIC.play()
+		if self.is_computer_turn():
+			print ("AI thinks it has a good move, but it doesn't")
+
 	def handle_played_move(self, useHintBox, USERDATA):
 		success = self.current_player.play(self.firstTurn)
 		if success == "END":
-			self.gameOver = True
-			endGame(self.players, self.active, useHintBox, USERDATA)
+			self.handle_end_game(useHintBox, USERDATA)
 		elif success:
-			DINGDING.play()
-			self.current_player.pulseScore()
-			self.firstTurn = False
-			self.change_current_player()
-			#If we were stuck before, we aren't anymore
-			if self.is_computer_turn():
-				self.AIstuck = False					
+			self.handle_successful_move()
 		else:
-			if TRAINING_FLAG:
-				self.AIstuck = True
-			TICTIC.play()
-			if self.is_computer_turn():
-				print ("AI thinks it has a good move, but it doesn't")
+			self.handle_unsuccessful_move()
 					
 	def play_action(self, useHintBox, USERDATA):
+		playedMove = True
 		#If it's the computer turn, we need to process its move first!
 		if self.is_computer_turn():
 			playedMove = self.execute_current_player_turn()
-		else:
-			playedMove = True
 
 		if playedMove:	
 			self.handle_played_move(useHintBox, USERDATA)
