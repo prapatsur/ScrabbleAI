@@ -25,12 +25,12 @@ Heuristic ideas:
 
 '''
 
+#local files
+import board, tile, bag, player, human, ai, heuristic
+from userdata import UserData
 
 import pygame, random, sys, time
 from pygame.locals import *
-
-#local files
-import board, tile, bag, player, human, ai, heuristic
 
 pygame.init()
 
@@ -320,7 +320,9 @@ class ScrabbleGame:
 
 class MainScreen:
 	def __init__(self):
-		self.user_data = loadUser()
+		# self.user_data = loadUser()
+		self.user_data_file = UserData()
+		self.user_data = self.user_data_file.get_user_data()
 		self.menu = menu.MainMenu(self.user_data)
 		self.selection = ""
 
@@ -346,7 +348,8 @@ class MainScreen:
 
 	def new_game(self):
 		self.user_data["numGames"] += 1
-		saveUser(self.user_data)
+		self.user_data_file.save_user_data(self.user_data)
+		# saveUser(self.user_data)
 		self.menu.resetAchievements(self.user_data)
 		ScrabbleGame().runGame(self.user_data)
 		self.menu.resetAchievements(self.user_data)
@@ -357,9 +360,6 @@ class MainScreen:
 			self.handle_menu_selections()
 			self.menu.redraw()
 			pygame.display.update()
-
-
-		
 
 def revert_played_tiles(theBoard, player):
 	tilesPulled = theBoard.removeTempTiles()
@@ -465,28 +465,28 @@ def endGame(players, active, isPractice, userdata, stuck = False):
 		player.Player.aiStats.save()
 	
 	
-def loadUser():
-	userFile = open(USERFILE, 'r')
-	i = 0
-	userdata = {}
-	userdata["name"] = "Guest"
-	userdata["bestScore"] = 0
-	userdata["numVictories"] = 0
-	userdata["numGames"] = 0
-	for line in userFile:
-		line = line.rstrip()
-		if i == 0:
-			userdata["name"] = line
-		elif i == 1:
-			userdata["bestScore"] = int(line)
-		elif i == 2:
-			userdata["numVictories"] = int(line)
-		elif i == 3:
-			userdata["numGames"] = int(line)
+# def loadUser():
+# 	userFile = open(USERFILE, 'r')
+# 	i = 0
+# 	userdata = {}
+# 	userdata["name"] = "Guest"
+# 	userdata["bestScore"] = 0
+# 	userdata["numVictories"] = 0
+# 	userdata["numGames"] = 0
+# 	for line in userFile:
+# 		line = line.rstrip()
+# 		if i == 0:
+# 			userdata["name"] = line
+# 		elif i == 1:
+# 			userdata["bestScore"] = int(line)
+# 		elif i == 2:
+# 			userdata["numVictories"] = int(line)
+# 		elif i == 3:
+# 			userdata["numGames"] = int(line)
 			
-		i += 1
+# 		i += 1
 			
-	return userdata
+# 	return userdata
 	
 def saveUser(USERDATA):
 	userFile = open(USERFILE, 'w')
