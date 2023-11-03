@@ -143,6 +143,16 @@ class ScrabbleGame:
 			self.active = 0
 		self.current_player = self.players[self.active]	
 
+	def redraw_tiles(self):
+		SCRIFFLE.play()
+		self.players[self.active].shuffle()
+		self.change_current_player()
+		#If we're stuck AND the AI is stuck, end the game without subtracting points
+		if self.AIstuck:
+			self.gameOver = True
+			endGame(self.players, self.active, useHintBox, USERDATA, stuck = True)
+		self.redrawEverything()
+	
 	def play_action(self, useHintBox, USERDATA):
 		#If it's the computer turn, we need to process its move first!
 		if self.is_computer_turn():
@@ -193,16 +203,9 @@ class ScrabbleGame:
 			if self.should_play_action():
 				self.play_action(useHintBox, USERDATA)
 
-			# if (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 			if self.should_redraw():
-				SCRIFFLE.play()
-				self.players[self.active].shuffle()
-				self.change_current_player()
-				#If we're stuck AND the AI is stuck, end the game without subtracting points
-				if self.AIstuck:
-					self.gameOver = True
-					endGame(self.players, self.active, useHintBox, USERDATA, stuck = True)
-				self.redrawEverything()
+				# FIXME: error when redraw when there are tentatives on the board
+				self.redraw_tiles()
 
 			if self.event_state.mouse_clicked and not self.is_computer_turn() and not self.gameOver:
 				self.inHand = tileGrab(self.event_state.mouse_x, self.event_state.mouse_y, self.inHand, self.the_board, self.players[self.active])
