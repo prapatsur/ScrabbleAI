@@ -123,6 +123,7 @@ class ScrabbleGame:
 		return (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver
 
 	def place_hinted_tiles(self):
+		"""	Play hint, put tiles on board and wait for user's action whether user want to play as hinted """
 		revert_played_tiles(self.the_board, self.current_player)
 		self.execute_current_player_turn()
 		TICTIC.play()
@@ -139,54 +140,55 @@ class ScrabbleGame:
 			self.active = 0
 		self.current_player = self.players[self.active]	
 
+	def play_action(self, useHintBox, USERDATA):
+		#If it's the computer turn, we need to process its move first!
+		if self.is_computer_turn():
+			playedMove = self.execute_current_player_turn()
+		else:
+			playedMove = True
+
+		if playedMove:	
+			success = self.current_player.play(self.firstTurn)
+			if success == "END":
+				self.gameOver = True
+				endGame(self.players, self.active, useHintBox, USERDATA)
+			elif success:
+				DINGDING.play()
+				self.current_player.pulseScore()
+				self.firstTurn = False
+				self.change_current_player()
+				#If we were stuck before, we aren't anymore
+				if self.is_computer_turn():
+					self.AIstuck = False					
+			else:
+				if TRAINING_FLAG:
+					self.AIstuck = True
+				TICTIC.play()
+				if self.is_computer_turn():
+					print ("AI thinks it has a good move, but it doesn't")
+		else:
+			# ???
+			print("shuffle")
+			self.current_player.shuffle()
+			#Let the player know the AI shuffled
+			self.current_player.lastScore = 0
+			self.current_player.pulseScore()
+			if self.the_bag.isEmpty():
+				self.AIstuck = True
+			self.change_current_player()
+
+		self.redrawEverything()	
+
 	def runGame(self, USERDATA, useHintBox = False):
 		self.setup_game(useHintBox)
 		while self.still_playing:
 			self.prepare_turn()
 
-			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
 			if self.should_place_hinted_tiles():
 				self.place_hinted_tiles()						
 
-			# Play action
 			if self.should_play_action():
-				#If it's the computer turn, we need to process its move first!
-				if self.is_computer_turn():
-					playedMove = self.execute_current_player_turn()
-				else:
-					playedMove = True
-
-				if playedMove:	
-					success = self.current_player.play(self.firstTurn)
-					if success == "END":
-						self.gameOver = True
-						endGame(self.players, self.active, useHintBox, USERDATA)
-					elif success:
-						DINGDING.play()
-						self.current_player.pulseScore()
-						self.firstTurn = False
-						self.change_current_player()
-						#If we were stuck before, we aren't anymore
-						if self.is_computer_turn():
-							self.AIstuck = False					
-					else:
-						if TRAINING_FLAG:
-							self.AIstuck = True
-						TICTIC.play()
-						if self.is_computer_turn():
-							print ("AI thinks it has a good move, but it doesn't")
-				else:
-					# ???
-					print("shuffle")
-					self.current_player.shuffle()
-					#Let the player know the AI shuffled
-					self.current_player.lastScore = 0
-					self.current_player.pulseScore()
-					if self.the_bag.isEmpty():
-						self.AIstuck = True
-					self.change_current_player()
-
-				self.redrawEverything()	
+				self.play_action(useHintBox, USERDATA)
 
 			if (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver:
 				SCRIFFLE.play()
@@ -267,7 +269,6 @@ class ScrabbleGame:
 
 def main():
 	USERDATA = loadUser()
-	game = ScrabbleGame()
 	theMenu = menu.MainMenu(USERDATA)
 	while True:
 		mouseClicked = False
@@ -293,7 +294,6 @@ def main():
 		if SELECTION == menu.MainMenu.NEW_GAME:
 			new_game(USERDATA, theMenu)
 		elif SELECTION == menu.MainMenu.TRAINING or TRAINING_FLAG:
-			# game.runGame(USERDATA, useHintBox=True)
 			ScrabbleGame().runGame(USERDATA, useHintBox=True)
 			# theMenu.redraw()
 		elif SELECTION == menu.MainMenu.EXIT_GAME:
