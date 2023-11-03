@@ -121,7 +121,12 @@ class ScrabbleGame:
 
 	def should_place_hinted_tiles(self):
 		return (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver
-	
+
+	def place_hinted_tiles(self):
+		revert_played_tiles(self.the_board, self.current_player)
+		self.current_player.executeTurn(self.firstTurn, DISPLAYSURF)
+		TICTIC.play()
+
 	def runGame(self, USERDATA, useHintBox = False):
 		self.setup_game(useHintBox)
 		while self.still_playing:
@@ -129,7 +134,7 @@ class ScrabbleGame:
 
 			# Play hint, put tiles on board and wait for user's action whether user want to play as hinted
 			if self.should_place_hinted_tiles():
-				place_hinted_tiles(self.the_board, self.current_player, self.firstTurn)							
+				self.place_hinted_tiles()						
 
 			# Play action
 			if (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver:
@@ -299,12 +304,7 @@ def new_game(USERDATA, theMenu):
 	saveUser(USERDATA)
 	theMenu.resetAchievements(USERDATA)
 	ScrabbleGame().runGame(USERDATA)
-	theMenu.resetAchievements(USERDATA)
-
-def place_hinted_tiles(theBoard, player, firstTurn):
-	revert_played_tiles(theBoard, player)
-	player.executeTurn(firstTurn, DISPLAYSURF)
-	TICTIC.play()		
+	theMenu.resetAchievements(USERDATA)		
 
 def revert_played_tiles(theBoard, player):
 	tilesPulled = theBoard.removeTempTiles()
