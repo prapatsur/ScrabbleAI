@@ -133,6 +133,12 @@ class ScrabbleGame:
 	def should_play_action(self):
 		return (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver
 
+	def change_current_player(self):
+		self.active += 1
+		if self.active >= len(self.players):
+			self.active = 0
+		self.current_player = self.players[self.active]	
+
 	def runGame(self, USERDATA, useHintBox = False):
 		self.setup_game(useHintBox)
 		while self.still_playing:
@@ -159,11 +165,7 @@ class ScrabbleGame:
 						DINGDING.play()
 						self.current_player.pulseScore()
 						self.firstTurn = False
-						# self.current_player = next_player(self.players, active)
-						self.active += 1
-						if self.active >= len(self.players):
-							self.active = 0
-						self.current_player = self.players[self.active]
+						self.change_current_player()
 						#If we were stuck before, we aren't anymore
 						if self.is_computer_turn():
 							self.AIstuck = False					
