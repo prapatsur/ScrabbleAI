@@ -234,7 +234,7 @@ class Button():
 		self.backColor = backColor
 	
 	def update(self, mouseX, mouseY):
-		
+		""" update button highlighting based on mouse position and draw text box if necessary"""
 		if self.within(mouseX, mouseY):
 			self.draw(self.color)
 			self.lastDrawn = Button.ON

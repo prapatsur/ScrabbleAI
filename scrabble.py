@@ -8,6 +8,7 @@ Scrabble To-Do:
 	- Apply State pattern for 2-screen board game (can ask chatGPT for explanation)
 	- Make processing time delay as a function
 	- Have generic "Player" account with achievements
+	- Refactor more on endGame method
 	
 Heuristic ideas:
 
@@ -165,8 +166,7 @@ class ScrabbleGame:
 		# If we're stuck AND the AI is stuck, end the game without subtracting points
 		if self.AIstuck:
 			self.gameOver = True
-			self.endGame(self.active,
-						 useHintBox, USERDATA, stuck=True)
+			self.endGame(useHintBox, USERDATA, stuck=True)
 		self.redrawEverything()
 
 	def handle_computer_cannot_play_move(self):
@@ -181,7 +181,7 @@ class ScrabbleGame:
 
 	def handle_end_game(self, useHintBox, USERDATA):
 		self.gameOver = True
-		self.endGame(self.active, useHintBox, USERDATA)
+		self.endGame(useHintBox, USERDATA)
 
 	def handle_successful_move(self):
 		DINGDING.play()
@@ -326,7 +326,7 @@ class ScrabbleGame:
 
 	def handle_events(self):
 		self.gather_events()
-		self.handle_mouse_move()
+		# self.handle_mouse_move()
 		self.handle_mouse_click()
 		return self.event_state
 
@@ -340,7 +340,9 @@ class ScrabbleGame:
 				sys.exit()
 			elif event.type == pygame.MOUSEMOTION:
 				self.event_state.mouse_x, self.event_state.mouse_y = event.pos
-				self.event_state.mouse_moved = True
+				# self.event_state.mouse_moved = True
+				# update menu highlight
+				self.gameMenu.update(*event.pos)
 			elif event.type == pygame.MOUSEBUTTONUP:
 				self.event_state.mouse_x, self.event_state.mouse_y = event.pos
 				self.event_state.mouse_clicked = True
@@ -352,10 +354,10 @@ class ScrabbleGame:
 				if event.key == pygame.K_h and self.game_menu.use_hint_box:
 					self.event_state.hint_key_hit = True
 
-	def handle_mouse_move(self):
-		if self.event_state.mouse_moved:
-			self.gameMenu.update(self.event_state.mouse_x,
-								 self.event_state.mouse_y)
+	# def handle_mouse_move(self):
+	# 	if self.event_state.mouse_moved:
+	# 		self.gameMenu.update(self.event_state.mouse_x,
+	# 							 self.event_state.mouse_y)
 
 	def handle_mouse_click(self):
 		if self.event_state.mouse_clicked:
@@ -382,22 +384,34 @@ class ScrabbleGame:
 		self.drawScore()
 		self.gameMenu.redraw()
 
+	def swap_points(self):
+		surplus = 0
+		i = 0
+		for player in self.players:
+			if i != self.active:
+				value = player.tray_value()
+				player.give_points(-value)
+				surplus += value
+
+		self.players[self.active].give_points(surplus)
+
 	'''
 	Ends the game, taking the tray value from all unfinished players, subtracting the value
 	from their score and giving it to the active player (who just finished)
 	'''
-
-	def endGame(self, active, isPractice, userdata, stuck=False):
+	def endGame(self, isPractice, userdata, stuck=False):
 		# Do points swaps only if someone could finish
+		# if not stuck:
+		# 	self.swap_points()
 		if not stuck:
 			i = 0
 			surplus = 0
 			for p in self.players:
-				if i != active:
+				if i != self.active:
 					value = p.trayValue()
 					p.givePoints(-value)
 					surplus += value
-			self.players[active].givePoints(surplus)
+			self.players[self.active].givePoints(surplus)
 
 		if not isPractice:
 			maxScore = -1
