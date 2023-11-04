@@ -41,6 +41,7 @@ from userdata import UserData
 import pygame
 import sys
 import time
+from itertools import cycle
 from pygame.locals import *
 
 from gui import DISPLAYSURF, ALPHASURF, TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
@@ -95,7 +96,9 @@ class ScrabbleGame:
 			ai.AI(self.the_board, self.the_bag,
 				  theHeuristic=h, theDifficulty=10.0),
 		]
+		self.players_iterator = cycle(self.players)
 		self.active = 0
+		self.current_player = self.next_player() # must run after setting self.active
 		self.gameOver = False
 		self.event_state = EventState()
 		self.user_data_file = UserData()
@@ -111,7 +114,8 @@ class ScrabbleGame:
 		self.AIstuck = False
 
 	def get_current_player(self):
-		return self.players[self.active]
+		# return self.players[self.active]
+		return self.current_player
 	
 	def should_place_hinted_tiles(self):
 		return (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver
@@ -146,6 +150,9 @@ class ScrabbleGame:
 		self.active += 1
 		if self.active >= len(self.players):
 			self.active = 0
+		self.current_player = next(self.players_iterator)
+		return self.current_player
+		
 
 	def redraw_tiles(self):
 		"""
@@ -158,7 +165,7 @@ class ScrabbleGame:
 		# If we're stuck AND the AI is stuck, end the game without subtracting points
 		if self.AIstuck:
 			self.gameOver = True
-			self.endGame(self.players, self.active,
+			self.endGame(self.active,
 						 useHintBox, USERDATA, stuck=True)
 		self.redrawEverything()
 
@@ -174,7 +181,7 @@ class ScrabbleGame:
 
 	def handle_end_game(self, useHintBox, USERDATA):
 		self.gameOver = True
-		self.endGame(self.players, self.active, useHintBox, USERDATA)
+		self.endGame(self.active, useHintBox, USERDATA)
 
 	def handle_successful_move(self):
 		DINGDING.play()
@@ -380,22 +387,22 @@ class ScrabbleGame:
 	from their score and giving it to the active player (who just finished)
 	'''
 
-	def endGame(self, players, active, isPractice, userdata, stuck=False):
+	def endGame(self, active, isPractice, userdata, stuck=False):
 		# Do points swaps only if someone could finish
 		if not stuck:
 			i = 0
 			surplus = 0
-			for p in players:
+			for p in self.players:
 				if i != active:
 					value = p.trayValue()
 					p.givePoints(-value)
 					surplus += value
-			players[active].givePoints(surplus)
+			self.players[active].givePoints(surplus)
 
 		if not isPractice:
 			maxScore = -1
-			maxPlayer = players[0]
-			for p in players:
+			maxPlayer = self.players[0]
+			for p in self.players:
 				if isinstance(p, human.Human):
 					if "bestScore" in userdata and p.score > userdata["bestScore"]:
 						userdata["bestScore"] = p.score
@@ -411,7 +418,7 @@ class ScrabbleGame:
 			self.user_data_file.save_user_data(userdata)
 
 		if TRAINING_FLAG:
-			player.Player.aiStats.saveGame([p.score for p in players])
+			player.Player.aiStats.saveGame([p.score for p in self.players])
 			player.Player.aiStats.save()
 
 
