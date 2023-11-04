@@ -281,22 +281,29 @@ class ScrabbleGame:
 		self.the_board.drawDirty(DISPLAYSURF, ALPHASURF)
 		self.drawScore(self.players, self.gameOver)
 
-	'''
-	Draws the scores
-	'''
+	def draw_text(self, text, left, top, color):
+		""" draw text and return rect of the draw area"""
+		rendered_text = SCORE_FONT.render(text, True, color, BACKGROUND_COLOR)
+		text_rect = rendered_text.get_rect()
+		text_rect.left = left
+		text_rect.top = top
+		DISPLAYSURF.blit(rendered_text, text_rect)
+		return text_rect
+
 	def drawScore(self, players, gameOver):
+		""" Draws the score for each player"""
 		i = 0
 		left = SCORE_LEFT
 		for player in players:
 			top = SCORE_TOP + SCORE_MARGIN * i
 			
 			sentence = player.name + ": " + str(player.score)
-			
-			scoreText = SCORE_FONT.render(sentence, True, SCORE_COLOR, BACKGROUND_COLOR)
-			scoreRect = scoreText.get_rect()
-			scoreRect.left = left
-			scoreRect.top = top
-			DISPLAYSURF.blit(scoreText, scoreRect)
+			score_rect = self.draw_text(sentence, left, top, SCORE_COLOR)
+			# scoreText = SCORE_FONT.render(sentence, True, SCORE_COLOR, BACKGROUND_COLOR)
+			# scoreRect = scoreText.get_rect()
+			# scoreRect.left = left
+			# scoreRect.top = top
+			# DISPLAYSURF.blit(scoreText, scoreRect)
 			
 			#Score Pulse
 			if time.time() - player.lastScorePulse < SCORE_PULSE:
@@ -304,21 +311,24 @@ class ScrabbleGame:
 				color = (SCORE_COLOR[0]*(1-tween) + BACKGROUND_COLOR[0]*tween,
 						SCORE_COLOR[1]*(1-tween) + BACKGROUND_COLOR[1]*tween,
 						SCORE_COLOR[2]*(1-tween) + BACKGROUND_COLOR[2]*tween)
-				pulseText = SCORE_FONT.render("(+"+str(player.lastScore)+")", True, color, BACKGROUND_COLOR)
-				pulseRect = pulseText.get_rect()
-				pulseRect.left = scoreRect.right + 10
-				pulseRect.top = top
-				DISPLAYSURF.blit(pulseText, pulseRect)
+				# pulseText = SCORE_FONT.render("(+"+str(player.lastScore)+")", True, color, BACKGROUND_COLOR)
+				# pulseRect = pulseText.get_rect()
+				# pulseRect.left = scoreRect.right + 10
+				# pulseRect.top = top
+				# DISPLAYSURF.blit(pulseText, pulseRect)
+				pulse_text = f"(+{player.lastScore})"
+				self.draw_text(pulse_text, score_rect.right + 10, top, color)
 					
 			i += 1
 		
 		#Let players know the game is over!
 		if gameOver:
-			scoreText = SCORE_FONT.render("Game finished!", True, SCORE_COLOR, BACKGROUND_COLOR)
-			scoreRect = scoreText.get_rect()
-			scoreRect.left = left
-			scoreRect.top = SCORE_TOP + SCORE_MARGIN * i
-			DISPLAYSURF.blit(scoreText, scoreRect)	
+			self.draw_text("Game finished!", SCORE_LEFT, SCORE_TOP + SCORE_MARGIN * len(players), SCORE_COLOR)
+			# scoreText = SCORE_FONT.render("Game finished!", True, SCORE_COLOR, BACKGROUND_COLOR)
+			# scoreRect = scoreText.get_rect()
+			# scoreRect.left = left
+			# scoreRect.top = SCORE_TOP + SCORE_MARGIN * i
+			# DISPLAYSURF.blit(scoreText, scoreRect)	
 
 	def handle_events(self):
 		self.gather_events()
@@ -467,45 +477,6 @@ This resolves the action of the player to try to pick up a tile. Two situations:
 	-If it's on the tray, highlight that piece and put it in hand.
 '''
 
-'''
-Draws the scores
-'''
-# def drawScore(players, gameOver):
-# 	i = 0
-# 	left = SCORE_LEFT
-# 	for player in players:
-# 		top = SCORE_TOP + SCORE_MARGIN * i
-		
-# 		sentence = player.name + ": " + str(player.score)
-		
-# 		scoreText = SCORE_FONT.render(sentence, True, SCORE_COLOR, BACKGROUND_COLOR)
-# 		scoreRect = scoreText.get_rect()
-# 		scoreRect.left = left
-# 		scoreRect.top = top
-# 		DISPLAYSURF.blit(scoreText, scoreRect)
-		
-# 		#Score Pulse
-# 		if time.time() - player.lastScorePulse < SCORE_PULSE:
-# 			tween = (time.time()-player.lastScorePulse) / SCORE_PULSE
-# 			color = (SCORE_COLOR[0]*(1-tween) + BACKGROUND_COLOR[0]*tween,
-# 					SCORE_COLOR[1]*(1-tween) + BACKGROUND_COLOR[1]*tween,
-# 					SCORE_COLOR[2]*(1-tween) + BACKGROUND_COLOR[2]*tween)
-# 			pulseText = SCORE_FONT.render("(+"+str(player.lastScore)+")", True, color, BACKGROUND_COLOR)
-# 			pulseRect = pulseText.get_rect()
-# 			pulseRect.left = scoreRect.right + 10
-# 			pulseRect.top = top
-# 			DISPLAYSURF.blit(pulseText, pulseRect)
-				
-# 		i += 1
-	
-# 	#Let players know the game is over!
-# 	if gameOver:
-# 		scoreText = SCORE_FONT.render("Game finished!", True, SCORE_COLOR, BACKGROUND_COLOR)
-# 		scoreRect = scoreText.get_rect()
-# 		scoreRect.left = left
-# 		scoreRect.top = SCORE_TOP + SCORE_MARGIN * i
-# 		DISPLAYSURF.blit(scoreText, scoreRect)		
-	
 def main():
 	main_screen = MainScreen().run()
 	
