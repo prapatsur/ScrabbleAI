@@ -279,7 +279,7 @@ class ScrabbleGame:
 	'''	
 	def redrawNecessary(self):
 		self.the_board.drawDirty(DISPLAYSURF, ALPHASURF)
-		self.drawScore(self.players, self.gameOver)
+		self.drawScore()
 
 	def draw_text(self, text, left, top, color):
 		""" draw text and return rect of the draw area"""
@@ -290,20 +290,14 @@ class ScrabbleGame:
 		DISPLAYSURF.blit(rendered_text, text_rect)
 		return text_rect
 
-	def drawScore(self, players, gameOver):
+	def drawScore(self):
 		""" Draws the score for each player"""
 		i = 0
 		left = SCORE_LEFT
-		for player in players:
+		for player in self.players:
 			top = SCORE_TOP + SCORE_MARGIN * i
-			
 			sentence = player.name + ": " + str(player.score)
 			score_rect = self.draw_text(sentence, left, top, SCORE_COLOR)
-			# scoreText = SCORE_FONT.render(sentence, True, SCORE_COLOR, BACKGROUND_COLOR)
-			# scoreRect = scoreText.get_rect()
-			# scoreRect.left = left
-			# scoreRect.top = top
-			# DISPLAYSURF.blit(scoreText, scoreRect)
 			
 			#Score Pulse
 			if time.time() - player.lastScorePulse < SCORE_PULSE:
@@ -311,24 +305,14 @@ class ScrabbleGame:
 				color = (SCORE_COLOR[0]*(1-tween) + BACKGROUND_COLOR[0]*tween,
 						SCORE_COLOR[1]*(1-tween) + BACKGROUND_COLOR[1]*tween,
 						SCORE_COLOR[2]*(1-tween) + BACKGROUND_COLOR[2]*tween)
-				# pulseText = SCORE_FONT.render("(+"+str(player.lastScore)+")", True, color, BACKGROUND_COLOR)
-				# pulseRect = pulseText.get_rect()
-				# pulseRect.left = scoreRect.right + 10
-				# pulseRect.top = top
-				# DISPLAYSURF.blit(pulseText, pulseRect)
 				pulse_text = f"(+{player.lastScore})"
 				self.draw_text(pulse_text, score_rect.right + 10, top, color)
 					
 			i += 1
 		
 		#Let players know the game is over!
-		if gameOver:
-			self.draw_text("Game finished!", SCORE_LEFT, SCORE_TOP + SCORE_MARGIN * len(players), SCORE_COLOR)
-			# scoreText = SCORE_FONT.render("Game finished!", True, SCORE_COLOR, BACKGROUND_COLOR)
-			# scoreRect = scoreText.get_rect()
-			# scoreRect.left = left
-			# scoreRect.top = SCORE_TOP + SCORE_MARGIN * i
-			# DISPLAYSURF.blit(scoreText, scoreRect)	
+		if self.gameOver:
+			self.draw_text("Game finished!", SCORE_LEFT, SCORE_TOP + SCORE_MARGIN * len(self.players), SCORE_COLOR)
 
 	def handle_events(self):
 		self.gather_events()
@@ -383,7 +367,7 @@ class ScrabbleGame:
 		DISPLAYSURF.fill(BACKGROUND_COLOR)
 		self.the_board.draw(DISPLAYSURF, ALPHASURF)
 		self.current_player.drawTray(DISPLAYSURF)			
-		self.drawScore(self.players, self.gameOver)
+		self.drawScore()
 		self.gameMenu.redraw()
 
 	'''
