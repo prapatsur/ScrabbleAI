@@ -106,21 +106,6 @@ class Board:
 		self.setLocks()
 		return (True, tile)
 		
-		# # The position is valid.
-		# if 0 <= boardX < Board.GRID_SIZE and 0 <= boardY < Board.GRID_SIZE:
-		# 	previousTile = self.squares[boardX][boardY][0]
-			
-		# 	if previousTile is None:
-		# 		self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
-				
-		# 		if tile.isBlank:
-		# 			return ("ASK", tile)
-				
-		# 		self.setLocks()
-		# 		return (True, tile)
-		
-		# return (False, tile)
-		
 	def isPositionLocked(self, boardX, boardY):
 		# fix both row and column
 		if (self.rowLock >= 0 and self.columnLock >= 0) and (boardX == self.columnLock or boardY == self.rowLock):
@@ -176,6 +161,9 @@ class Board:
 			else:
 				self.columnLock, self.rowLock = -1, row
 
+	def is_valid_position(self, boardX, boardY):
+		return 0 <= boardX < Board.GRID_SIZE and 0 <= boardY < Board.GRID_SIZE
+
 	'''
 	Attempts to remove the tile from the given square, returns the tile if it
 	was removed successfully, otherwise returns None if the pointer was out of range,
@@ -183,7 +171,7 @@ class Board:
 	'''	
 	def remove(self, x, y):
 		(boardX, boardY) = self.getBoardPosition(x, y)	
-		if boardX >= 0 and boardY >= 0 and boardX < Board.GRID_SIZE and boardY < Board.GRID_SIZE:
+		if self.is_valid_position(boardX, boardY):
 			tile = self.squares[boardX][boardY][0]
 			if tile != None and not tile.locked:
 				self.squares[boardX][boardY] = (None, self.squares[boardX][boardY][1])

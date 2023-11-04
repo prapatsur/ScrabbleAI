@@ -224,6 +224,9 @@ class ScrabbleGame:
 		self.redrawEverything()
 
 	def handle_no_tile_in_hand(self):
+		# if there is no tile in hand
+		# if click on the board, pick up tile from board
+		# and put back to the tray
 		tile = self.the_board.remove(
 			self.event_state.mouse_x, self.event_state.mouse_y)
 		if tile is None:
@@ -231,6 +234,7 @@ class ScrabbleGame:
 				self.event_state.mouse_x, self.event_state.mouse_y)
 			return tile if tile is not None else None
 		else:
+			# if click on the tray, pick up tile from tray?
 			TIC.play()
 			self.get_current_player().take(tile)
 			return None
@@ -238,6 +242,7 @@ class ScrabbleGame:
 	def handle_tile_in_hand(self):
 		(success, blank) = self.the_board.placeTentative(
 			self.event_state.mouse_x, self.event_state.mouse_y, self.inHand)
+		assert blank is self.inHand
 		if success == False:
 			return self.get_current_player().pickup(self.event_state.mouse_x, self.event_state.mouse_y)
 		TIC.play()
@@ -247,9 +252,11 @@ class ScrabbleGame:
 		return None
 
 	def tileGrab(self):
+		# if there is no tile in hand
 		if self.inHand is None:
 			return self.handle_no_tile_in_hand()
 		else:
+			# if there is tile in hand
 			return self.handle_tile_in_hand()
 
 	def runGame(self, USERDATA, useHintBox=False):
@@ -274,7 +281,14 @@ class ScrabbleGame:
 				self.redraw_tiles()
 
 			if self.should_handle_mouse_clicked():
+				# note: what can happend when mouse clicked
+				# 1. pick up tile from board
+				# 2. pick up tile from tray
+				# 3. place tile on board
+				# 4. place tile on tray
+
 				self.inHand = self.tileGrab()
+				# ?:why redraw everything here
 				self.redrawEverything()
 
 			if self.gameOver and TRAINING_FLAG:  # automatically start a new game for training purposes
