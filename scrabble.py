@@ -144,7 +144,7 @@ class ScrabbleGame:
 	def execute_current_player_turn(self):
 		return self.current_player.executeTurn(self.firstTurn, DISPLAYSURF)
 
-	def change_current_player(self):
+	def next_player(self):
 		self.active += 1
 		if self.active >= len(self.players):
 			self.active = 0
@@ -157,7 +157,7 @@ class ScrabbleGame:
 		"""
 		SCRIFFLE.play()
 		self.players[self.active].shuffle()
-		self.change_current_player()
+		self.next_player()
 		# If we're stuck AND the AI is stuck, end the game without subtracting points
 		if self.AIstuck:
 			self.gameOver = True
@@ -173,7 +173,7 @@ class ScrabbleGame:
 		self.current_player.pulseScore()
 		if self.the_bag.isEmpty():
 			self.AIstuck = True
-		self.change_current_player()
+		self.next_player()
 
 	def handle_end_game(self, useHintBox, USERDATA):
 		self.gameOver = True
@@ -183,7 +183,7 @@ class ScrabbleGame:
 		DINGDING.play()
 		self.current_player.pulseScore()
 		self.firstTurn = False
-		self.change_current_player()
+		self.next_player()
 		if self.is_computer_turn():
 			self.AIstuck = False
 
