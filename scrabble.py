@@ -53,7 +53,6 @@ tile.Tile.initialize()
 @dataclass
 class EventState:
 	mouse_clicked: bool = False
-	# mouse_moved: bool = False
 	action_key_hit: bool = False
 	shuffle_key_hit: bool = False
 	hint_key_hit: bool = False
@@ -332,19 +331,21 @@ class ScrabbleGame:
 	def gather_events(self):
 		# initialize new event state every time
 		self.event_state = EventState()
-
+		selected_menu = None
 		for event in pygame.event.get():
+			# if click on the close button
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				sys.exit()
-			elif event.type == pygame.MOUSEMOTION:
+			
+			if event.type == pygame.MOUSEMOTION:
 				self.event_state.mouse_x, self.event_state.mouse_y = event.pos
-				# self.event_state.mouse_moved = True
 				# update menu highlight
 				self.gameMenu.update(*event.pos)
 			elif event.type == pygame.MOUSEBUTTONUP:
 				self.event_state.mouse_x, self.event_state.mouse_y = event.pos
-				self.event_state.mouse_clicked = True
+				# self.event_state.mouse_clicked = True
+				selected_menu = self.gameMenu.execute(*event.pos)
 			elif event.type == pygame.KEYUP:
 				if event.key in [pygame.K_SPACE, pygame.K_RETURN]:
 					self.event_state.action_key_hit = True
@@ -352,6 +353,18 @@ class ScrabbleGame:
 					self.event_state.shuffle_key_hit = True
 				if event.key == pygame.K_h and self.game_menu.use_hint_box:
 					self.event_state.hint_key_hit = True
+
+			# set event_state based on selected menu
+			# require python 3.10+ to use match case
+			match selected_menu:
+				case menu.GameMenu.PLAY_TURN:
+					self.event_state.action_key_hit = True
+				case menu.GameMenu.RESHUFFLE:
+					self.event_state.shuffle_key_hit = True
+				case menu.GameMenu.HINT_TURN:
+					self.event_state.hint_key_hit = True
+				case menu.GameMenu.MAIN_MENU:
+					self.still_playing = False		
 
 	def handle_mouse_click(self):
 		if self.event_state.mouse_clicked:
