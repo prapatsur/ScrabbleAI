@@ -95,7 +95,6 @@ class ScrabbleGame:
 			ai.AI(self.the_board, self.the_bag,
 				  theHeuristic=h, theDifficulty=10.0),
 		]
-		# self.current_player = self.players[0]
 		self.active = 0
 		self.gameOver = False
 		self.event_state = EventState()
@@ -114,10 +113,6 @@ class ScrabbleGame:
 	def get_current_player(self):
 		return self.players[self.active]
 	
-	def prepare_turn(self):
-		# self.current_player = self.players[self.active]
-		self.handle_events()
-
 	def should_place_hinted_tiles(self):
 		return (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver
 
@@ -137,7 +132,6 @@ class ScrabbleGame:
 			# Take the tiles back
 			for tile in tilesPulled:
 				self.get_current_player().take(tile)
-				# self.current_player.take(tile)
 
 	def place_hinted_tiles(self):
 		"""	Play hint, put tiles on board and wait for user's action whether user want to play as hinted """
@@ -152,7 +146,6 @@ class ScrabbleGame:
 		self.active += 1
 		if self.active >= len(self.players):
 			self.active = 0
-		# self.current_player = self.players[self.active]
 
 	def redraw_tiles(self):
 		"""
@@ -257,8 +250,7 @@ class ScrabbleGame:
 
 		# main game loop
 		while self.still_playing:
-			# handle pygame events and update game menu
-			self.prepare_turn()
+			self.handle_events()
 
 			if self.should_place_hinted_tiles():
 				self.place_hinted_tiles()
