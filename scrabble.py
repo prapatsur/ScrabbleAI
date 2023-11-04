@@ -95,7 +95,7 @@ class ScrabbleGame:
 			ai.AI(self.the_board, self.the_bag,
 				  theHeuristic=h, theDifficulty=10.0),
 		]
-		self.current_player = self.players[0]
+		# self.current_player = self.players[0]
 		self.active = 0
 		self.gameOver = False
 		self.event_state = EventState()
@@ -111,8 +111,11 @@ class ScrabbleGame:
 		self.still_playing = True
 		self.AIstuck = False
 
+	def get_current_player(self):
+		return self.players[self.active]
+	
 	def prepare_turn(self):
-		self.current_player = self.players[self.active]
+		# self.current_player = self.players[self.active]
 		self.handle_events()
 
 	def should_place_hinted_tiles(self):
@@ -133,7 +136,8 @@ class ScrabbleGame:
 		if tilesPulled is not None:
 			# Take the tiles back
 			for tile in tilesPulled:
-				self.current_player.take(tile)
+				self.get_current_player().take(tile)
+				# self.current_player.take(tile)
 
 	def place_hinted_tiles(self):
 		"""	Play hint, put tiles on board and wait for user's action whether user want to play as hinted """
@@ -142,13 +146,13 @@ class ScrabbleGame:
 		TICTIC.play()
 
 	def execute_current_player_turn(self):
-		return self.current_player.executeTurn(self.firstTurn, DISPLAYSURF)
+		return self.get_current_player().executeTurn(self.firstTurn, DISPLAYSURF)
 
 	def next_player(self):
 		self.active += 1
 		if self.active >= len(self.players):
 			self.active = 0
-		self.current_player = self.players[self.active]
+		# self.current_player = self.players[self.active]
 
 	def redraw_tiles(self):
 		"""
@@ -167,10 +171,10 @@ class ScrabbleGame:
 
 	def handle_computer_cannot_play_move(self):
 		print("shuffle")
-		self.current_player.shuffle()
+		self.get_current_player().shuffle()
 		# Let the player know the AI shuffled
-		self.current_player.lastScore = 0
-		self.current_player.pulseScore()
+		self.get_current_player().lastScore = 0
+		self.get_current_player().pulseScore()
 		if self.the_bag.isEmpty():
 			self.AIstuck = True
 		self.next_player()
@@ -181,7 +185,7 @@ class ScrabbleGame:
 
 	def handle_successful_move(self):
 		DINGDING.play()
-		self.current_player.pulseScore()
+		self.get_current_player().pulseScore()
 		self.firstTurn = False
 		self.next_player()
 		if self.is_computer_turn():
@@ -195,7 +199,7 @@ class ScrabbleGame:
 			print("AI thinks it has a good move, but it doesn't")
 
 	def handle_played_move(self, useHintBox, USERDATA):
-		success = self.current_player.play(self.firstTurn)
+		success = self.get_current_player().play(self.firstTurn)
 		if success == "END":
 			self.handle_end_game(useHintBox, USERDATA)
 		elif success:
@@ -369,13 +373,13 @@ class ScrabbleGame:
 				self.still_playing = False
 
 	def is_computer_turn(self):
-		return isinstance(self.current_player, ai.AI)
+		return isinstance(self.get_current_player(), ai.AI)
 
 	def redrawEverything(self):
 		"""Composite function which redraws everything"""
 		DISPLAYSURF.fill(BACKGROUND_COLOR)
 		self.the_board.draw(DISPLAYSURF, ALPHASURF)
-		self.current_player.drawTray(DISPLAYSURF)
+		self.get_current_player().drawTray(DISPLAYSURF)
 		self.drawScore()
 		self.gameMenu.redraw()
 
