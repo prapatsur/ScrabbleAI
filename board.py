@@ -85,23 +85,41 @@ class Board:
 		Otherwise, it returns (True, tile) or ("ASK", tile) for a blank tile.
 		"""
 		boardX, boardY = self.getBoardPosition(x, y)
+		# The position is outside the bounds of the board.
+		if boardX < 0 or boardY < 0 or boardX >= Board.GRID_SIZE or boardY >= Board.GRID_SIZE:
+			return (False, tile)
 		
+		# The square is locked.
 		if self.isPositionLocked(boardX, boardY):
 			return (False, tile)
 		
-		if 0 <= boardX < Board.GRID_SIZE and 0 <= boardY < Board.GRID_SIZE:
-			previousTile = self.squares[boardX][boardY][0]
-			
-			if previousTile is None:
-				self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
-				
-				if tile.isBlank:
-					return ("ASK", tile)
-				
-				self.setLocks()
-				return (True, tile)
+		# The square is occupied.
+		if self.squares[boardX][boardY][0] is not None:
+			return (False, tile)
+
+		# Place the tile.
+		self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
 		
-		return (False, tile)
+		if tile.isBlank:
+			return ("ASK", tile)
+		
+		self.setLocks()
+		return (True, tile)
+		
+		# # The position is valid.
+		# if 0 <= boardX < Board.GRID_SIZE and 0 <= boardY < Board.GRID_SIZE:
+		# 	previousTile = self.squares[boardX][boardY][0]
+			
+		# 	if previousTile is None:
+		# 		self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
+				
+		# 		if tile.isBlank:
+		# 			return ("ASK", tile)
+				
+		# 		self.setLocks()
+		# 		return (True, tile)
+		
+		# return (False, tile)
 		
 	def isPositionLocked(self, boardX, boardY):
 		# fix both row and column
