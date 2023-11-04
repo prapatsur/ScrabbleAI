@@ -5,6 +5,7 @@ BUG
 
 Scrabble To-Do:
 
+	- Apply State pattern for 2-screen board game (can ask chatGPT for explanation)
 	- Make processing time delay as a function
 	- Have generic "Player" account with achievements
 	
@@ -131,10 +132,18 @@ class ScrabbleGame:
 
 	def should_handle_mouse_clicked(self):
 		return self.event_state.mouse_clicked and not self.is_computer_turn() and not self.gameOver
-					
+
+	def revert_played_tiles(self):
+		tilesPulled = self.the_board.removeTempTiles()
+		# if there are tiles back, put it back to the player
+		if tilesPulled is not None:
+			# Take the tiles back
+			for tile in tilesPulled:
+				self.current_player.take(tile)
+
 	def place_hinted_tiles(self):
 		"""	Play hint, put tiles on board and wait for user's action whether user want to play as hinted """
-		revert_played_tiles(self.the_board, self.current_player)
+		self.revert_played_tiles()
 		self.execute_current_player_turn()
 		TICTIC.play()
 
@@ -402,13 +411,13 @@ class MainScreen:
 			self.menu.redraw()
 			pygame.display.update()
 
-def revert_played_tiles(theBoard, player):
-	tilesPulled = theBoard.removeTempTiles()
-	# if there are tiles back, put it back to the player
-	if tilesPulled is not None:
-		# Take the tiles back
-		for tile in tilesPulled:
-			player.take(tile)	
+# def revert_played_tiles(theBoard, player):
+# 	tilesPulled = theBoard.removeTempTiles()
+# 	# if there are tiles back, put it back to the player
+# 	if tilesPulled is not None:
+# 		# Take the tiles back
+# 		for tile in tilesPulled:
+# 			player.take(tile)	
 
 '''
 This resolves the action of the player to try to pick up a tile. Two situations:
