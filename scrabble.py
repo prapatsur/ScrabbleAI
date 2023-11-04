@@ -53,7 +53,7 @@ tile.Tile.initialize()
 @dataclass
 class EventState:
 	mouse_clicked: bool = False
-	mouse_moved: bool = False
+	# mouse_moved: bool = False
 	action_key_hit: bool = False
 	shuffle_key_hit: bool = False
 	hint_key_hit: bool = False
@@ -326,7 +326,6 @@ class ScrabbleGame:
 
 	def handle_events(self):
 		self.gather_events()
-		# self.handle_mouse_move()
 		self.handle_mouse_click()
 		return self.event_state
 
@@ -353,11 +352,6 @@ class ScrabbleGame:
 					self.event_state.shuffle_key_hit = True
 				if event.key == pygame.K_h and self.game_menu.use_hint_box:
 					self.event_state.hint_key_hit = True
-
-	# def handle_mouse_move(self):
-	# 	if self.event_state.mouse_moved:
-	# 		self.gameMenu.update(self.event_state.mouse_x,
-	# 							 self.event_state.mouse_y)
 
 	def handle_mouse_click(self):
 		if self.event_state.mouse_clicked:
