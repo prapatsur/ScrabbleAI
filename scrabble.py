@@ -39,36 +39,15 @@ import heuristic
 from userdata import UserData
 
 import pygame
-import random
 import sys
 import time
 from pygame.locals import *
 
-# pygame.init()
-
-# # window setup
-# DISPLAYSURF = pygame.display.set_mode((800, 600))
-# ALPHASURF = DISPLAYSURF.convert_alpha()
-# pygame.display.set_caption('Wordsmith - Prapat edition')
 from gui import DISPLAYSURF, ALPHASURF, TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
 
 tile.Tile.initialize()
 
-# # Simple sound effects
-# TIC = pygame.mixer.Sound('media/tic.ogg')
-# TICTIC = pygame.mixer.Sound('media/tictic.ogg')
-# DINGDING = pygame.mixer.Sound('media/dingding.ogg')
-# SCRIFFLE = pygame.mixer.Sound('media/scriffle.ogg')
-# CLICK = pygame.mixer.Sound('media/click.ogg')
-
-# Achievements and data
-USERFILE = 'media/user.txt'
-
-# IMPORT THE MENU
-
 # Event_state
-
-
 @dataclass
 class EventState:
 	mouse_clicked: bool = False
