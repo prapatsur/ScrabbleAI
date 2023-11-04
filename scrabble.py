@@ -106,6 +106,7 @@ class ScrabbleGame:
 		self.gameMenu = menu.GameMenu(useHintBox)
 		self.event_state = EventState()
 		self.still_playing = True
+		self.user_data_file = UserData()
 
 	def setup_game(self, useHintBox):
 		self.firstTurn = True
@@ -352,7 +353,8 @@ class ScrabbleGame:
 				if "numVictories" in userdata:
 					userdata["numVictories"] += 1
 				
-			saveUser(userdata)
+			# saveUser(userdata)
+			self.user_data_file.save_user_data(userdata)
 		
 		if TRAINING_FLAG:
 			player.Player.aiStats.saveGame([p.score for p in players])
@@ -399,8 +401,6 @@ class MainScreen:
 			self.handle_menu_selections()
 			self.menu.redraw()
 			pygame.display.update()
-
-			
 
 def revert_played_tiles(theBoard, player):
 	tilesPulled = theBoard.removeTempTiles()
@@ -467,31 +467,6 @@ def drawScore(players, gameOver):
 		scoreRect.top = SCORE_TOP + SCORE_MARGIN * i
 		DISPLAYSURF.blit(scoreText, scoreRect)		
 	
-	
-def saveUser(USERDATA):
-	userFile = open(USERFILE, 'w')
-	if "name" in USERDATA:
-		userFile.write(str(USERDATA["name"])+"\n")
-	else:
-		userFile.write("Guest\n")
-	
-	if "bestScore" in USERDATA:
-		userFile.write(str(USERDATA["bestScore"])+"\n")
-	else:
-		userFile.write("0\n")	
-		
-	if "numVictories" in USERDATA:
-		userFile.write(str(USERDATA["numVictories"])+"\n")
-	else:
-		userFile.write("0\n")
-
-	if "numGames" in USERDATA:
-		userFile.write(str(USERDATA["numGames"])+"\n")
-	else:
-		userFile.write("0\n")	
-
-##===============================================
-
 def main():
 	main_screen = MainScreen().run()
 	
