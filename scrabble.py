@@ -130,7 +130,8 @@ class ScrabbleGame:
 	def should_handle_mouse_clicked(self):
 		return self.event_state.mouse_clicked and not self.is_computer_turn() and not self.gameOver
 
-	def revert_played_tiles(self):
+	def pull_tiles_back_to_tray(self):
+		""" if there are tiles on board, pull tiles back to tray """
 		tilesPulled = self.the_board.removeTempTiles()
 		# if there are tiles back, put it back to the player
 		if tilesPulled is not None:
@@ -140,7 +141,7 @@ class ScrabbleGame:
 
 	def place_hinted_tiles(self):
 		"""	Play hint, put tiles on board and wait for user's action whether user want to play as hinted """
-		self.revert_played_tiles()
+		# self.pull_tiles_back_to_tray()
 		self.execute_current_player_turn()
 		TICTIC.play()
 
@@ -260,6 +261,9 @@ class ScrabbleGame:
 			self.handle_events()
 
 			if self.should_place_hinted_tiles():
+				# take back what's on the board
+				self.pull_tiles_back_to_tray()
+				# place hinted tiles
 				self.place_hinted_tiles()
 
 			if self.should_play_action():
