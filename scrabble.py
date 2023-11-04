@@ -1,4 +1,4 @@
-#This is the main scrabble program
+# This is the main scrabble program
 '''
 BUG
 	- if redraw when there are tiles in the board, error occurs
@@ -26,37 +26,48 @@ Heuristic ideas:
 
 '''
 
-#local files
-import board, tile, bag, player, human, ai, heuristic
+# local files
+from dataclasses import dataclass
+import menu
+import board
+import tile
+import bag
+import player
+import human
+import ai
+import heuristic
 from userdata import UserData
 
-import pygame, random, sys, time
+import pygame
+import random
+import sys
+import time
 from pygame.locals import *
 
 pygame.init()
 
-#window setup
+# window setup
 DISPLAYSURF = pygame.display.set_mode((800, 600))
 ALPHASURF = DISPLAYSURF.convert_alpha()
 pygame.display.set_caption('Wordsmith - Prapat edition')
 
 tile.Tile.initialize()
 
-#Simple sound effects
+# Simple sound effects
 TIC = pygame.mixer.Sound('media/tic.ogg')
 TICTIC = pygame.mixer.Sound('media/tictic.ogg')
 DINGDING = pygame.mixer.Sound('media/dingding.ogg')
 SCRIFFLE = pygame.mixer.Sound('media/scriffle.ogg')
 CLICK = pygame.mixer.Sound('media/click.ogg')
 
-#Achievements and data
+# Achievements and data
 USERFILE = 'media/user.txt'
 
-#IMPORT THE MENU
-import menu
+# IMPORT THE MENU
 
 # Event_state
-from dataclasses import dataclass
+
+
 @dataclass
 class EventState:
 	mouse_clicked: bool = False
@@ -67,7 +78,8 @@ class EventState:
 	mouse_x: int = None
 	mouse_y: int = None
 
-#font setup
+
+# font setup
 SCORE_FONT = pygame.font.Font('freesansbold.ttf', 20)
 SCORE_LEFT = 570
 SCORE_TOP = 100
@@ -77,11 +89,12 @@ SCORE_PULSE = 5.0
 BACKGROUND_COLOR = (255, 255, 255)
 SCORE_COLOR = (55, 46, 40)
 
-#GAME MODES
-TRAINING_FLAG = False #With this set to true, entering training mode causes the AI to play against
-					  #itself automatically
+# GAME MODES
+# With this set to true, entering training mode causes the AI to play against
+TRAINING_FLAG = False
+# itself automatically
 
-#If training, make no sound					
+# If training, make no sound
 if TRAINING_FLAG:
 	TIC.set_volume(0.0)
 	TICTIC.set_volume(0.0)
@@ -90,16 +103,17 @@ if TRAINING_FLAG:
 	CLICK.set_volume(0.0)
 
 
-
-##=====================MAIN======================
+# =====================MAIN======================
 class ScrabbleGame:
-	def __init__(self, useHintBox = False):
+	def __init__(self, useHintBox=False):
 		self.the_bag = bag.Bag()
-		self.the_board = board.Board()		
-		h = heuristic.notEndGameHeuristic(heuristic.tileQuantileHeuristic(.5, 1.0))
+		self.the_board = board.Board()
+		h = heuristic.notEndGameHeuristic(
+			heuristic.tileQuantileHeuristic(.5, 1.0))
 		self.players = [
 			human.Human("Player", self.the_board, self.the_bag),
-			ai.AI(self.the_board, self.the_bag, theHeuristic=h, theDifficulty=10.0),
+			ai.AI(self.the_board, self.the_bag,
+				  theHeuristic=h, theDifficulty=10.0),
 		]
 		self.current_player = self.players[0]
 		self.active = 0
@@ -126,7 +140,7 @@ class ScrabbleGame:
 
 	def should_play_action(self):
 		return (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver
-	
+
 	def should_redraw(self):
 		return (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG)) and not self.is_computer_turn() and not self.gameOver
 
@@ -154,7 +168,7 @@ class ScrabbleGame:
 		self.active += 1
 		if self.active >= len(self.players):
 			self.active = 0
-		self.current_player = self.players[self.active]	
+		self.current_player = self.players[self.active]
 
 	def redraw_tiles(self):
 		"""
@@ -164,16 +178,17 @@ class ScrabbleGame:
 		SCRIFFLE.play()
 		self.players[self.active].shuffle()
 		self.change_current_player()
-		#If we're stuck AND the AI is stuck, end the game without subtracting points
+		# If we're stuck AND the AI is stuck, end the game without subtracting points
 		if self.AIstuck:
 			self.gameOver = True
-			self.endGame(self.players, self.active, useHintBox, USERDATA, stuck = True)
+			self.endGame(self.players, self.active,
+						 useHintBox, USERDATA, stuck=True)
 		self.redrawEverything()
-	
+
 	def handle_computer_cannot_play_move(self):
 		print("shuffle")
 		self.current_player.shuffle()
-		#Let the player know the AI shuffled
+		# Let the player know the AI shuffled
 		self.current_player.lastScore = 0
 		self.current_player.pulseScore()
 		if self.the_bag.isEmpty():
@@ -197,7 +212,7 @@ class ScrabbleGame:
 			self.AIstuck = True
 		TICTIC.play()
 		if self.is_computer_turn():
-			print ("AI thinks it has a good move, but it doesn't")
+			print("AI thinks it has a good move, but it doesn't")
 
 	def handle_played_move(self, useHintBox, USERDATA):
 		success = self.current_player.play(self.firstTurn)
@@ -207,34 +222,37 @@ class ScrabbleGame:
 			self.handle_successful_move()
 		else:
 			self.handle_unsuccessful_move()
-					
+
 	def play_action(self, useHintBox, USERDATA):
 		playedMove = True
-		#If it's the computer turn, we need to process its move first!
+		# If it's the computer turn, we need to process its move first!
 		if self.is_computer_turn():
 			playedMove = self.execute_current_player_turn()
 
-		if playedMove:	
+		if playedMove:
 			self.handle_played_move(useHintBox, USERDATA)
 		else:
 			# this one is not called when it's player turn
 			# I think it's for AI turn
 			self.handle_computer_cannot_play_move()
 
-		self.redrawEverything()	
+		self.redrawEverything()
 
 	def handle_no_tile_in_hand(self):
-		tile = self.the_board.remove(self.event_state.mouse_x, self.event_state.mouse_y)
+		tile = self.the_board.remove(
+			self.event_state.mouse_x, self.event_state.mouse_y)
 		if tile is None:
-			tile = self.players[self.active].pickup(self.event_state.mouse_x, self.event_state.mouse_y)
+			tile = self.players[self.active].pickup(
+				self.event_state.mouse_x, self.event_state.mouse_y)
 			return tile if tile is not None else None
 		else:
 			TIC.play()
 			self.players[self.active].take(tile)
-			return None		
+			return None
 
 	def handle_tile_in_hand(self):
-		(success, blank) = self.the_board.placeTentative(self.event_state.mouse_x, self.event_state.mouse_y, self.inHand)
+		(success, blank) = self.the_board.placeTentative(
+			self.event_state.mouse_x, self.event_state.mouse_y, self.inHand)
 		if success == False:
 			return self.players[self.active].pickup(self.event_state.mouse_x, self.event_state.mouse_y)
 		TIC.play()
@@ -242,20 +260,20 @@ class ScrabbleGame:
 			self.the_board.askForLetter(blank, DISPLAYSURF, ALPHASURF)
 		self.players[self.active].placeTentative()
 		return None
-	
+
 	def tileGrab(self):
 		if self.inHand is None:
 			return self.handle_no_tile_in_hand()
 		else:
 			return self.handle_tile_in_hand()
 
-	def runGame(self, USERDATA, useHintBox = False):
+	def runGame(self, USERDATA, useHintBox=False):
 		self.setup_game(useHintBox)
 		while self.still_playing:
 			self.prepare_turn()
 
 			if self.should_place_hinted_tiles():
-				self.place_hinted_tiles()						
+				self.place_hinted_tiles()
 
 			if self.should_play_action():
 				self.play_action(useHintBox, USERDATA)
@@ -266,9 +284,9 @@ class ScrabbleGame:
 
 			if self.should_handle_mouse_clicked():
 				self.inHand = self.tileGrab()
-				self.redrawEverything()	
+				self.redrawEverything()
 
-			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
+			if self.gameOver and TRAINING_FLAG:  # automatically start a new game for training purposes
 				self.still_playing = False
 
 			self.redrawNecessary()
@@ -276,7 +294,8 @@ class ScrabbleGame:
 
 	'''
 	Function which redraws only animated elements
-	'''	
+	'''
+
 	def redrawNecessary(self):
 		self.the_board.drawDirty(DISPLAYSURF, ALPHASURF)
 		self.drawScore()
@@ -290,29 +309,33 @@ class ScrabbleGame:
 		DISPLAYSURF.blit(rendered_text, text_rect)
 		return text_rect
 
+	def get_pulse_color(self, tween):
+		"""Calculate the pulse color based on the tween value."""
+		return tuple(
+			int(SCORE_COLOR[i] * (1 - tween) + BACKGROUND_COLOR[i] * tween)
+			for i in range(3)
+		)
+
 	def drawScore(self):
 		""" Draws the score for each player"""
-		i = 0
-		left = SCORE_LEFT
-		for player in self.players:
+		for i, player in enumerate(self.players):
 			top = SCORE_TOP + SCORE_MARGIN * i
-			sentence = player.name + ": " + str(player.score)
-			score_rect = self.draw_text(sentence, left, top, SCORE_COLOR)
-			
-			#Score Pulse
-			if time.time() - player.lastScorePulse < SCORE_PULSE:
-				tween = (time.time()-player.lastScorePulse) / SCORE_PULSE
-				color = (SCORE_COLOR[0]*(1-tween) + BACKGROUND_COLOR[0]*tween,
-						SCORE_COLOR[1]*(1-tween) + BACKGROUND_COLOR[1]*tween,
-						SCORE_COLOR[2]*(1-tween) + BACKGROUND_COLOR[2]*tween)
+			sentence = f"{player.name}: {player.score}"
+			score_rect = self.draw_text(sentence, SCORE_LEFT, top, SCORE_COLOR)
+
+			# Score Pulse
+			elapsed_time = time.time() - player.lastScorePulse
+			if elapsed_time < SCORE_PULSE:
+				tween = elapsed_time / SCORE_PULSE
+				color = self.get_pulse_color(tween)
 				pulse_text = f"(+{player.lastScore})"
 				self.draw_text(pulse_text, score_rect.right + 10, top, color)
-					
-			i += 1
-		
-		#Let players know the game is over!
+
+		# Let players know the game is over!
 		if self.gameOver:
-			self.draw_text("Game finished!", SCORE_LEFT, SCORE_TOP + SCORE_MARGIN * len(self.players), SCORE_COLOR)
+			game_over_msg = "Game finished!"
+			self.draw_text(game_over_msg, SCORE_LEFT, SCORE_TOP +
+						   SCORE_MARGIN * len(self.players), SCORE_COLOR)
 
 	def handle_events(self):
 		self.gather_events()
@@ -344,11 +367,13 @@ class ScrabbleGame:
 
 	def handle_mouse_move(self):
 		if self.event_state.mouse_moved:
-			self.gameMenu.update(self.event_state.mouse_x, self.event_state.mouse_y)
+			self.gameMenu.update(self.event_state.mouse_x,
+								 self.event_state.mouse_y)
 
 	def handle_mouse_click(self):
 		if self.event_state.mouse_clicked:
-			SELECTION = self.gameMenu.execute(self.event_state.mouse_x, self.event_state.mouse_y)	
+			SELECTION = self.gameMenu.execute(
+				self.event_state.mouse_x, self.event_state.mouse_y)
 
 			if SELECTION == menu.GameMenu.PLAY_TURN:
 				self.event_state.action_key_hit = True
@@ -357,16 +382,16 @@ class ScrabbleGame:
 			elif SELECTION == menu.GameMenu.HINT_TURN:
 				self.event_state.hint_key_hit = True
 			elif SELECTION == menu.GameMenu.MAIN_MENU:
-				self.still_playing = False	
+				self.still_playing = False
 
 	def is_computer_turn(self):
-		return isinstance(self.current_player, ai.AI)	
+		return isinstance(self.current_player, ai.AI)
 
 	def redrawEverything(self):
 		"""Composite function which redraws everything"""
 		DISPLAYSURF.fill(BACKGROUND_COLOR)
 		self.the_board.draw(DISPLAYSURF, ALPHASURF)
-		self.current_player.drawTray(DISPLAYSURF)			
+		self.current_player.drawTray(DISPLAYSURF)
 		self.drawScore()
 		self.gameMenu.redraw()
 
@@ -374,8 +399,9 @@ class ScrabbleGame:
 	Ends the game, taking the tray value from all unfinished players, subtracting the value
 	from their score and giving it to the active player (who just finished)
 	'''
-	def endGame(self, players, active, isPractice, userdata, stuck = False):		
-		#Do points swaps only if someone could finish
+
+	def endGame(self, players, active, isPractice, userdata, stuck=False):
+		# Do points swaps only if someone could finish
 		if not stuck:
 			i = 0
 			surplus = 0
@@ -384,8 +410,8 @@ class ScrabbleGame:
 					value = p.trayValue()
 					p.givePoints(-value)
 					surplus += value
-			players[active].givePoints(surplus)	
-		
+			players[active].givePoints(surplus)
+
 		if not isPractice:
 			maxScore = -1
 			maxPlayer = players[0]
@@ -396,17 +422,19 @@ class ScrabbleGame:
 				if p.score > maxScore:
 					maxPlayer = p
 					maxScore = p.score
-				
+
 			if isinstance(maxPlayer, human.Human):
 				if "numVictories" in userdata:
 					userdata["numVictories"] += 1
-				
+
 			# saveUser(userdata)
 			self.user_data_file.save_user_data(userdata)
-		
+
 		if TRAINING_FLAG:
 			player.Player.aiStats.saveGame([p.score for p in players])
 			player.Player.aiStats.save()
+
+
 class MainScreen:
 	def __init__(self):
 		# self.user_data = loadUser()
@@ -450,6 +478,7 @@ class MainScreen:
 			self.menu.redraw()
 			pygame.display.update()
 
+
 '''
 This resolves the action of the player to try to pick up a tile. Two situations:
 1) The player has a piece in hand:
@@ -461,9 +490,8 @@ This resolves the action of the player to try to pick up a tile. Two situations:
 	-If it's on the tray, highlight that piece and put it in hand.
 '''
 
-def main():
-	main_screen = MainScreen().run()
-	
-##===============================================
+# def main():
+# 	main_screen = MainScreen().run()
+
 if __name__ == '__main__':
-	main()
+	MainScreen().run()
