@@ -261,7 +261,7 @@ class ScrabbleGame:
 			self.handle_events()
 
 			if self.ask_for_hint():
-				# take back what's on the board
+				# take back what's already on the board
 				self.pull_tiles_back_to_tray()
 				# place hinted tiles
 				self.place_hinted_tiles()
