@@ -271,15 +271,15 @@ class ScrabbleGame:
 			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
 				self.still_playing = False
 
-			self.redrawNecessary(self.the_board, self.players, self.gameOver)
+			self.redrawNecessary()
 			pygame.display.update()
 
 	'''
 	Function which redraws only animated elements
 	'''	
-	def redrawNecessary(self, board, players, gameOver):
-		board.drawDirty(DISPLAYSURF, ALPHASURF)
-		drawScore(players, gameOver)
+	def redrawNecessary(self):
+		self.the_board.drawDirty(DISPLAYSURF, ALPHASURF)
+		drawScore(self.players, self.gameOver)
 
 	def handle_events(self):
 		self.gather_events()
