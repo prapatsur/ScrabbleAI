@@ -6,7 +6,9 @@ execute will process button clicks.
 
 import pygame, ai
 from pygame.locals import *
-from scrabble import DISPLAYSURF, CLICK
+# from scrabble import DISPLAYSURF, CLICK
+from gui import DISPLAYSURF, ALPHASURF, CLICK
+
 
 class Menu():
 	

@@ -44,21 +44,22 @@ import sys
 import time
 from pygame.locals import *
 
-pygame.init()
+# pygame.init()
 
-# window setup
-DISPLAYSURF = pygame.display.set_mode((800, 600))
-ALPHASURF = DISPLAYSURF.convert_alpha()
-pygame.display.set_caption('Wordsmith - Prapat edition')
+# # window setup
+# DISPLAYSURF = pygame.display.set_mode((800, 600))
+# ALPHASURF = DISPLAYSURF.convert_alpha()
+# pygame.display.set_caption('Wordsmith - Prapat edition')
+from gui import DISPLAYSURF, ALPHASURF, TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
 
 tile.Tile.initialize()
 
-# Simple sound effects
-TIC = pygame.mixer.Sound('media/tic.ogg')
-TICTIC = pygame.mixer.Sound('media/tictic.ogg')
-DINGDING = pygame.mixer.Sound('media/dingding.ogg')
-SCRIFFLE = pygame.mixer.Sound('media/scriffle.ogg')
-CLICK = pygame.mixer.Sound('media/click.ogg')
+# # Simple sound effects
+# TIC = pygame.mixer.Sound('media/tic.ogg')
+# TICTIC = pygame.mixer.Sound('media/tictic.ogg')
+# DINGDING = pygame.mixer.Sound('media/dingding.ogg')
+# SCRIFFLE = pygame.mixer.Sound('media/scriffle.ogg')
+# CLICK = pygame.mixer.Sound('media/click.ogg')
 
 # Achievements and data
 USERFILE = 'media/user.txt'
@@ -122,8 +123,6 @@ class ScrabbleGame:
 		self.user_data_file = UserData()
 
 		self.setup_game(useHintBox)
-		# self.still_playing = True
-		# self.gameMenu = menu.GameMenu(useHintBox)
 
 	def setup_game(self, useHintBox):
 		self.firstTurn = True
@@ -270,8 +269,12 @@ class ScrabbleGame:
 			return self.handle_tile_in_hand()
 
 	def runGame(self, USERDATA, useHintBox=False):
+		# Start a new game
 		self.setup_game(useHintBox)
+
+		# main game loop
 		while self.still_playing:
+			# handle pygame events and update game menu
 			self.prepare_turn()
 
 			if self.should_place_hinted_tiles():
