@@ -55,7 +55,7 @@ class EventState:
 	mouse_clicked: bool = False
 	action_key_hit: bool = False
 	shuffle_key_hit: bool = False
-	hint_key_hit: bool = False
+	ask_hint: bool = False
 	mouse_x: int = None
 	mouse_y: int = None
 
@@ -118,7 +118,8 @@ class ScrabbleGame:
 		return self.current_player
 	
 	def should_place_hinted_tiles(self):
-		return (self.event_state.hint_key_hit or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver
+		""" return true if user hit hint box or training flag is on and it's not computer turn """
+		return (self.event_state.ask_hint or TRAINING_FLAG) and not self.is_computer_turn() and not self.gameOver
 
 	def should_play_action(self):
 		return (self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()) and not self.gameOver
@@ -325,7 +326,6 @@ class ScrabbleGame:
 
 	def handle_events(self):
 		self.gather_events()
-		self.handle_mouse_click()
 		return self.event_state
 
 	def gather_events(self):
@@ -344,7 +344,7 @@ class ScrabbleGame:
 				self.gameMenu.update(*event.pos)
 			elif event.type == pygame.MOUSEBUTTONUP:
 				self.event_state.mouse_x, self.event_state.mouse_y = event.pos
-				# self.event_state.mouse_clicked = True
+				self.event_state.mouse_clicked = True
 				selected_menu = self.gameMenu.execute(*event.pos)
 			elif event.type == pygame.KEYUP:
 				if event.key in [pygame.K_SPACE, pygame.K_RETURN]:
@@ -352,7 +352,7 @@ class ScrabbleGame:
 				if event.key == pygame.K_r:
 					self.event_state.shuffle_key_hit = True
 				if event.key == pygame.K_h and self.game_menu.use_hint_box:
-					self.event_state.hint_key_hit = True
+					self.event_state.ask_hint = True
 
 			# set event_state based on selected menu
 			# require python 3.10+ to use match case
@@ -362,24 +362,10 @@ class ScrabbleGame:
 				case menu.GameMenu.RESHUFFLE:
 					self.event_state.shuffle_key_hit = True
 				case menu.GameMenu.HINT_TURN:
-					self.event_state.hint_key_hit = True
+					self.event_state.ask_hint = True
 				case menu.GameMenu.MAIN_MENU:
-					self.still_playing = False		
-
-	def handle_mouse_click(self):
-		if self.event_state.mouse_clicked:
-			SELECTION = self.gameMenu.execute(
-				self.event_state.mouse_x, self.event_state.mouse_y)
-
-			if SELECTION == menu.GameMenu.PLAY_TURN:
-				self.event_state.action_key_hit = True
-			elif SELECTION == menu.GameMenu.RESHUFFLE:
-				self.event_state.shuffle_key_hit = True
-			elif SELECTION == menu.GameMenu.HINT_TURN:
-				self.event_state.hint_key_hit = True
-			elif SELECTION == menu.GameMenu.MAIN_MENU:
-				self.still_playing = False
-
+					self.still_playing = False	
+			
 	def is_computer_turn(self):
 		return isinstance(self.get_current_player(), ai.AI)
 
