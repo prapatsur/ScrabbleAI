@@ -153,7 +153,7 @@ class ScrabbleGame:
 		If the AI is stuck and the player is also stuck, the game ends without subtracting points.
 		"""
 		SCRIFFLE.play()
-		self.players[self.active].shuffle()
+		self.get_current_player().shuffle()
 		self.next_player()
 		# If we're stuck AND the AI is stuck, end the game without subtracting points
 		if self.AIstuck:
@@ -219,23 +219,23 @@ class ScrabbleGame:
 		tile = self.the_board.remove(
 			self.event_state.mouse_x, self.event_state.mouse_y)
 		if tile is None:
-			tile = self.players[self.active].pickup(
+			tile = self.get_current_player().pickup(
 				self.event_state.mouse_x, self.event_state.mouse_y)
 			return tile if tile is not None else None
 		else:
 			TIC.play()
-			self.players[self.active].take(tile)
+			self.get_current_player().take(tile)
 			return None
 
 	def handle_tile_in_hand(self):
 		(success, blank) = self.the_board.placeTentative(
 			self.event_state.mouse_x, self.event_state.mouse_y, self.inHand)
 		if success == False:
-			return self.players[self.active].pickup(self.event_state.mouse_x, self.event_state.mouse_y)
+			return self.get_current_player().pickup(self.event_state.mouse_x, self.event_state.mouse_y)
 		TIC.play()
 		if success == "ASK":
 			self.the_board.askForLetter(blank, DISPLAYSURF, ALPHASURF)
-		self.players[self.active].placeTentative()
+		self.get_current_player().placeTentative()
 		return None
 
 	def tileGrab(self):
