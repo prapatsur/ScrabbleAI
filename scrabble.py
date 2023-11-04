@@ -271,9 +271,15 @@ class ScrabbleGame:
 			if self.gameOver and TRAINING_FLAG: #automatically start a new game for training purposes
 				self.still_playing = False
 
-			redrawNecessary(self.the_board, self.players, self.gameOver)
+			self.redrawNecessary(self.the_board, self.players, self.gameOver)
 			pygame.display.update()
 
+	'''
+	Function which redraws only animated elements
+	'''	
+	def redrawNecessary(self, board, players, gameOver):
+		board.drawDirty(DISPLAYSURF, ALPHASURF)
+		drawScore(players, gameOver)
 
 	def handle_events(self):
 		self.gather_events()
@@ -411,14 +417,6 @@ class MainScreen:
 			self.menu.redraw()
 			pygame.display.update()
 
-# def revert_played_tiles(theBoard, player):
-# 	tilesPulled = theBoard.removeTempTiles()
-# 	# if there are tiles back, put it back to the player
-# 	if tilesPulled is not None:
-# 		# Take the tiles back
-# 		for tile in tilesPulled:
-# 			player.take(tile)	
-
 '''
 This resolves the action of the player to try to pick up a tile. Two situations:
 1) The player has a piece in hand:
@@ -433,9 +431,9 @@ This resolves the action of the player to try to pick up a tile. Two situations:
 '''
 Function which redraws only animated elements
 '''	
-def redrawNecessary(board, players, gameOver):
-	board.drawDirty(DISPLAYSURF, ALPHASURF)
-	drawScore(players, gameOver)
+# def redrawNecessary(board, players, gameOver):
+# 	board.drawDirty(DISPLAYSURF, ALPHASURF)
+# 	drawScore(players, gameOver)
 		
 '''
 Draws the scores
