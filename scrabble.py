@@ -118,10 +118,12 @@ class ScrabbleGame:
 		self.current_player = self.players[0]
 		self.active = 0
 		self.gameOver = False
-		self.gameMenu = menu.GameMenu(useHintBox)
 		self.event_state = EventState()
-		self.still_playing = True
 		self.user_data_file = UserData()
+
+		self.setup_game(useHintBox)
+		# self.still_playing = True
+		# self.gameMenu = menu.GameMenu(useHintBox)
 
 	def setup_game(self, useHintBox):
 		self.firstTurn = True
@@ -437,7 +439,6 @@ class ScrabbleGame:
 
 class MainScreen:
 	def __init__(self):
-		# self.user_data = loadUser()
 		self.user_data_file = UserData()
 		self.user_data = self.user_data_file.get_user_data()
 		self.menu = menu.MainMenu(self.user_data)
@@ -466,7 +467,6 @@ class MainScreen:
 	def new_game(self):
 		self.user_data["numGames"] += 1
 		self.user_data_file.save_user_data(self.user_data)
-		# saveUser(self.user_data)
 		self.menu.resetAchievements(self.user_data)
 		ScrabbleGame().runGame(self.user_data)
 		self.menu.resetAchievements(self.user_data)
@@ -489,9 +489,6 @@ This resolves the action of the player to try to pick up a tile. Two situations:
 	-If it's on the board and the piece is not locked, return it to the tray (at the end)
 	-If it's on the tray, highlight that piece and put it in hand.
 '''
-
-# def main():
-# 	main_screen = MainScreen().run()
 
 if __name__ == '__main__':
 	MainScreen().run()
