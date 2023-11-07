@@ -52,6 +52,23 @@ tile.Tile.initialize()
 
 MousePosition = namedtuple('mouse_position', ['x', 'y'])
 
+# Initialize logger
+# In another module or part of your code
+import logging
+
+# Configure the logger
+logging.basicConfig(level=logging.DEBUG, 
+					format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+# # Configure the logger
+# logging.basicConfig(filename='example.log', 
+#                     level=logging.DEBUG, 
+#                     filemode='w',  # 'w' for write mode, 'a' for append mode
+#                     format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Get the logger with the same name ('scrabble_app') that you created earlier
+logger = logging.getLogger('scrabble_app')
+logger.setLevel(logging.DEBUG)
+
 # Event_state
 @dataclass
 class EventState:
@@ -486,6 +503,7 @@ class MainScreen:
 		self.menu.resetAchievements(self.user_data)
 
 	def run(self):
+		logger.info("Starting Scrabble")
 		while True:
 			self.handle_pygame_events()
 			self.handle_menu_selections()
