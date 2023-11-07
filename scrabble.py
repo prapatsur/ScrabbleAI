@@ -46,8 +46,11 @@ from itertools import cycle
 from pygame.locals import *
 
 from gui import DISPLAYSURF, ALPHASURF, TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
+from collections import namedtuple
 
 tile.Tile.initialize()
+
+MousePosition = namedtuple('mouse_position', ['x', 'y'])
 
 # Event_state
 @dataclass
@@ -58,6 +61,7 @@ class EventState:
 	ask_hint: bool = False
 	mouse_x: int = None
 	mouse_y: int = None
+	mouse_position : MousePosition = None
 
 
 # font setup

@@ -1,1 +1,3 @@
 *.pyc
+media/wordfreq.txt
+app.log
