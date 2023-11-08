@@ -19,17 +19,6 @@ class Menu():
 	'''
 	Goes through all buttons and returns the name of the button, if it was clicked
 	'''
-	# def execute(self, mouseX, mouseY):
-	# 	if self.within(mouseX, mouseY):
-	# 		theKey = ""
-	# 		for key in list(self.buttons.keys()):
-	# 			if self.buttons[key].within(mouseX, mouseY):
-	# 				theKey = key
-		
-	# 		if theKey != "":
-	# 			CLICK.play()
-					
-	# 		return theKey
 	def execute(self, mouseX, mouseY):
 		"""
 		Executes the menu by checking if the mouse is within the menu area and if any of the buttons are clicked.
@@ -71,7 +60,6 @@ class Menu():
 #==================== MAIN MENU =====================
 		
 class MainMenu(Menu):
-	
 	NEW_GAME = "new"
 	EXIT_GAME = "exit"
 	TRAINING = "training"
@@ -91,8 +79,7 @@ class MainMenu(Menu):
 		self.buttons[MainMenu.TRAINING] = Button("Training", (250, 135, 300, 50), trainerText)
 		self.buttons[MainMenu.NEW_GAME] = Button("Challenge", (250, 190, 300, 50), newGameText)
 		self.buttons[MainMenu.ACHIEVEMENT] = Button("Achievements", (250, 245, 300, 50), achieveText)
-		self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50), NullTextBox())
-		# self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50))
+		self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50))
 		DISPLAYSURF.fill((255,255,255))
 		
 	def resetAchievements(self, userdata):
@@ -148,9 +135,9 @@ class GameMenu(Menu):
 								"pieces down. Just hit",
 								"PLAY to confirm it."], (570, 480), (55, 46, 40), (255, 255, 255))
 			self.buttons[GameMenu.HINT_TURN] = Button("HINT", (570, 380, 150, 30), textBox = hintText, color = (255, 255, 100), backColor = (255, 170, 50))
-			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 420, 150, 30), textBox=NullTextBox())
+			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 420, 150, 30))
 		else:
-			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 380, 150, 30), textBox=NullTextBox())
+			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 380, 150, 30))
 		DISPLAYSURF.fill((255,255,255))		
 		
 #==================== TEXT BOX ======================
@@ -229,7 +216,6 @@ class Button():
 		Button.initialized = True
 	
 	def __init__(self, name, rect, textBox = None, color = None, backColor = None):
-		assert textBox is not None
 		#Make sure the fonts are set up
 		if not Button.initialized:
 			Button.initialize()
@@ -242,7 +228,10 @@ class Button():
 		self.name = name
 		self.rect = rect
 		self.lastDrawn = Button.OFF
-		self.textBox = textBox
+		if textBox is None:
+			self.textBox = NullTextBox()
+		else:
+			self.textBox = textBox
 		self.color = color
 		self.backColor = backColor
 
