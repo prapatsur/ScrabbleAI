@@ -91,7 +91,8 @@ class MainMenu(Menu):
 		self.buttons[MainMenu.TRAINING] = Button("Training", (250, 135, 300, 50), trainerText)
 		self.buttons[MainMenu.NEW_GAME] = Button("Challenge", (250, 190, 300, 50), newGameText)
 		self.buttons[MainMenu.ACHIEVEMENT] = Button("Achievements", (250, 245, 300, 50), achieveText)
-		self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50))
+		self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50), NullTextBox())
+		# self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50))
 		DISPLAYSURF.fill((255,255,255))
 		
 	def resetAchievements(self, userdata):
@@ -147,9 +148,9 @@ class GameMenu(Menu):
 								"pieces down. Just hit",
 								"PLAY to confirm it."], (570, 480), (55, 46, 40), (255, 255, 255))
 			self.buttons[GameMenu.HINT_TURN] = Button("HINT", (570, 380, 150, 30), textBox = hintText, color = (255, 255, 100), backColor = (255, 170, 50))
-			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 420, 150, 30))
+			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 420, 150, 30), textBox=NullTextBox())
 		else:
-			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 380, 150, 30))
+			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 380, 150, 30), textBox=NullTextBox())
 		DISPLAYSURF.fill((255,255,255))		
 		
 #==================== TEXT BOX ======================
@@ -199,6 +200,16 @@ class TextBox():
 			rect = (self.pos[0], self.pos[1], self.width, height)
 		pygame.draw.rect(DISPLAYSURF, self.backColor, rect)	
 		
+class NullTextBox(TextBox):
+	""" NullTextBox is a TextBox that does nothing when drawn or undrawn. """
+	def __init__(self):	
+		super().__init__([], (0, 0), (0, 0, 0), (0, 0, 0), False)
+
+	def draw(self):
+		pass
+
+	def undraw(self):
+		pass
 #==================== BUTTON ========================
 
 class Button():
@@ -218,6 +229,7 @@ class Button():
 		Button.initialized = True
 	
 	def __init__(self, name, rect, textBox = None, color = None, backColor = None):
+		assert textBox is not None
 		#Make sure the fonts are set up
 		if not Button.initialized:
 			Button.initialize()
