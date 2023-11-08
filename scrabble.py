@@ -105,7 +105,6 @@ if TRAINING_FLAG:
 	SCRIFFLE.set_volume(0.0)
 	CLICK.set_volume(0.0)
 
-
 # =====================MAIN======================
 class ScrabbleGame:
 	def __init__(self, useHintBox=False):

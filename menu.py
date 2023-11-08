@@ -257,12 +257,11 @@ class Button():
 	def highlight(self):
 		self.draw(self.color)
 		self.lastDrawn = Button.ON
-		if self.textBox != None:
-			self.textBox.draw()
+		self.textBox.draw()
 
 	def no_highlight(self):
 		self.draw(self.backColor)
-		if self.lastDrawn == Button.ON and self.textBox != None:
+		if self.lastDrawn == Button.ON:
 			self.textBox.undraw()
 		self.lastDrawn = Button.OFF		
 
