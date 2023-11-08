@@ -1,3 +1,4 @@
 *.pyc
 media/wordfreq.txt
 app.log
+media/user.txt

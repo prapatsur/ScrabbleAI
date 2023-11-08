@@ -57,7 +57,7 @@ class Menu():
 	def update(self, mouse_position=None):
 		assert mouse_position is not None
 		for button in list(self.buttons.values()):
-			button.update(*mouse_position)
+			button.update(mouse_position)
 			
 	def within(self, mouseX, mouseY):
 		(left, top, width, height) = self.rect
@@ -233,9 +233,10 @@ class Button():
 		self.textBox = textBox
 		self.color = color
 		self.backColor = backColor
-	
-	def update(self, mouseX, mouseY):
+
+	def update(self, mouse_position):
 		""" update button highlighting based on mouse position and draw text box if necessary"""
+		mouseX, mouseY = mouse_position
 		if self.within(mouseX, mouseY):
 			self.draw(self.color)
 			self.lastDrawn = Button.ON
