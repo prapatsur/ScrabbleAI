@@ -93,7 +93,8 @@ SCORE_COLOR = (55, 46, 40)
 
 # GAME MODES
 # With this set to true, entering training mode causes the AI to play against
-TRAINING_FLAG = False
+# TRAINING_FLAG = False
+TRAINING_FLAG = True
 # itself automatically
 
 # If training, make no sound
