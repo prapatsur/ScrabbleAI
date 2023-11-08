@@ -238,16 +238,22 @@ class Button():
 		""" update button highlighting based on mouse position and draw text box if necessary"""
 		mouseX, mouseY = mouse_position
 		if self.within(mouseX, mouseY):
-			self.draw(self.color)
-			self.lastDrawn = Button.ON
-			if self.textBox != None:
-				self.textBox.draw()
+			self.highlight()
 		else:
-			self.draw(self.backColor)
-			if self.lastDrawn == Button.ON and self.textBox != None:
-				self.textBox.undraw()
-			self.lastDrawn = Button.OFF
-			
+			self.no_highlight()
+
+	def highlight(self):
+		self.draw(self.color)
+		self.lastDrawn = Button.ON
+		if self.textBox != None:
+			self.textBox.draw()
+
+	def no_highlight(self):
+		self.draw(self.backColor)
+		if self.lastDrawn == Button.ON and self.textBox != None:
+			self.textBox.undraw()
+		self.lastDrawn = Button.OFF		
+
 	def within(self, mouseX, mouseY):
 		(left, top, width, height) = self.rect
 		return mouseX >= left and mouseX <= left+width and mouseY >= top and mouseY <= top+height
