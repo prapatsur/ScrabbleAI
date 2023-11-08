@@ -93,8 +93,8 @@ SCORE_COLOR = (55, 46, 40)
 
 # GAME MODES
 # With this set to true, entering training mode causes the AI to play against
-# TRAINING_FLAG = False
-TRAINING_FLAG = True
+TRAINING_FLAG = False
+# TRAINING_FLAG = True
 # itself automatically
 
 # If training, make no sound
@@ -381,7 +381,7 @@ class ScrabbleGame:
 			if event.type == pygame.MOUSEMOTION:
 				self.event_state.mouse_x, self.event_state.mouse_y = event.pos
 				# update menu highlight
-				self.gameMenu.update(*event.pos)
+				self.gameMenu.update(event.pos)
 			elif event.type == pygame.MOUSEBUTTONUP:
 				self.event_state.mouse_x, self.event_state.mouse_y = event.pos
 				self.event_state.mouse_clicked = True
@@ -492,7 +492,7 @@ class MainScreen:
 				pygame.quit()
 				sys.exit()
 			elif event.type == MOUSEMOTION:
-				self.menu.update(*event.pos)
+				self.menu.update(event.pos)
 			elif event.type == MOUSEBUTTONUP:
 				self.selection = self.menu.execute(*event.pos)
 

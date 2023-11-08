@@ -54,9 +54,10 @@ class Menu():
 	'''
 	Goes through and updates all buttons, redrawing them if they are hovered
 	'''	
-	def update(self, mouseX, mouseY):
+	def update(self, mouse_position=None):
+		assert mouse_position is not None
 		for button in list(self.buttons.values()):
-			button.update(mouseX, mouseY)
+			button.update(*mouse_position)
 			
 	def within(self, mouseX, mouseY):
 		(left, top, width, height) = self.rect
