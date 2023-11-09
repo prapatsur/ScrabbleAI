@@ -1,4 +1,5 @@
 import pygame, time
+from gui import DARK_BROWN, WHITE
 
 ''' NOTE -- These are the available fonts on my Mac
 ['inaimathi', 'plantagenetcherokee', 'decotypenaskh', 'tahoma', 'thonburi', 'applegothic', 
@@ -12,7 +13,7 @@ import pygame, time
 
 class Tile:
 	
-	TILE_OUTLINE = (55, 46, 40)
+	TILE_OUTLINE = DARK_BROWN
 	TILE_BLANK = (110, 92, 80)
 	# TILE_HIGHLIGHT = (100, 100, 255)
 	TILE_HIGHLIGHT = (255, 255, 255) #White color

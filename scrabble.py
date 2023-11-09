@@ -46,6 +46,7 @@ from itertools import cycle
 from pygame.locals import *
 
 from gui import DISPLAYSURF, ALPHASURF, TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
+from gui import DARK_BROWN, WHITE
 from collections import namedtuple
 
 tile.Tile.initialize()
@@ -89,7 +90,7 @@ SCORE_MARGIN = 25
 SCORE_PULSE = 5.0
 
 BACKGROUND_COLOR = (255, 255, 255)
-SCORE_COLOR = (55, 46, 40)
+SCORE_COLOR = DARK_BROWN
 
 # GAME MODES
 # With this set to true, entering training mode causes the AI to play against

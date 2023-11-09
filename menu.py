@@ -7,7 +7,10 @@ execute will process button clicks.
 import pygame, ai
 from pygame.locals import *
 from gui import DISPLAYSURF, ALPHASURF, CLICK
+from gui import DARK_BROWN, WHITE
 from models.textbox_model import TextBoxModel
+
+
 
 class Menu():
 	
@@ -70,12 +73,12 @@ class MainMenu(Menu):
 		trainerText = TextBox(["Practice your Scrabble skills with a built-in HINT",
 								"box, which lets you know how the AI would have played",
 								"your move. But you can't get ACHIEVEMENTS while training."], (400, 400), 
-							(55, 46, 40), (255, 255, 255), horzCenter = True)
+							DARK_BROWN, (255, 255, 255), horzCenter = True)
 		newGameText = TextBox(["Play one-on-one against Wordsmith, the Scrabble AI.",
 							    "No hints allowed, try to beat your best score!"], (400, 400), 
-							(55, 46, 40), (255, 255, 255), horzCenter = True)
+							DARK_BROWN, (255, 255, 255), horzCenter = True)
 		achieveText = TextBox(self.createAchievementText(userdata), (400, 400), 
-							(55, 46, 40), (255, 255, 255), horzCenter = True)
+							DARK_BROWN, (255, 255, 255), horzCenter = True)
 		self.buttons[MainMenu.TRAINING] = Button("Training", (250, 135, 300, 50), trainerText)
 		self.buttons[MainMenu.NEW_GAME] = Button("Challenge", (250, 190, 300, 50), newGameText)
 		self.buttons[MainMenu.ACHIEVEMENT] = Button("Achievements", (250, 245, 300, 50), achieveText)
@@ -124,16 +127,16 @@ class GameMenu(Menu):
 		self.rect = (570, 300, 150, 300)
 		playText = TextBox(["Confirm your move,",
 							"returns your tiles if",
-							"your move is illegal."], (570, 480), (55, 46, 40), (255, 255, 255))
+							"your move is illegal."], (570, 480), DARK_BROWN, (255, 255, 255))
 		self.buttons[GameMenu.PLAY_TURN] = Button("PLAY", (570, 300, 150, 30), textBox = playText)
 		shuffleText = TextBox(["Forfeit your turn",
 							"and draw new tiles for",
-							"the next turn."], (570, 480), (55, 46, 40), (255, 255, 255))
+							"the next turn."], (570, 480), DARK_BROWN, (255, 255, 255))
 		self.buttons[GameMenu.RESHUFFLE] = Button("REDRAW", (570, 340, 150, 30), textBox = shuffleText)
 		if useHintBox:
 			hintText = TextBox(["The AI will put your",
 								"pieces down. Just hit",
-								"PLAY to confirm it."], (570, 480), (55, 46, 40), (255, 255, 255))
+								"PLAY to confirm it."], (570, 480), DARK_BROWN, (255, 255, 255))
 			self.buttons[GameMenu.HINT_TURN] = Button("HINT", (570, 380, 150, 30), textBox = hintText, color = (255, 255, 100), backColor = (255, 170, 50))
 			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 420, 150, 30))
 		else:
@@ -161,6 +164,7 @@ class TextBox():
 		self.horzCentered = horzCenter
 		if not TextBox.initialized:
 			TextBox.initialize()
+		self.model = TextBoxModel(textLines, pos, color, backColor, horzCenter)
 		
 	def draw(self):	
 		i = 0
@@ -203,7 +207,7 @@ class Button():
 	
 	BACKGROUND = (125, 125, 170)
 	HIGHLIGHT = (200, 200, 255)
-	FONT_COLOR = (55, 46, 40)
+	FONT_COLOR = DARK_BROWN
 	
 	ON = "on"
 	OFF = "off"
