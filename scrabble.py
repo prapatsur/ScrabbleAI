@@ -300,7 +300,8 @@ class ScrabbleGame:
             # if there is tile in hand
             return self.handle_tile_in_hand()
 
-    def runGame(self, USERDATA, useHintBox=False):
+    def runGame(self, USERDATA=None, useHintBox=False):
+        USERDATA = self.user_data_file.get_user_data()
         # Start a new game
         self.setup_game(useHintBox)
 
@@ -504,9 +505,7 @@ class MainScreen:
     def new_game(self):
         self.user_data_file.increase_gameplay()
         self.user_data = self.user_data_file.get_user_data()
-        # self.menu.resetAchievements(self.user_data)
-        ScrabbleGame().runGame(self.user_data)
-        # self.menu.resetAchievements(self.user_data)
+        ScrabbleGame().runGame()
         self.menu.refresh_achievements()
 
     def highlight_hovered_menu(self, mouse_pos):
@@ -516,7 +515,7 @@ class MainScreen:
         if selected_menu == MainMenu.NEW_GAME:
             self.new_game()
         elif selected_menu == MainMenu.TRAINING:
-            ScrabbleGame().runGame(self.user_data, useHintBox=True)
+            ScrabbleGame().runGame(useHintBox=True)
 
     def run(self):
         logger.info("Starting Scrabble")
@@ -536,7 +535,7 @@ class MainScreen:
                     sys.exit()
 
                 if TRAINING_FLAG:
-                    ScrabbleGame().runGame(self.user_data, useHintBox=True)
+                    ScrabbleGame().runGame(useHintBox=True)
                 pygame.display.flip()
             pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
 
