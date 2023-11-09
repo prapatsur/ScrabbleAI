@@ -25,26 +25,33 @@ class Menu:
 	Goes through all buttons and returns the name of the button, if it was clicked
 	"""
 
-    def execute(self, mouseX, mouseY):
-        """
-        Executes the menu by checking if the mouse is within the menu area and if any of the buttons are clicked.
-
-        Args:
-                mouseX (int): The x-coordinate of the mouse.
-                mouseY (int): The y-coordinate of the mouse.
-
-        Returns:
-                str: The key of the button that was clicked, or an empty string if no button was clicked.
-        """
-        if not self.within(mouseX, mouseY):
-            return ""
-
+    def get_selected_menu(self, mouse_position):
         for key, button in self.buttons.items():
-            if button.within(mouseX, mouseY):
+            if button.within(*mouse_position):
                 CLICK.play()
                 return key
-
         return ""
+
+    # def execute(self, mouseX, mouseY):
+    #     """
+    #     Executes the menu by checking if the mouse is within the menu area and if any of the buttons are clicked.
+
+    #     Args:
+    #             mouseX (int): The x-coordinate of the mouse.
+    #             mouseY (int): The y-coordinate of the mouse.
+
+    #     Returns:
+    #             str: The key of the button that was clicked, or an empty string if no button was clicked.
+    #     """
+    #     if not self.within(mouseX, mouseY):
+    #         return ""
+
+    #     for key, button in self.buttons.items():
+    #         if button.within(mouseX, mouseY):
+    #             CLICK.play()
+    #             return key
+
+    #     return ""
 
     """
 	Goes through and updates all buttons, redrawing them if they are hovered
@@ -122,12 +129,9 @@ class MainMenu(Menu):
         DISPLAYSURF.fill(WHITE)
 
     def refresh_achievements(self):
-        user_data = UserData().get_user_data()
-        self.buttons[MainMenu.ACHIEVEMENT].textBox.text = self.createAchievementText(
-            user_data
-        )
+        self.buttons[MainMenu.ACHIEVEMENT].textBox.text = self.createAchievementText()
 
-    def createAchievementText(self, userdata=None):
+    def createAchievementText(self):
         # every time we create achievement text, we reread the file
         userdata = UserData().get_user_data()
         text = []

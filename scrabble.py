@@ -411,7 +411,7 @@ class ScrabbleGame:
             elif event.type == pygame.MOUSEBUTTONUP:
                 self.event_state.mouse_x, self.event_state.mouse_y = event.pos
                 self.event_state.mouse_clicked = True
-                selected_menu = self.gameMenu.execute(*event.pos)
+                selected_menu = self.gameMenu.get_selected_menu(event.pos)
             elif event.type == pygame.KEYUP:
                 if event.key in [pygame.K_SPACE, pygame.K_RETURN]:
                     self.event_state.action_key_hit = True
@@ -498,11 +498,10 @@ class ScrabbleGame:
 
 class MainScreen:
     def __init__(self):
-        self.user_data_file = UserData()
         self.menu = MainMenu()
 
-    def new_game(self):
-        self.user_data_file.increase_gameplay()
+    def play_as_challenge(self):
+        UserData().increase_gameplay()
         ScrabbleGame().runGame()
         self.menu.refresh_achievements()
 
@@ -511,7 +510,7 @@ class MainScreen:
 
     def act_based_on_selected_menu(self, selected_menu):
         if selected_menu == MainMenu.NEW_GAME:
-            self.new_game()
+            self.play_as_challenge()
         elif selected_menu == MainMenu.TRAINING:
             ScrabbleGame().runGame(useHintBox=True)
 
@@ -524,7 +523,7 @@ class MainScreen:
 
                 selected_menu = ""
                 if event.type == MOUSEBUTTONUP:
-                    selected_menu = self.menu.execute(*event.pos)
+                    selected_menu = self.menu.get_selected_menu(event.pos)
                     self.act_based_on_selected_menu(selected_menu)
                     self.menu.display()  # redraw the whole menu after coming back from a game
 
