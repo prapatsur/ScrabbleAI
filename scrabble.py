@@ -218,9 +218,9 @@ class ScrabbleGame:
             self.AIstuck = True
         self.next_player()
 
-    def handle_end_game(self, useHintBox, USERDATA):
+    def handle_end_game(self, useHintBox):
         self.gameOver = True
-        self.endGame(useHintBox, USERDATA)
+        self.endGame(useHintBox)
 
     def handle_successful_move(self):
         DINGDING.play()
@@ -237,23 +237,24 @@ class ScrabbleGame:
         if self.is_computer_turn():
             print("AI thinks it has a good move, but it doesn't")
 
-    def handle_played_move(self, useHintBox, USERDATA):
+    def handle_played_move(self, useHintBox):
         success = self.get_current_player().play(self.firstTurn)
         if success == "END":
-            self.handle_end_game(useHintBox, USERDATA)
+            self.handle_end_game(useHintBox)
         elif success:
             self.handle_successful_move()
         else:
             self.handle_unsuccessful_move()
 
-    def play_action(self, useHintBox, USERDATA):
+    def play_action(self, useHintBox):
+        USERDATA = self.user_data_file.get_user_data()
         playedMove = True
         # If it's the computer turn, we need to process its move first!
         if self.is_computer_turn():
             playedMove = self.execute_current_player_turn()
 
         if playedMove:
-            self.handle_played_move(useHintBox, USERDATA)
+            self.handle_played_move(useHintBox)
         else:
             # this one is not called when it's player turn
             # I think it's for AI turn
@@ -300,8 +301,8 @@ class ScrabbleGame:
             # if there is tile in hand
             return self.handle_tile_in_hand()
 
-    def runGame(self, USERDATA=None, useHintBox=False):
-        USERDATA = self.user_data_file.get_user_data()
+    def runGame(self, useHintBox=False):
+        # USERDATA = self.user_data_file.get_user_data()
         # Start a new game
         self.setup_game(useHintBox)
 
@@ -316,7 +317,7 @@ class ScrabbleGame:
                 self.place_hinted_tiles()
 
             if self.should_play_action():
-                self.play_action(useHintBox, USERDATA)
+                self.play_action(useHintBox)
 
             if self.should_redraw():
                 # FIXME: error when redraw when there are tentatives on the board
@@ -459,7 +460,8 @@ class ScrabbleGame:
 	from their score and giving it to the active player (who just finished)
 	"""
 
-    def endGame(self, isPractice, userdata, stuck=False):
+    def endGame(self, isPractice, stuck=False):
+        userdata = self.user_data_file.get_user_data()
         # Do points swaps only if someone could finish
         # if not stuck:
         # 	self.swap_points()
