@@ -7,7 +7,7 @@ execute will process button clicks.
 import pygame, ai
 from pygame.locals import *
 from gui import DISPLAYSURF, ALPHASURF, CLICK
-
+from models.textbox_model import TextBoxModel
 
 class Menu():
 	
