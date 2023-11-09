@@ -30,6 +30,7 @@ Heuristic ideas:
 # local files
 from dataclasses import dataclass
 import menu
+from menu import MainMenu, GameMenu
 import board
 import tile
 import bag
@@ -132,7 +133,7 @@ class ScrabbleGame:
 
     def setup_game(self, useHintBox):
         self.firstTurn = True
-        self.gameMenu = menu.GameMenu(useHintBox)
+        self.gameMenu = GameMenu(useHintBox)
         self.redrawEverything()
         self.inHand = None
         self.still_playing = True
@@ -422,13 +423,13 @@ class ScrabbleGame:
             # set event_state based on selected menu
             # require python 3.10+ to use match case
             match selected_menu:
-                case menu.GameMenu.PLAY_TURN:
+                case GameMenu.PLAY_TURN:
                     self.event_state.action_key_hit = True
-                case menu.GameMenu.RESHUFFLE:
+                case GameMenu.RESHUFFLE:
                     self.event_state.shuffle_key_hit = True
-                case menu.GameMenu.HINT_TURN:
+                case GameMenu.HINT_TURN:
                     self.event_state.ask_hint = True
-                case menu.GameMenu.MAIN_MENU:
+                case GameMenu.MAIN_MENU:
                     self.still_playing = False
 
     def is_computer_turn(self):
@@ -499,8 +500,7 @@ class MainScreen:
     def __init__(self):
         self.user_data_file = UserData()
         self.user_data = self.user_data_file.get_user_data()
-        self.menu = menu.MainMenu(self.user_data)
-        self.running = True
+        self.menu = MainMenu(self.user_data)
 
     def new_game(self):
         self.user_data["numGames"] += 1
@@ -513,31 +513,29 @@ class MainScreen:
         self.menu.update(mouse_pos)
 
     def act_based_on_selected_menu(self, selected_menu):
-        if selected_menu == menu.MainMenu.NEW_GAME:
+        if selected_menu == MainMenu.NEW_GAME:
             self.new_game()
-        elif selected_menu == menu.MainMenu.TRAINING or TRAINING_FLAG:
+        elif selected_menu == MainMenu.TRAINING or TRAINING_FLAG:
             ScrabbleGame().runGame(self.user_data, useHintBox=True)
-        elif selected_menu == menu.MainMenu.EXIT_GAME:
-            self.running = False
 
     def run(self):
         logger.info("Starting Scrabble")
-        self.running = True
-        while self.running:
-            self.selected_menu = ""
+        while True:
             for event in pygame.event.get():
-                if event.type == QUIT:
-                    self.running = False
-                elif event.type == MOUSEMOTION:
+                if event.type == MOUSEMOTION:
                     self.highlight_hovered_menu(event.pos)
-                    pygame.display.flip()  # update the screen
-                elif event.type == MOUSEBUTTONUP:
+
+                selected_menu = ""
+                if event.type == MOUSEBUTTONUP:
                     selected_menu = self.menu.execute(*event.pos)
                     self.act_based_on_selected_menu(selected_menu)
                     self.menu.display()  # redraw the whole menu after coming back from a game
+
+                if event.type == QUIT or selected_menu == MainMenu.EXIT_GAME:
+                    pygame.quit()
+                    sys.exit()
+                pygame.display.flip()
             pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
-        pygame.quit()
-        sys.exit()
 
 
 """
