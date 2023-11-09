@@ -79,7 +79,7 @@ class MainMenu(Menu):
     TRAINING = "training"
     ACHIEVEMENT = "achievement"
 
-    def __init__(self, userdata):
+    def __init__(self, userdata=None):
         Menu.__init__(self)
         trainerText = TextBox(
             [
@@ -103,7 +103,7 @@ class MainMenu(Menu):
             horzCenter=True,
         )
         achieveText = TextBox(
-            self.createAchievementText(userdata),
+            self.createAchievementText(),
             MAIN_MENU_TEXTBOX_POS,
             DARK_BROWN,
             WHITE,
@@ -121,18 +121,15 @@ class MainMenu(Menu):
         self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50))
         DISPLAYSURF.fill(WHITE)
 
-    # def resetAchievements(self, userdata):
-    #     self.buttons[MainMenu.ACHIEVEMENT].textBox.text = self.createAchievementText(
-    #         userdata
-    #     )
-
     def refresh_achievements(self):
         user_data = UserData().get_user_data()
         self.buttons[MainMenu.ACHIEVEMENT].textBox.text = self.createAchievementText(
             user_data
         )
 
-    def createAchievementText(self, userdata):
+    def createAchievementText(self, userdata=None):
+        # every time we create achievement text, we reread the file
+        userdata = UserData().get_user_data()
         text = []
         if "name" in userdata:
             text.append(userdata["name"] + "'s Achievements")

@@ -499,12 +499,10 @@ class ScrabbleGame:
 class MainScreen:
     def __init__(self):
         self.user_data_file = UserData()
-        self.user_data = self.user_data_file.get_user_data()
-        self.menu = MainMenu(self.user_data)
+        self.menu = MainMenu()
 
     def new_game(self):
         self.user_data_file.increase_gameplay()
-        self.user_data = self.user_data_file.get_user_data()
         ScrabbleGame().runGame()
         self.menu.refresh_achievements()
 
