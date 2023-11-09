@@ -100,8 +100,8 @@ SCORE_COLOR = DARK_BROWN
 # GAME MODES
 # With this set to true, entering training mode causes the AI to play against
 # itself automatically
-TRAINING_FLAG = False
-# TRAINING_FLAG = True
+# TRAINING_FLAG = False
+TRAINING_FLAG = True
 
 # If training, make no sound
 if TRAINING_FLAG:
@@ -514,7 +514,7 @@ class MainScreen:
     def act_based_on_selected_menu(self, selected_menu):
         if selected_menu == MainMenu.NEW_GAME:
             self.new_game()
-        elif selected_menu == MainMenu.TRAINING or TRAINING_FLAG:
+        elif selected_menu == MainMenu.TRAINING:
             ScrabbleGame().runGame(self.user_data, useHintBox=True)
 
     def run(self):
