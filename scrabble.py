@@ -339,6 +339,7 @@ class ScrabbleGame:
 
             self.redrawNecessary()
             pygame.display.update()
+        # clear screen
 
     """
 	Function which redraws only animated elements
@@ -500,26 +501,26 @@ class MainScreen:
         self.user_data_file = UserData()
         self.user_data = self.user_data_file.get_user_data()
         self.menu = menu.MainMenu(self.user_data)
-        self.selection = ""
+        self.selected_menu = ""
         self.running = True
 
     def handle_menu_selections(self):
-        if self.selection == menu.MainMenu.NEW_GAME:
+        if self.selected_menu == menu.MainMenu.NEW_GAME:
             self.new_game()
-        elif self.selection == menu.MainMenu.TRAINING or TRAINING_FLAG:
+        elif self.selected_menu == menu.MainMenu.TRAINING or TRAINING_FLAG:
             ScrabbleGame().runGame(self.user_data, useHintBox=True)
-        elif self.selection == menu.MainMenu.EXIT_GAME:
+        elif self.selected_menu == menu.MainMenu.EXIT_GAME:
             self.running = False
 
     def handle_pygame_events(self):
-        self.selection = ""
+        self.selected_menu = ""
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.running = False
             elif event.type == MOUSEMOTION:
                 self.menu.update(event.pos)
             elif event.type == MOUSEBUTTONUP:
-                self.selection = self.menu.execute(*event.pos)
+                self.selected_menu = self.menu.execute(*event.pos)
 
     def new_game(self):
         self.user_data["numGames"] += 1
@@ -528,16 +529,33 @@ class MainScreen:
         ScrabbleGame().runGame(self.user_data)
         self.menu.resetAchievements(self.user_data)
 
+    def highlight_hovered_menu(self, mouse_pos):
+        self.menu.update(mouse_pos)
+
+    def act_based_on_selected_menu(self, selected_menu):
+        if selected_menu == menu.MainMenu.NEW_GAME:
+            self.new_game()
+        elif selected_menu == menu.MainMenu.TRAINING or TRAINING_FLAG:
+            ScrabbleGame().runGame(self.user_data, useHintBox=True)
+        elif selected_menu == menu.MainMenu.EXIT_GAME:
+            self.running = False
+
     def run(self):
         logger.info("Starting Scrabble")
         self.running = True
         while self.running:
-            self.handle_pygame_events()
-            self.handle_menu_selections()
-            self.menu.redraw()
-            pygame.display.update()
-            # Cap the frame rate 30 fps
-            pygame.time.Clock().tick(30)
+            self.selected_menu = ""
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    self.running = False
+                elif event.type == MOUSEMOTION:
+                    self.highlight_hovered_menu(event.pos)
+                    pygame.display.flip()  # update the screen
+                elif event.type == MOUSEBUTTONUP:
+                    self.selected_menu = self.menu.execute(*event.pos)
+                    self.act_based_on_selected_menu(self.selected_menu)
+                    self.menu.redraw()  # redraw the whole menu after coming back from a game
+            pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
         pygame.quit()
         sys.exit()
 
