@@ -17,3 +17,5 @@ CLICK = pygame.mixer.Sound('media/click.ogg')
 # const color
 DARK_BROWN = (55, 46, 40)
 WHITE = (255, 255, 255)
+LIGHT_LAVENDOR = (200, 200, 255)
+DARK_LAVENDOR = (125, 125, 170)

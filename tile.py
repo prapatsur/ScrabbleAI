@@ -1,5 +1,5 @@
 import pygame, time
-from gui import DARK_BROWN, WHITE
+from gui import DARK_BROWN, WHITE, LIGHT_LAVENDOR
 
 ''' NOTE -- These are the available fonts on my Mac
 ['inaimathi', 'plantagenetcherokee', 'decotypenaskh', 'tahoma', 'thonburi', 'applegothic', 
@@ -18,7 +18,7 @@ class Tile:
 	# TILE_HIGHLIGHT = (100, 100, 255)
 	TILE_HIGHLIGHT = WHITE #White color
 	TILE_COLOR = (220, 185, 167)
-	TILE_FLASH = (200, 200, 255)
+	TILE_FLASH = LIGHT_LAVENDOR
 	PULSE_DURATION = 1.5
 
 	SQUARE_SIZE = 32

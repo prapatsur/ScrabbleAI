@@ -7,7 +7,7 @@ execute will process button clicks.
 import pygame, ai
 from pygame.locals import *
 from gui import DISPLAYSURF, ALPHASURF, CLICK
-from gui import DARK_BROWN, WHITE
+from gui import DARK_BROWN, WHITE, LIGHT_LAVENDOR, DARK_LAVENDOR
 from models.textbox_model import TextBoxModel
 
 
@@ -205,8 +205,8 @@ class NullTextBox(TextBox):
 
 class Button():
 	
-	BACKGROUND = (125, 125, 170)
-	HIGHLIGHT = (200, 200, 255)
+	BACKGROUND = DARK_LAVENDOR
+	HIGHLIGHT = LIGHT_LAVENDOR
 	FONT_COLOR = DARK_BROWN
 	
 	ON = "on"

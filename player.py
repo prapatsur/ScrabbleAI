@@ -6,7 +6,7 @@ execute the actions of the player by either GUI interaction or algorithm
 import pygame, time
 import board, tile, bag, aistats, heuristic
 from pygame.locals import *
-from gui import DARK_BROWN, WHITE
+from gui import DARK_BROWN, WHITE, LIGHT_LAVENDOR
 class Player:
 	
 	PROGRESS_TOP = 220
@@ -15,7 +15,7 @@ class Player:
 	PROGRESS_HEIGHT = 7
 	PROGRESS_MARGIN = 25
 	
-	PROGRESS_COLOR_BACK = (200, 200, 255)
+	PROGRESS_COLOR_BACK = LIGHT_LAVENDOR
 	PROGRESS_COLOR_FRONT = (100, 100, 255)
 	
 	FONT_COLOR = DARK_BROWN
