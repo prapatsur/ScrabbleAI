@@ -30,7 +30,13 @@ class UserData:
             userFile.write(str(user_data.get("name", "Guest")) + "\n")
             userFile.write(str(user_data.get("bestScore", 0)) + "\n")
             userFile.write(str(user_data.get("numVictories", 0)) + "\n")
-            userFile.write(str(user_data.get("numGames", 0)) + "\n")	
+            userFile.write(str(user_data.get("numGames", 0)) + "\n")
+
+    def increase_gameplay(self):
+        user_data = self.load_user_data()
+        user_data["numGames"] += 1
+        self.save_user_data(user_data)     
+        self.user_data = user_data
             
     def get_user_data(self):
         return self.user_data

@@ -100,8 +100,8 @@ SCORE_COLOR = DARK_BROWN
 # GAME MODES
 # With this set to true, entering training mode causes the AI to play against
 # itself automatically
-# TRAINING_FLAG = False
-TRAINING_FLAG = True
+TRAINING_FLAG = False
+# TRAINING_FLAG = True
 
 # If training, make no sound
 if TRAINING_FLAG:
@@ -502,8 +502,7 @@ class MainScreen:
         self.menu = MainMenu(self.user_data)
 
     def new_game(self):
-        self.user_data["numGames"] += 1
-        self.user_data_file.save_user_data(self.user_data)
+        self.user_data_file.increase_gameplay()
         self.menu.resetAchievements(self.user_data)
         ScrabbleGame().runGame(self.user_data)
         self.menu.resetAchievements(self.user_data)
