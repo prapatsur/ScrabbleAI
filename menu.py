@@ -32,27 +32,6 @@ class Menu:
                 return key
         return ""
 
-    # def execute(self, mouseX, mouseY):
-    #     """
-    #     Executes the menu by checking if the mouse is within the menu area and if any of the buttons are clicked.
-
-    #     Args:
-    #             mouseX (int): The x-coordinate of the mouse.
-    #             mouseY (int): The y-coordinate of the mouse.
-
-    #     Returns:
-    #             str: The key of the button that was clicked, or an empty string if no button was clicked.
-    #     """
-    #     if not self.within(mouseX, mouseY):
-    #         return ""
-
-    #     for key, button in self.buttons.items():
-    #         if button.within(mouseX, mouseY):
-    #             CLICK.play()
-    #             return key
-
-    #     return ""
-
     """
 	Goes through and updates all buttons, redrawing them if they are hovered
 	"""
