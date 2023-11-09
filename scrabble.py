@@ -536,6 +536,8 @@ class MainScreen:
             self.handle_menu_selections()
             self.menu.redraw()
             pygame.display.update()
+            # Cap the frame rate (optional)
+            pygame.time.Clock().tick(60)
 
 
 """
