@@ -99,9 +99,9 @@ SCORE_COLOR = DARK_BROWN
 
 # GAME MODES
 # With this set to true, entering training mode causes the AI to play against
+# itself automatically
 TRAINING_FLAG = False
 # TRAINING_FLAG = True
-# itself automatically
 
 # If training, make no sound
 if TRAINING_FLAG:
@@ -140,7 +140,6 @@ class ScrabbleGame:
         self.AIstuck = False
 
     def get_current_player(self):
-        # return self.players[self.active]
         return self.current_player
 
     def ask_for_hint(self):
@@ -534,6 +533,9 @@ class MainScreen:
                 if event.type == QUIT or selected_menu == MainMenu.EXIT_GAME:
                     pygame.quit()
                     sys.exit()
+
+                if TRAINING_FLAG:
+                    ScrabbleGame().runGame(self.user_data, useHintBox=True)
                 pygame.display.flip()
             pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
 
