@@ -63,7 +63,7 @@ class Menu:
             and mouseY <= top + height
         )
 
-    def redraw(self):
+    def display(self):
         pygame.draw.rect(DISPLAYSURF, self.background, self.rect)
         for button in list(self.buttons.values()):
             button.redraw()

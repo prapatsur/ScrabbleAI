@@ -339,7 +339,6 @@ class ScrabbleGame:
 
             self.redrawNecessary()
             pygame.display.update()
-        # clear screen
 
     """
 	Function which redraws only animated elements
@@ -441,7 +440,7 @@ class ScrabbleGame:
         self.the_board.draw(DISPLAYSURF, ALPHASURF)
         self.get_current_player().drawTray(DISPLAYSURF)
         self.drawScore()
-        self.gameMenu.redraw()
+        self.gameMenu.display()
 
     def swap_points(self):
         surplus = 0
@@ -501,26 +500,7 @@ class MainScreen:
         self.user_data_file = UserData()
         self.user_data = self.user_data_file.get_user_data()
         self.menu = menu.MainMenu(self.user_data)
-        self.selected_menu = ""
         self.running = True
-
-    def handle_menu_selections(self):
-        if self.selected_menu == menu.MainMenu.NEW_GAME:
-            self.new_game()
-        elif self.selected_menu == menu.MainMenu.TRAINING or TRAINING_FLAG:
-            ScrabbleGame().runGame(self.user_data, useHintBox=True)
-        elif self.selected_menu == menu.MainMenu.EXIT_GAME:
-            self.running = False
-
-    def handle_pygame_events(self):
-        self.selected_menu = ""
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                self.running = False
-            elif event.type == MOUSEMOTION:
-                self.menu.update(event.pos)
-            elif event.type == MOUSEBUTTONUP:
-                self.selected_menu = self.menu.execute(*event.pos)
 
     def new_game(self):
         self.user_data["numGames"] += 1
@@ -552,9 +532,9 @@ class MainScreen:
                     self.highlight_hovered_menu(event.pos)
                     pygame.display.flip()  # update the screen
                 elif event.type == MOUSEBUTTONUP:
-                    self.selected_menu = self.menu.execute(*event.pos)
-                    self.act_based_on_selected_menu(self.selected_menu)
-                    self.menu.redraw()  # redraw the whole menu after coming back from a game
+                    selected_menu = self.menu.execute(*event.pos)
+                    self.act_based_on_selected_menu(selected_menu)
+                    self.menu.display()  # redraw the whole menu after coming back from a game
             pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
         pygame.quit()
         sys.exit()
