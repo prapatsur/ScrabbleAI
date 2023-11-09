@@ -501,6 +501,7 @@ class MainScreen:
         self.user_data = self.user_data_file.get_user_data()
         self.menu = menu.MainMenu(self.user_data)
         self.selection = ""
+        self.running = True
 
     def handle_menu_selections(self):
         if self.selection == menu.MainMenu.NEW_GAME:
@@ -508,15 +509,13 @@ class MainScreen:
         elif self.selection == menu.MainMenu.TRAINING or TRAINING_FLAG:
             ScrabbleGame().runGame(self.user_data, useHintBox=True)
         elif self.selection == menu.MainMenu.EXIT_GAME:
-            pygame.quit()
-            sys.exit()
+            self.running = False
 
     def handle_pygame_events(self):
         self.selection = ""
         for event in pygame.event.get():
             if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+                self.running = False
             elif event.type == MOUSEMOTION:
                 self.menu.update(event.pos)
             elif event.type == MOUSEBUTTONUP:
@@ -531,13 +530,16 @@ class MainScreen:
 
     def run(self):
         logger.info("Starting Scrabble")
-        while True:
+        self.running = True
+        while self.running:
             self.handle_pygame_events()
             self.handle_menu_selections()
             self.menu.redraw()
             pygame.display.update()
-            # Cap the frame rate (optional)
-            pygame.time.Clock().tick(60)
+            # Cap the frame rate 30 fps
+            pygame.time.Clock().tick(30)
+        pygame.quit()
+        sys.exit()
 
 
 """
