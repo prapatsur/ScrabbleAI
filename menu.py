@@ -8,6 +8,7 @@ import pygame, ai
 from pygame.locals import *
 from gui import DISPLAYSURF, ALPHASURF, CLICK
 from gui import DARK_BROWN, WHITE, LIGHT_LAVENDOR, DARK_LAVENDOR
+from gui import MAIN_MENU_TEXTBOX_POS
 from models.textbox_model import TextBoxModel
 
 
@@ -72,18 +73,18 @@ class MainMenu(Menu):
 		Menu.__init__(self)
 		trainerText = TextBox(["Practice your Scrabble skills with a built-in HINT",
 								"box, which lets you know how the AI would have played",
-								"your move. But you can't get ACHIEVEMENTS while training."], (400, 400), 
+								"your move. But you can't get ACHIEVEMENTS while training."], MAIN_MENU_TEXTBOX_POS, 
 							DARK_BROWN, WHITE, horzCenter = True)
 		newGameText = TextBox(["Play one-on-one against Wordsmith, the Scrabble AI.",
-							    "No hints allowed, try to beat your best score!"], (400, 400), 
+							    "No hints allowed, try to beat your best score!"], MAIN_MENU_TEXTBOX_POS, 
 							DARK_BROWN, WHITE, horzCenter = True)
-		achieveText = TextBox(self.createAchievementText(userdata), (400, 400), 
+		achieveText = TextBox(self.createAchievementText(userdata), MAIN_MENU_TEXTBOX_POS, 
 							DARK_BROWN, WHITE, horzCenter = True)
 		self.buttons[MainMenu.TRAINING] = Button("Training", (250, 135, 300, 50), trainerText)
 		self.buttons[MainMenu.NEW_GAME] = Button("Challenge", (250, 190, 300, 50), newGameText)
 		self.buttons[MainMenu.ACHIEVEMENT] = Button("Achievements", (250, 245, 300, 50), achieveText)
 		self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50))
-		DISPLAYSURF.fill((255,255,255))
+		DISPLAYSURF.fill(WHITE)
 		
 	def resetAchievements(self, userdata):
 		self.buttons[MainMenu.ACHIEVEMENT].textBox.text = self.createAchievementText(userdata)
@@ -141,7 +142,7 @@ class GameMenu(Menu):
 			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 420, 150, 30))
 		else:
 			self.buttons[GameMenu.MAIN_MENU] = Button("QUIT", (570, 380, 150, 30))
-		DISPLAYSURF.fill((255,255,255))		
+		DISPLAYSURF.fill(WHITE)		
 		
 #==================== TEXT BOX ======================
 class TextBox():
