@@ -10,6 +10,8 @@ from gui import DISPLAYSURF, ALPHASURF, CLICK
 from gui import DARK_BROWN, WHITE, LIGHT_LAVENDOR, DARK_LAVENDOR
 from gui import MAIN_MENU_TEXTBOX_POS
 from models.textbox_model import TextBoxModel
+from textbox import TextBox
+from button import Button
 
 
 
@@ -145,135 +147,135 @@ class GameMenu(Menu):
 		DISPLAYSURF.fill(WHITE)		
 		
 #==================== TEXT BOX ======================
-class TextBox():
+# class TextBox():
 	
-	initialized = False
-	MARGIN = 21
+# 	initialized = False
+# 	MARGIN = 21
 	
-	@staticmethod
-	def initialize():
-		TextBox.FONT = pygame.font.Font('freesansbold.ttf', 18)
-		TextBox.initialized = True
+# 	@staticmethod
+# 	def initialize():
+# 		TextBox.FONT = pygame.font.Font('freesansbold.ttf', 18)
+# 		TextBox.initialized = True
 		
 
-	def __init__(self, textLines, pos, color, backColor, horzCenter = False):	
-		self.text = textLines
-		self.pos = pos
-		self.color = color
-		self.width = 0
-		self.backColor = backColor
-		self.horzCentered = horzCenter
-		if not TextBox.initialized:
-			TextBox.initialize()
-		self.model = TextBoxModel(textLines, pos, color, backColor, horzCenter)
+# 	def __init__(self, textLines, pos, color, backColor, horzCenter = False):	
+# 		self.text = textLines
+# 		self.pos = pos
+# 		self.color = color
+# 		self.width = 0
+# 		self.backColor = backColor
+# 		self.horzCentered = horzCenter
+# 		if not TextBox.initialized:
+# 			TextBox.initialize()
+# 		self.model = TextBoxModel(textLines, pos, color, backColor, horzCenter)
 		
-	def draw(self):	
-		i = 0
-		for	line in self.text:
-			left = self.pos[0]
-			top = self.pos[1] + TextBox.MARGIN * i
-			text = TextBox.FONT.render(line, True, self.color, self.backColor)
-			rect = text.get_rect()
-			if self.horzCentered:
-				rect.centerx = left
-			else:
-				rect.left = left
-			rect.top = top
-			if rect.width > self.width:
-				self.width = rect.width
-			DISPLAYSURF.blit(text, rect)		
-			i+=1
+# 	def draw(self):	
+# 		i = 0
+# 		for	line in self.text:
+# 			left = self.pos[0]
+# 			top = self.pos[1] + TextBox.MARGIN * i
+# 			text = TextBox.FONT.render(line, True, self.color, self.backColor)
+# 			rect = text.get_rect()
+# 			if self.horzCentered:
+# 				rect.centerx = left
+# 			else:
+# 				rect.left = left
+# 			rect.top = top
+# 			if rect.width > self.width:
+# 				self.width = rect.width
+# 			DISPLAYSURF.blit(text, rect)		
+# 			i+=1
 			
-	def undraw(self):
-		height = TextBox.MARGIN * len(self.text)
-		if self.horzCentered:
-			rect = (self.pos[0]-self.width/2, self.pos[1], self.width, height)
-		else:
-			rect = (self.pos[0], self.pos[1], self.width, height)
-		pygame.draw.rect(DISPLAYSURF, self.backColor, rect)	
+# 	def undraw(self):
+# 		height = TextBox.MARGIN * len(self.text)
+# 		if self.horzCentered:
+# 			rect = (self.pos[0]-self.width/2, self.pos[1], self.width, height)
+# 		else:
+# 			rect = (self.pos[0], self.pos[1], self.width, height)
+# 		pygame.draw.rect(DISPLAYSURF, self.backColor, rect)	
 		
-class NullTextBox(TextBox):
-	""" NullTextBox is a TextBox that does nothing when drawn or undrawn. """
-	def __init__(self):	
-		super().__init__([], (0, 0), (0, 0, 0), (0, 0, 0), False)
+# class NullTextBox(TextBox):
+# 	""" NullTextBox is a TextBox that does nothing when drawn or undrawn. """
+# 	def __init__(self):	
+# 		super().__init__([], (0, 0), (0, 0, 0), (0, 0, 0), False)
 
-	def draw(self):
-		pass
+# 	def draw(self):
+# 		pass
 
-	def undraw(self):
-		pass
+# 	def undraw(self):
+# 		pass
 #==================== BUTTON ========================
 
-class Button():
+# class Button():
 	
-	BACKGROUND = DARK_LAVENDOR
-	HIGHLIGHT = LIGHT_LAVENDOR
-	FONT_COLOR = DARK_BROWN
+# 	BACKGROUND = DARK_LAVENDOR
+# 	HIGHLIGHT = LIGHT_LAVENDOR
+# 	FONT_COLOR = DARK_BROWN
 	
-	ON = "on"
-	OFF = "off"
+# 	ON = "on"
+# 	OFF = "off"
 	
-	initialized = False
+# 	initialized = False
 
-	@staticmethod
-	def initialize():
-		Button.FONT = pygame.font.Font('freesansbold.ttf', 18)
-		Button.initialized = True
+# 	@staticmethod
+# 	def initialize():
+# 		Button.FONT = pygame.font.Font('freesansbold.ttf', 18)
+# 		Button.initialized = True
 	
-	def __init__(self, name, rect, textBox = None, color = None, backColor = None):
-		#Make sure the fonts are set up
-		if not Button.initialized:
-			Button.initialize()
+# 	def __init__(self, name, rect, textBox = None, color = None, backColor = None):
+# 		#Make sure the fonts are set up
+# 		if not Button.initialized:
+# 			Button.initialize()
 			
-		if color == None:
-			color = Button.HIGHLIGHT
-		if backColor == None:
-			backColor = Button.BACKGROUND
+# 		if color == None:
+# 			color = Button.HIGHLIGHT
+# 		if backColor == None:
+# 			backColor = Button.BACKGROUND
 		
-		self.name = name
-		self.rect = rect
-		self.lastDrawn = Button.OFF
-		if textBox is None:
-			self.textBox = NullTextBox()
-		else:
-			self.textBox = textBox
-		self.color = color
-		self.backColor = backColor
+# 		self.name = name
+# 		self.rect = rect
+# 		self.lastDrawn = Button.OFF
+# 		if textBox is None:
+# 			self.textBox = NullTextBox()
+# 		else:
+# 			self.textBox = textBox
+# 		self.color = color
+# 		self.backColor = backColor
 
-	def update(self, mouse_position):
-		""" update button highlighting based on mouse position and draw text box if necessary"""
-		mouseX, mouseY = mouse_position
-		if self.within(mouseX, mouseY):
-			self.highlight()
-		else:
-			self.no_highlight()
+# 	def update(self, mouse_position):
+# 		""" update button highlighting based on mouse position and draw text box if necessary"""
+# 		mouseX, mouseY = mouse_position
+# 		if self.within(mouseX, mouseY):
+# 			self.highlight()
+# 		else:
+# 			self.no_highlight()
 
-	def highlight(self):
-		self.draw(self.color)
-		self.lastDrawn = Button.ON
-		self.textBox.draw()
+# 	def highlight(self):
+# 		self.draw(self.color)
+# 		self.lastDrawn = Button.ON
+# 		self.textBox.draw()
 
-	def no_highlight(self):
-		self.draw(self.backColor)
-		if self.lastDrawn == Button.ON:
-			self.textBox.undraw()
-		self.lastDrawn = Button.OFF		
+# 	def no_highlight(self):
+# 		self.draw(self.backColor)
+# 		if self.lastDrawn == Button.ON:
+# 			self.textBox.undraw()
+# 		self.lastDrawn = Button.OFF		
 
-	def within(self, mouseX, mouseY):
-		(left, top, width, height) = self.rect
-		return mouseX >= left and mouseX <= left+width and mouseY >= top and mouseY <= top+height
+# 	def within(self, mouseX, mouseY):
+# 		(left, top, width, height) = self.rect
+# 		return mouseX >= left and mouseX <= left+width and mouseY >= top and mouseY <= top+height
 		
-	def draw(self, backColor):
-		pygame.draw.rect(DISPLAYSURF, backColor, self.rect)
-		(left, top, width, height) = self.rect	
-		text = Button.FONT.render(self.name, True, Button.FONT_COLOR, backColor)
-		rect = text.get_rect()
-		rect.center = (left+width/2, top+height/2)
-		DISPLAYSURF.blit(text, rect)
+# 	def draw(self, backColor):
+# 		pygame.draw.rect(DISPLAYSURF, backColor, self.rect)
+# 		(left, top, width, height) = self.rect	
+# 		text = Button.FONT.render(self.name, True, Button.FONT_COLOR, backColor)
+# 		rect = text.get_rect()
+# 		rect.center = (left+width/2, top+height/2)
+# 		DISPLAYSURF.blit(text, rect)
 		
-	def redraw(self):
-		if self.lastDrawn == Button.ON:
-			self.draw(self.color)
-		elif self.lastDrawn == Button.OFF:
-			self.draw(self.backColor)
+# 	def redraw(self):
+# 		if self.lastDrawn == Button.ON:
+# 			self.draw(self.color)
+# 		elif self.lastDrawn == Button.OFF:
+# 			self.draw(self.backColor)
 			
