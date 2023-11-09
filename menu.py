@@ -12,6 +12,7 @@ from gui import MAIN_MENU_TEXTBOX_POS
 from models.textbox_model import TextBoxModel
 from textbox import TextBox
 from button import Button
+from userdata import UserData
 
 
 class Menu:
@@ -120,9 +121,15 @@ class MainMenu(Menu):
         self.buttons[MainMenu.EXIT_GAME] = Button("Exit", (250, 300, 300, 50))
         DISPLAYSURF.fill(WHITE)
 
-    def resetAchievements(self, userdata):
+    # def resetAchievements(self, userdata):
+    #     self.buttons[MainMenu.ACHIEVEMENT].textBox.text = self.createAchievementText(
+    #         userdata
+    #     )
+
+    def refresh_achievements(self):
+        user_data = UserData().get_user_data()
         self.buttons[MainMenu.ACHIEVEMENT].textBox.text = self.createAchievementText(
-            userdata
+            user_data
         )
 
     def createAchievementText(self, userdata):

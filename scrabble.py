@@ -503,9 +503,11 @@ class MainScreen:
 
     def new_game(self):
         self.user_data_file.increase_gameplay()
-        self.menu.resetAchievements(self.user_data)
+        self.user_data = self.user_data_file.get_user_data()
+        # self.menu.resetAchievements(self.user_data)
         ScrabbleGame().runGame(self.user_data)
-        self.menu.resetAchievements(self.user_data)
+        # self.menu.resetAchievements(self.user_data)
+        self.menu.refresh_achievements()
 
     def highlight_hovered_menu(self, mouse_pos):
         self.menu.update(mouse_pos)
