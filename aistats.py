@@ -414,7 +414,7 @@ class AIStats():
 		TOP_Y = 50
 		COLOR = (0, 100, 255)
 		
-		pygame.draw.rect(DISPLAYSURF, (255, 255, 255), (LEFT_X, TOP_Y, width, height))
+		pygame.draw.rect(DISPLAYSURF, WHITE, (LEFT_X, TOP_Y, width, height))
 		
 		i = 0	
 		barWidth = width/numBuckets
