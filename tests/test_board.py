@@ -16,6 +16,14 @@ def test_all_tiles_in_straight_line():
     assert board.all_tiles_in_straight_line([(1, 1), (1, 2), (1, 3)]) == True
     assert board.all_tiles_in_straight_line([(1, 1), (2, 2), (3, 3)]) == False
 
+def test_is_valid_position():
+    board = Board()
+    assert board.is_valid_position(0, 0) == True
+    assert board.is_valid_position(Board.GRID_SIZE - 1, Board.GRID_SIZE - 1) == True
+    assert board.is_valid_position(-1, 0) == False
+    assert board.is_valid_position(0, Board.GRID_SIZE) == False
+
+
 # def test_played_words_are_broken_1():
 #     # This test is for those that are not broken
 #     board = Board()
