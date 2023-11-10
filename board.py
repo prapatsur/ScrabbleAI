@@ -93,16 +93,16 @@ class Board:
     def is_square_occupied(self, boardX, boardY):
         return self.get_tile(boardX, boardY) is not None
     
-    def can_place(self, mouse_position):
-        boardX, boardY = self.getBoardPosition(x, y)
+    def can_place(self, boardX, boardY):
+        # boardX, boardY = self.getBoardPosition(*mouse_position)
         if not self.is_valid_position(boardX, boardY):
             return False
-        # The square is locked.
-        if self.isPositionLocked(boardX, boardY):
-            return False   
         # The square is occupied.
-        if self.squares[boardX][boardY][0] is not None:
+        if self.is_square_occupied(boardX, boardY):
             return False             
+        # The square is locked.
+        # if not self.isPositionLocked(boardX, boardY):
+        #     return False   
         return True
         
     def placeTentative(self, x, y, tile):

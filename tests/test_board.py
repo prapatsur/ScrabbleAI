@@ -41,6 +41,35 @@ def test_get_tile():
     assert board.get_tile(0, 0) == 'A'
     assert board.get_tile(14, 14) == 'A'
 
+def test_can_place():
+    board = Board()
+    # Set up the squares attribute
+    board.squares = [[(None, 'Normal') for _ in range(15)] for _ in range(15)]
+    board.setLocks()
+
+    # Test if the position is valid
+    assert board.can_place(-1, -1) == False
+    assert board.can_place(0, 0) == True
+
+    # Test if the position is occupied
+    board.place_tile(0, 0, 'A')
+    assert board.can_place(0, 0) == False
+    assert board.can_place(0, 1) == True
+
+    board.setLocks()
+    # now, we lock to column 0 and row 0
+    # assert board.can_place(0, 1) == True
+    
+    # board.columnLock = 0
+    # assert board.can_place(0, 0) == True    
+    # Test if the position is locked
+    # Set lock to column 3, so we should not be able to place other columns
+    # board.locked_positions.append((0, 0))
+    # board.columnLock = 0
+    # assert board.can_place(0, 0) == False
+    # board.locked_positions.remove((0, 0))
+
+
 # def test_played_words_are_broken_1():
 #     # This test is for those that are not broken
 #     board = Board()

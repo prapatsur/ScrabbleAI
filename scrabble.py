@@ -9,6 +9,7 @@ Scrabble To-Do:
 	- Make processing time delay as a function
 	- Have generic "Player" account with achievements
 	- Refactor more on endGame method
+    - Initialize pygame not globally
 	
 Heuristic ideas:
 
