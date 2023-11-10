@@ -176,7 +176,6 @@ class ScrabbleGame:
 
     def place_hinted_tiles(self):
         """Play hint, put tiles on board and wait for user's action whether user want to play as hinted"""
-        # self.pull_tiles_back_to_tray()
         self.execute_current_player_turn()
         TICTIC.play()
 
@@ -319,7 +318,6 @@ class ScrabbleGame:
             if self.ask_for_hint():
                 # take back what's already on the board
                 self.pull_tiles_back_to_tray()
-                # place hinted tiles
                 self.place_hinted_tiles()
 
             if self.should_play_action():
