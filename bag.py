@@ -10,6 +10,7 @@ class Bag:
 	
 	#sets up the initial distribution of tiles
 	def __init__(self):
+		"""Initializes the bag with the standard distribution of tiles."""
 		self.tiles = []
 		
 		# # Initial distribution of tiles
@@ -46,12 +47,15 @@ class Bag:
 		return self.tiles.pop(0)
 			
 	def isEmpty(self):
+		"""Returns True if the bag is empty."""	
 		return not self.tiles
 
 	def shuffle(self):
+		"""Shuffles the bag."""
 		random.shuffle(self.tiles)
 		
 	def putBack(self, tile):
+		"""Puts a tile back into the bag."""
 		self.tiles.append(tile)
 
 	def add(self, letter, points, n):
@@ -59,5 +63,6 @@ class Bag:
 		self.tiles.extend([tile.Tile(letter, points) for _ in range(n)])
 
 	def empty_bag(self):
+		"""Empties the bag."""
 		self.tiles = []
 
