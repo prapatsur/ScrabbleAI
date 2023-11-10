@@ -47,6 +47,11 @@ def test_get_tile():
     assert board.get_tile(0, 0) == tile1
     assert board.get_tile(14, 14) == tile2
 
+def test_get_bonus():
+    board = Board()
+    assert board.get_bonus(0, 0) == Board.TRIPLEWORD
+    assert board.get_bonus(14, 11) == Board.DOUBLELETTER
+
 def test_setLocks():
     board = Board()
 
