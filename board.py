@@ -208,6 +208,34 @@ class Board:
 		assert self.squares[x][y][0] == None
 		self.squares[x][y] = (tile, self.squares[x][y][1])
 		
+	#collect all tentative tiles
+	def getInPlay(self):
+		inPlay = []
+		for x in range(Board.GRID_SIZE):
+			for y in range(Board.GRID_SIZE):
+				if self.squares[x][y][0] != None and not self.squares[x][y][0].locked:
+					inPlay.append((x, y))
+		return inPlay
+	
+	def no_tile_played(self, in_play):
+		return len(in_play) == 0
+	
+	def all_same_column(self, in_play):
+		start_col, _ = in_play[0]
+		return all(x == start_col for x, y in in_play)
+	
+	def all_same_row(self, in_play):
+		_, start_row = in_play[0]
+		return all(y == start_row for x, y in in_play)
+
+	def all_tiles_in_straight_line(self, in_play):
+		if self.all_same_column(in_play) or self.all_same_row(in_play):
+			return True
+		return False
+		# if not (self.all_same_row(in_play) or self.all_same_column(in_play)):
+		# 	return False
+		# return True		
+			
 	'''
 	This function works by going through all tentative tiles on the board, validating the move
 	and then processing the play. The return value is a tuple of (tiles, points) with the former
@@ -226,28 +254,16 @@ class Board:
 	
 	'''	
 	def play(self, isFirstTurn=True):
-
-		#collect all tentative tiles
-		inPlay = []
-		for x in range(Board.GRID_SIZE):
-			for y in range(Board.GRID_SIZE):
-				if self.squares[x][y][0] != None and not self.squares[x][y][0].locked:
-					inPlay.append((x, y))
+		inPlay = self.getInPlay()
 
 		#VALIDATION STEP ONE: There must be at least one tile played
-		if len(inPlay) <= 0:
-			#fail
+		if self.no_tile_played(inPlay):
 			if Board.DEBUG_ERRORS:
 				print("Play requires at least one tile.")
-			return ([], -1)	
+			return ([], -1)
 		
 		# VALIDATION STEP TWO: Tiles must be played in a straight line
-		start_col, start_row = inPlay[0]
-
-		all_same_column = all(x == start_col for x, y in inPlay)
-		all_same_row = all(y == start_row for x, y in inPlay)
-
-		if not (all_same_row or all_same_column):
+		if not self.all_tiles_in_straight_line(inPlay):
 			if Board.DEBUG_ERRORS:
 				print("All tiles must be placed along a line.")
 			return self.removeTempTiles(), -1
@@ -257,8 +273,14 @@ class Board:
 			return self.removeTempTiles(), -1
 
 		# VALIDATION STEP FOUR: Ensure the word is unbroken
+
 		leftmost, rightmost = min(x for x, y in inPlay), max(x for x, y in inPlay)
 		topmost, bottommost = min(y for x, y in inPlay), max(y for x, y in inPlay)
+
+		start_col, start_row = inPlay[0]
+
+		all_same_column = all(x == start_col for x, y in inPlay)
+		all_same_row = all(y == start_row for x, y in inPlay)
 
 		if all_same_column:
 			for y in range(topmost, bottommost + 1):
