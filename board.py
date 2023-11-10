@@ -138,7 +138,8 @@ class Board:
             return (False, tile)
 
         # Place the tile.
-        self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
+        self.place_tile(boardX, boardY, tile)
+        # self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
 
         if tile.isBlank:
             return ("ASK", tile)
@@ -219,10 +220,12 @@ class Board:
     def remove(self, x, y):
         (boardX, boardY) = self.getBoardPosition(x, y)
         if self.is_valid_position(boardX, boardY):
-            tile = self.squares[boardX][boardY][0]
-            if tile != None and not tile.locked:
-                self.squares[boardX][boardY] = (
-                    None, self.squares[boardX][boardY][1])
+            tile = self.get_tile(boardX, boardY)
+            # tile = self.squares[boardX][boardY][0]
+            if tile is not None and not tile.locked:
+                self.place_tile(boardX, boardY, None)
+                # self.squares[boardX][boardY] = (
+                #     None, self.squares[boardX][boardY][1])
                 self.setLocks()
                 return tile
         return None
