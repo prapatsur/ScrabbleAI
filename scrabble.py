@@ -137,7 +137,6 @@ class ScrabbleGame:
         self.gameMenu = GameMenu(self.use_hint_box)
         self.redrawEverything()
         self.inHand = None
-        # self.still_playing = True
         self.AIstuck = False
 
     def get_current_player(self):
@@ -319,7 +318,7 @@ class ScrabbleGame:
         still_playing = True
         # main game loop
         while still_playing:
-            self.handle_events()
+            self.gather_events()
 
             if self.ask_for_hint():
                 # take back what's already on the board
@@ -405,10 +404,6 @@ class ScrabbleGame:
                 SCORE_TOP + SCORE_MARGIN * len(self.players),
                 SCORE_COLOR,
             )
-
-    def handle_events(self):
-        self.gather_events()
-        return self.event_state
 
     def gather_events(self):
         # initialize new event state every time
