@@ -82,6 +82,7 @@ class EventState:
     action_key_hit: bool = False
     shuffle_key_hit: bool = False
     ask_hint: bool = False
+    back_to_mainscreen: bool = False
     mouse_x: int = None
     mouse_y: int = None
     mouse_position: MousePosition = None
@@ -129,7 +130,6 @@ class ScrabbleGame:
         self.event_state = EventState()
         self.user_data_file = UserData()
         self.use_hint_box = useHintBox
-
         self.setup_game()
 
     def setup_game(self):
@@ -137,7 +137,7 @@ class ScrabbleGame:
         self.gameMenu = GameMenu(self.use_hint_box)
         self.redrawEverything()
         self.inHand = None
-        self.still_playing = True
+        # self.still_playing = True
         self.AIstuck = False
 
     def get_current_player(self):
@@ -293,6 +293,17 @@ class ScrabbleGame:
         self.get_current_player().placeTentative()
         return None
 
+    """
+    This resolves the action of the player to try to pick up a tile. Two situations:
+    1) The player has a piece in hand:
+        -If it's on the board, attempt to place the piece there. If it doesn't work,
+        do nothing. If it does work, empty the hand and update the board
+        -If it's on the tray, swap positions and set the hand to none
+    2) The player doesn't have a piece in hand:
+        -If it's on the board and the piece is not locked, return it to the tray (at the end)
+        -If it's on the tray, highlight that piece and put it in hand.
+    """
+
     def tileGrab(self):
         # if there is no tile in hand
         if self.inHand is None:
@@ -302,12 +313,12 @@ class ScrabbleGame:
             return self.handle_tile_in_hand()
 
     def runGame(self):
-        useHintBox = self.use_hint_box
         # Start a new game
         self.setup_game()
 
+        still_playing = True
         # main game loop
-        while self.still_playing:
+        while still_playing:
             self.handle_events()
 
             if self.ask_for_hint():
@@ -337,7 +348,11 @@ class ScrabbleGame:
             if (
                 self.gameOver and TRAINING_FLAG
             ):  # automatically start a new game for training purposes
-                self.still_playing = False
+                still_playing = False
+
+            # if user click on QUIT button, go back to main screen
+            if self.event_state.back_to_mainscreen:
+                still_playing = False
 
             self.redrawNecessary()
             pygame.display.update()
@@ -431,7 +446,7 @@ class ScrabbleGame:
                 case GameMenu.HINT_TURN:
                     self.event_state.ask_hint = True
                 case GameMenu.MAIN_MENU:
-                    self.still_playing = False
+                    self.event_state.back_to_mainscreen = True
 
     def is_computer_turn(self):
         return isinstance(self.get_current_player(), ai.AI)
@@ -538,17 +553,6 @@ class MainScreen:
                 pygame.display.flip()
             pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
 
-
-"""
-This resolves the action of the player to try to pick up a tile. Two situations:
-1) The player has a piece in hand:
-	-If it's on the board, attempt to place the piece there. If it doesn't work,
-	 do nothing. If it does work, empty the hand and update the board
-	-If it's on the tray, swap positions and set the hand to none
-2) The player doesn't have a piece in hand:
-	-If it's on the board and the piece is not locked, return it to the tray (at the end)
-	-If it's on the tray, highlight that piece and put it in hand.
-"""
 
 if __name__ == "__main__":
     if sys.version_info < (3, 10):
