@@ -1,4 +1,9 @@
-import pygame, tile, player, dictionarywords, wordfrequency, time
+import pygame
+import tile
+import player
+import dictionarywords
+import wordfrequency
+import time
 from gui import BEIGE, RED, BLUE, PINK, LBLUE, MASK_COLOR
 from pygame.locals import *
 from views.board_view import draw_letter_prompt
@@ -30,75 +35,25 @@ class Board:
         ]
 
         # BONUS SQUARES
-        triplewords = [
-            (0, 0),
-            (7, 0),
-            (14, 0),
-            (0, 7),
-            (14, 7),
-            (0, 14),
-            (7, 14),
-            (14, 14),
-        ]
-        doublewords = [
-            (1, 1),
-            (2, 2),
-            (3, 3),
-            (4, 4),
-            (1, 13),
-            (2, 12),
-            (3, 11),
-            (4, 10),
-            (13, 1),
-            (12, 2),
-            (11, 3),
-            (10, 4),
-            (13, 13),
-            (12, 12),
-            (11, 11),
-            (10, 10),
-            (7, 7),
-        ]
-        tripleletters = [
-            (5, 1),
-            (9, 1),
-            (1, 5),
-            (1, 9),
-            (5, 13),
-            (9, 13),
-            (13, 5),
-            (13, 9),
-            (5, 5),
-            (9, 9),
-            (5, 9),
-            (9, 5),
-        ]
-        doubleletters = [
-            (3, 0),
-            (0, 3),
-            (11, 0),
-            (0, 11),
-            (3, 14),
-            (11, 14),
-            (14, 3),
-            (14, 11),
-            (2, 6),
-            (3, 7),
-            (2, 8),
-            (6, 2),
-            (7, 3),
-            (8, 2),
-            (6, 12),
-            (7, 11),
-            (8, 12),
-            (12, 6),
-            (11, 7),
-            (12, 8),
-            (6, 6),
-            (8, 8),
-            (6, 8),
-            (8, 6),
-        ]
+        triplewords = [(0, 0), (7, 0), (14, 0), (0, 7),
+                       (14, 7), (0, 14), (7, 14), (14, 14)]
+        
+        doublewords = [(1, 1), (2, 2), (3, 3), (4, 4),
+                      (1, 13), (2, 12), (3, 11), (4, 10),
+                      (13, 1), (12, 2), (11, 3), (10, 4),
+                      (13, 13), (12, 12), (11, 11), (10, 10),
+                      (7, 7)]
+
+        tripleletters = [(5, 1), (9, 1), (1, 5), (1, 9),
+                        (5, 13), (9, 13), (13, 5), (13, 9),
+                        (5, 5), (9, 9), (5, 9), (9, 5)]
+
+        doubleletters = [(3, 0), (0, 3), (11, 0), (0, 11),
+                         (3, 14), (11, 14), (14, 3), (14, 11),
+                         (2, 6), (3, 7), (2, 8), (6, 2),
+                         (7, 3), (8, 2), (6, 12), (7, 11),
+                         (8, 12), (12, 6), (11, 7), (12, 8),
+                         (6, 6), (8, 8), (6, 8), (8, 6)]
 
         for x, y in triplewords:
             self.squares[x][y] = (None, Board.TRIPLEWORD)
@@ -113,7 +68,8 @@ class Board:
         self.rowLock = -1
 
         # Load the dictionary
-        self.dictionary = dictionarywords.DictionaryWords(Board.DICTIONARY_FILE)
+        self.dictionary = dictionarywords.DictionaryWords(
+            Board.DICTIONARY_FILE)
 
         # Load the file keeping track of word usage
         self.wordfreq = wordfrequency.WordFrequency()
@@ -234,7 +190,8 @@ class Board:
         if self.is_valid_position(boardX, boardY):
             tile = self.squares[boardX][boardY][0]
             if tile != None and not tile.locked:
-                self.squares[boardX][boardY] = (None, self.squares[boardX][boardY][1])
+                self.squares[boardX][boardY] = (
+                    None, self.squares[boardX][boardY][1])
                 self.setLocks()
                 return tile
         return None
@@ -309,7 +266,8 @@ class Board:
         if self.all_same_row(in_play):
             # return False
             start_col, start_row = in_play[0]
-            leftmost, rightmost = min(x for x, y in in_play), max(x for x, y in in_play)
+            leftmost, rightmost = min(
+                x for x, y in in_play), max(x for x, y in in_play)
             for x in range(leftmost, rightmost + 1):
                 print(self.squares[x][start_row][0])
                 if self.squares[x][start_row][0] is None:
@@ -358,8 +316,10 @@ class Board:
         # if self.played_words_are_broken(inPlay):
         # 	return self.removeTempTiles(), -1
 
-        leftmost, rightmost = min(x for x, y in inPlay), max(x for x, y in inPlay)
-        topmost, bottommost = min(y for x, y in inPlay), max(y for x, y in inPlay)
+        leftmost, rightmost = min(
+            x for x, y in inPlay), max(x for x, y in inPlay)
+        topmost, bottommost = min(
+            y for x, y in inPlay), max(y for x, y in inPlay)
 
         start_col, start_row = inPlay[0]
         if self.all_same_column(inPlay):
@@ -413,12 +373,14 @@ class Board:
             # apply bonus to first crossword
             bonusesApplied1 = bonusesApplied[:]
             bonusesApplied1.append((conflicts[0][0], conflicts[0][1][0]))
-            score1 = self.wordScoreTreeSearch(conflicts[1:], scores, bonusesApplied1)
+            score1 = self.wordScoreTreeSearch(
+                conflicts[1:], scores, bonusesApplied1)
 
             # apply bonus to second crossword
             bonusesApplied2 = bonusesApplied[:]
             bonusesApplied2.append((conflicts[0][0], conflicts[0][1][1]))
-            score2 = self.wordScoreTreeSearch(conflicts[1:], scores, bonusesApplied2)
+            score2 = self.wordScoreTreeSearch(
+                conflicts[1:], scores, bonusesApplied2)
 
             if score1 > score2:
                 bestScore = score1
@@ -488,7 +450,9 @@ class Board:
             # build right
             right = col
             while (
-                right + 1 < Board.GRID_SIZE and self.squares[right + 1][row][0] != None
+                right +
+                    1 < Board.GRID_SIZE and self.squares[right +
+                                                         1][row][0] != None
             ):
                 right += 1
 
@@ -516,7 +480,8 @@ class Board:
             # Add the word built
             if up != down:
                 wordsBuilt.append(
-                    [((col, y), self.squares[col][y][0]) for y in range(up, down + 1)]
+                    [((col, y), self.squares[col][y][0])
+                     for y in range(up, down + 1)]
                 )
 
         crosswordMade = False
@@ -813,16 +778,24 @@ class Board:
             self.columnLock * (Board.SQUARE_SIZE + Board.SQUARE_BORDER)
             + Board.BOARD_LEFT
         )
-        x2 = x1 + (Board.SQUARE_SIZE + Board.SQUARE_BORDER) + Board.SQUARE_BORDER
-        y1 = self.rowLock * (Board.SQUARE_SIZE + Board.SQUARE_BORDER) + Board.BOARD_LEFT
-        y2 = y1 + (Board.SQUARE_SIZE + Board.SQUARE_BORDER) + Board.SQUARE_BORDER
+        x2 = x1 + (Board.SQUARE_SIZE + Board.SQUARE_BORDER) + \
+            Board.SQUARE_BORDER
+        y1 = self.rowLock * (Board.SQUARE_SIZE +
+                             Board.SQUARE_BORDER) + Board.BOARD_LEFT
+        y2 = y1 + (Board.SQUARE_SIZE + Board.SQUARE_BORDER) + \
+            Board.SQUARE_BORDER
         if self.rowLock >= 0 and self.columnLock >= 0:
-            pygame.draw.rect(ALPHASURF, MASK_COLOR, (left, top, x1 - left, y1 - top))
-            pygame.draw.rect(ALPHASURF, MASK_COLOR, (left, y2, x1 - left, bottom - y2))
-            pygame.draw.rect(ALPHASURF, MASK_COLOR, (x2, top, right - x2, y1 - top))
-            pygame.draw.rect(ALPHASURF, MASK_COLOR, (x2, y2, right - x2, bottom - y2))
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (left, top, x1 - left, y1 - top))
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (left, y2, x1 - left, bottom - y2))
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (x2, top, right - x2, y1 - top))
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (x2, y2, right - x2, bottom - y2))
         elif self.rowLock >= 0:
-            pygame.draw.rect(ALPHASURF, MASK_COLOR, (left, top, right - left, y1 - top))
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (left, top, right - left, y1 - top))
             pygame.draw.rect(
                 ALPHASURF, MASK_COLOR, (left, y2, right - left, bottom - y2)
             )
@@ -830,7 +803,8 @@ class Board:
             pygame.draw.rect(
                 ALPHASURF, MASK_COLOR, (left, top, x1 - left, bottom - top)
             )
-            pygame.draw.rect(ALPHASURF, MASK_COLOR, (x2, top, right - x2, bottom - top))
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (x2, top, right - x2, bottom - top))
 
         DISPLAYSURF.blit(ALPHASURF, (0, 0))
         # =================================
