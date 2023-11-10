@@ -80,14 +80,29 @@ class Board:
         for x, y in doubleletters:
             result[x][y] = (None, Board.DOUBLELETTER)
         return result
+    
+    def get_tile(self, boardX, boardY):
+        return self.squares[boardX][boardY][0]
 
+    def place_tile(self, boardX, boardY, tile):
+        self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
+        
     def is_valid_position(self, boardX, boardY):
         return 0 <= boardX < Board.GRID_SIZE and 0 <= boardY < Board.GRID_SIZE
+    
+    def is_square_occupied(self, boardX, boardY):
+        return self.get_tile(boardX, boardY) is not None
     
     def can_place(self, mouse_position):
         boardX, boardY = self.getBoardPosition(x, y)
         if not self.is_valid_position(boardX, boardY):
             return False
+        # The square is locked.
+        if self.isPositionLocked(boardX, boardY):
+            return False   
+        # The square is occupied.
+        if self.squares[boardX][boardY][0] is not None:
+            return False             
         return True
         
     def placeTentative(self, x, y, tile):
