@@ -102,8 +102,8 @@ class Board:
         if self.is_square_occupied(boardX, boardY):
             return False             
         # The square is locked.
-        # if not self.isPositionLocked(boardX, boardY):
-        #     return False   
+        if self.isPositionLocked(boardX, boardY):
+            return False   
         return True
         
     def placeTentative(self, x, y, tile):
