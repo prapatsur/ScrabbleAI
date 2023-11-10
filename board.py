@@ -327,24 +327,8 @@ class Board:
 
         # VALIDATION STEP FOUR: Ensure the word is unbroken
         # it'll fail if there's a gap between two tiles
-        # if self.played_words_are_broken(inPlay):
-        # 	return self.removeTempTiles(), -1
-
-        # topmost, bottommost = min(y for x, y in inPlay), max(y for x, y in inPlay)
-        # start_col, start_row = inPlay[0]
-        # if self.all_same_column(inPlay):
-        #     for y in range(topmost, bottommost + 1):
-        #         if self.get_tile(start_col, y) is None:
-        #             return self.removeTempTiles(), -1
-        if self.played_words_are_broken_in_column(inPlay):
-            return self.removeTempTiles(), -1
-
-        # leftmost, rightmost = min( x for x, y in inPlay), max(x for x, y in inPlay)
-        # if self.all_same_row(inPlay):
-        #     for x in range(leftmost, rightmost + 1):
-        #         if self.get_tile(x, start_row) is None:
-        #             return self.removeTempTiles(), -1
-        if self.played_words_are_broken_in_row(inPlay):
+        if self.played_words_are_broken_in_column(inPlay) or \
+           self.played_words_are_broken_in_row(inPlay):
             return self.removeTempTiles(), -1
 
         # VALIDATION STEPS FIVE & SIX:
@@ -667,7 +651,6 @@ class Board:
     """
     Calculates the number of seeds and number of tiles and returns them as a tuple
     """
-
     def calculateSeedRatio(self):
         numSeeds = 0
         numTiles = 0
@@ -676,18 +659,85 @@ class Board:
                 if self.get_tile(x, y) is not None:
                     numTiles += 1
                 elif (
-                    (x > 0 and self.squares[x - 1][y][0] != None)
-                    or (x < Board.GRID_SIZE - 1 and self.squares[x + 1][y][0] != None)
-                    or (y > 0 and self.squares[x][y - 1][0] != None)
-                    or (y < Board.GRID_SIZE - 1 and self.squares[x][y + 1][0] != None)
+                    (x > 0 and self.get_tile(x - 1, y) is not None)
+                    or (x < Board.GRID_SIZE - 1 and self.get_tile(x + 1, y) is not None)
+                    or (y > 0 and self.get_tile(x, y - 1) is not None)
+                    or (y < Board.GRID_SIZE - 1 and self.get_tile(x, y + 1) is not None)
                 ):
                     numSeeds += 1
 
         # If the board is empty, then there is one seed
         if numSeeds == 0:
             numSeeds = 1
+        assert numTiles == self.count_tiles_on_board()
+        assert numSeeds == self.calculate_num_seeds()
+        return (numSeeds, numTiles)  
 
-        return (numSeeds, numTiles)
+    def count_tiles_on_board(self):
+        return sum(1 
+                   for x in range(Board.GRID_SIZE) 
+                   for y in range(Board.GRID_SIZE) 
+                   if self.get_tile(x, y) is not None
+                   )
+
+    # def calculate_num_seeds(self):
+    #     result = 0
+    #     for x in range(Board.GRID_SIZE):
+    #         for y in range(Board.GRID_SIZE):
+    #             if self.get_tile(x, y) is not None:
+    #                 continue
+    #             if (
+    #                 (x > 0 and self.get_tile(x - 1, y) is not None)
+    #                 or (x < Board.GRID_SIZE - 1 and self.get_tile(x + 1, y) is not None)
+    #                 or (y > 0 and self.get_tile(x, y - 1) is not None)
+    #                 or (y < Board.GRID_SIZE - 1 and self.get_tile(x, y + 1) is not None)
+    #             ):
+    #                 result += 1
+
+    #     # If the board is empty, then there is one seed
+    #     if result == 0:
+    #         result = 1 
+    #     return result      
+    def calculate_num_seeds(self):
+        result = sum(1 
+                     for x in range(Board.GRID_SIZE) 
+                     for y in range(Board.GRID_SIZE) 
+                     if self.is_seed_position(x, y)
+                     )
+
+        # If the board is empty, then there is one seed
+        return result if result > 0 else 1
+
+    def is_seed_position(self, x, y):
+        """
+        Determines if a given position on the board is a 'seed' position.
+        
+        A 'seed' position is defined as an empty position (no tile) that is adjacent
+        to at least one tile. In the context of Scrabble, a 'seed' position is a potential
+        spot for placing a new tile.
+
+        Parameters:
+        x (int): The x-coordinate (row) of the position to check.
+        y (int): The y-coordinate (column) of the position to check.
+
+        Returns:
+        bool: True if the position is a 'seed', False otherwise.
+        """        
+        if self.get_tile(x, y) is not None:
+            return False
+        # create a list of adjacent positions and then use the any() function 
+        # to check if any of the adjacent positions contain a tile.
+        adjacent_positions = [
+            (x - 1, y),
+            (x + 1, y),
+            (x, y - 1),
+            (x, y + 1)
+        ]
+        return any(
+            (0 <= adj_x < Board.GRID_SIZE) and (0 <= adj_y < Board.GRID_SIZE) and (self.get_tile(adj_x, adj_y) is not None)
+            for adj_x, adj_y in adjacent_positions
+        )
+
 
     """
     Prompts player to set a letter for the blank character
