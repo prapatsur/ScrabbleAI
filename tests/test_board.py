@@ -69,27 +69,29 @@ def test_setLocks():
     assert board.columnLock == -1
     assert board.rowLock == 0
 
-# def test_can_place():
-#     board = Board()
-#     # Set up the squares attribute
-#     board.setLocks()
+def test_can_place():
+    board = Board()
+    # Set up the squares attribute
+    board.setLocks()
 
-#     # Test if the position is valid
-#     assert board.can_place(-1, -1) == False
-#     assert board.can_place(0, 0) == True
+    # Test if the position is valid
+    assert board.can_place(-1, -1) == False
+    assert board.can_place(0, 0) == True
 
-#     # Test if the position is occupied
-#     tile1 = Tile('A', 1)
-#     board.place_tile(0, 0, tile1)
-#     assert board.can_place(0, 0) == False
-#     assert board.can_place(0, 1) == True
+    # Test if the position is occupied
+    tile1 = Tile('A', 1)
+    board.place_tile(0, 0, tile1)
+    assert board.can_place(0, 0) == False
+    assert board.can_place(0, 1) == True
 
-    # board.setLocks()
-    # # now, we lock to column 0 and row 0
-    # # we can only place in column 0 and row 0
-    # assert board.can_place(0, 1) == True
-    # # but cannot place in column 3
-    # assert board.can_place(3, 0) == False
+    board.setLocks()
+    # now, we lock to column 0 and row 0
+    # we can place in column 0 
+    assert board.can_place(0, 1) == True
+    # we can place in row 0
+    assert board.can_place(3, 0) == True
+    # but cannot place in column 3 and row 3
+    assert board.can_place(3, 3) == False
     
     # board.columnLock = 0
     # assert board.can_place(0, 0) == True    
