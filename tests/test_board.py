@@ -39,13 +39,14 @@ def test_place_tile():
 def test_get_tile():
     board = Board()
     tile1 = Tile('A', 1)
+    tile2 = Tile('B', 2)
     # Set up the squares attribute
-    board.place_tile(0, 0, copy.copy(tile1))
-    board.place_tile(14, 14, copy.copy(tile1))
+    board.place_tile(0, 0, tile1)
+    board.place_tile(14, 14, tile2)
 
     # Test the method
     assert board.get_tile(0, 0) == tile1
-    assert board.get_tile(14, 14) == tile1
+    assert board.get_tile(14, 14) == tile2
 
 def test_setLocks():
     board = Board()
