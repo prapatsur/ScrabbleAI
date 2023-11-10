@@ -1,5 +1,7 @@
 import pytest
-from square_model import Square
+import sys
+sys.path.append('..')
+from models.square_model import Square
 
 def test_square():
     square = Square('A')
