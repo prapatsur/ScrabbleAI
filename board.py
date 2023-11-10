@@ -448,11 +448,7 @@ class Board:
 
             # build right
             right = col
-            while (
-                right +
-                    1 < Board.GRID_SIZE and self.squares[right +
-                                                         1][row][0] != None
-            ):
+            while (right + 1 < Board.GRID_SIZE and self.squares[right + 1][row][0] != None ):
                 right += 1
 
             # Add the word built if it has at least 2 letters
@@ -651,27 +647,8 @@ class Board:
     """
     Calculates the number of seeds and number of tiles and returns them as a tuple
     """
-    def calculateSeedRatio(self):
-        numSeeds = 0
-        numTiles = 0
-        for x in range(Board.GRID_SIZE):
-            for y in range(Board.GRID_SIZE):
-                if self.get_tile(x, y) is not None:
-                    numTiles += 1
-                elif (
-                    (x > 0 and self.get_tile(x - 1, y) is not None)
-                    or (x < Board.GRID_SIZE - 1 and self.get_tile(x + 1, y) is not None)
-                    or (y > 0 and self.get_tile(x, y - 1) is not None)
-                    or (y < Board.GRID_SIZE - 1 and self.get_tile(x, y + 1) is not None)
-                ):
-                    numSeeds += 1
-
-        # If the board is empty, then there is one seed
-        if numSeeds == 0:
-            numSeeds = 1
-        assert numTiles == self.count_tiles_on_board()
-        assert numSeeds == self.calculate_num_seeds()
-        return (numSeeds, numTiles)  
+    def calculateSeedRatio(self):  
+        return (self.calculate_num_seeds(), self.count_tiles_on_board())
 
     def count_tiles_on_board(self):
         return sum(1 
@@ -679,25 +656,7 @@ class Board:
                    for y in range(Board.GRID_SIZE) 
                    if self.get_tile(x, y) is not None
                    )
-
-    # def calculate_num_seeds(self):
-    #     result = 0
-    #     for x in range(Board.GRID_SIZE):
-    #         for y in range(Board.GRID_SIZE):
-    #             if self.get_tile(x, y) is not None:
-    #                 continue
-    #             if (
-    #                 (x > 0 and self.get_tile(x - 1, y) is not None)
-    #                 or (x < Board.GRID_SIZE - 1 and self.get_tile(x + 1, y) is not None)
-    #                 or (y > 0 and self.get_tile(x, y - 1) is not None)
-    #                 or (y < Board.GRID_SIZE - 1 and self.get_tile(x, y + 1) is not None)
-    #             ):
-    #                 result += 1
-
-    #     # If the board is empty, then there is one seed
-    #     if result == 0:
-    #         result = 1 
-    #     return result      
+    
     def calculate_num_seeds(self):
         result = sum(1 
                      for x in range(Board.GRID_SIZE) 
