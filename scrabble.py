@@ -130,11 +130,11 @@ class ScrabbleGame:
         self.user_data_file = UserData()
         self.use_hint_box = useHintBox
 
-        self.setup_game(useHintBox)
+        self.setup_game()
 
-    def setup_game(self, useHintBox):
+    def setup_game(self):
         self.firstTurn = True
-        self.gameMenu = GameMenu(useHintBox)
+        self.gameMenu = GameMenu(self.use_hint_box)
         self.redrawEverything()
         self.inHand = None
         self.still_playing = True
@@ -206,7 +206,7 @@ class ScrabbleGame:
         # If we're stuck AND the AI is stuck, end the game without subtracting points
         if self.AIstuck:
             self.gameOver = True
-            self.endGame(useHintBox, USERDATA, stuck=True)
+            self.endGame(self.use_hint_box, USERDATA, stuck=True)
         self.redrawEverything()
 
     def handle_computer_cannot_play_move(self):
@@ -219,9 +219,9 @@ class ScrabbleGame:
             self.AIstuck = True
         self.next_player()
 
-    def handle_end_game(self, useHintBox):
+    def handle_end_game(self):
         self.gameOver = True
-        self.endGame(useHintBox)
+        self.endGame()
 
     def handle_successful_move(self):
         DINGDING.play()
@@ -238,24 +238,23 @@ class ScrabbleGame:
         if self.is_computer_turn():
             print("AI thinks it has a good move, but it doesn't")
 
-    def handle_played_move(self, useHintBox):
+    def handle_played_move(self):
         success = self.get_current_player().play(self.firstTurn)
         if success == "END":
-            self.handle_end_game(useHintBox)
+            self.handle_end_game()
         elif success:
             self.handle_successful_move()
         else:
             self.handle_unsuccessful_move()
 
-    def play_action(self, useHintBox):
-        USERDATA = self.user_data_file.get_user_data()
+    def play_action(self):
         playedMove = True
         # If it's the computer turn, we need to process its move first!
         if self.is_computer_turn():
             playedMove = self.execute_current_player_turn()
 
         if playedMove:
-            self.handle_played_move(useHintBox)
+            self.handle_played_move()
         else:
             # this one is not called when it's player turn
             # I think it's for AI turn
@@ -302,11 +301,10 @@ class ScrabbleGame:
             # if there is tile in hand
             return self.handle_tile_in_hand()
 
-    # def runGame(self, useHintBox=False):
     def runGame(self):
         useHintBox = self.use_hint_box
         # Start a new game
-        self.setup_game(useHintBox)
+        self.setup_game()
 
         # main game loop
         while self.still_playing:
@@ -319,7 +317,7 @@ class ScrabbleGame:
                 self.place_hinted_tiles()
 
             if self.should_play_action():
-                self.play_action(useHintBox)
+                self.play_action()
 
             if self.should_redraw():
                 # FIXME: error when redraw when there are tentatives on the board
@@ -462,7 +460,7 @@ class ScrabbleGame:
 	from their score and giving it to the active player (who just finished)
 	"""
 
-    def endGame(self, isPractice, stuck=False):
+    def endGame(self, stuck=False):
         userdata = self.user_data_file.get_user_data()
         # Do points swaps only if someone could finish
         # if not stuck:
@@ -477,7 +475,7 @@ class ScrabbleGame:
                     surplus += value
             self.players[self.active].givePoints(surplus)
 
-        if not isPractice:
+        if not self.use_hint_box:
             maxScore = -1
             maxPlayer = self.players[0]
             for p in self.players:
@@ -492,7 +490,6 @@ class ScrabbleGame:
                 if "numVictories" in userdata:
                     userdata["numVictories"] += 1
 
-            # saveUser(userdata)
             self.user_data_file.save_user_data(userdata)
 
         if TRAINING_FLAG:
