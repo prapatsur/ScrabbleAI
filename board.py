@@ -118,28 +118,11 @@ class Board:
         Otherwise, it returns (True, tile) or ("ASK", tile) for a blank tile.
         """
         boardX, boardY = self.getBoardPosition(x, y)
-        # # The position is outside the bounds of the board.
-        # if (
-        #     boardX < 0
-        #     or boardY < 0
-        #     or boardX >= Board.GRID_SIZE
-        #     or boardY >= Board.GRID_SIZE
-        # ):
-        #     return (False, tile)
-
-        # # The square is locked.
-        # if self.isPositionLocked(boardX, boardY):
-        #     return (False, tile)
-
-        # # The square is occupied.
-        # if self.squares[boardX][boardY][0] is not None:
-        #     return (False, tile)
         if not self.can_place(boardX, boardY):
             return (False, tile)
 
         # Place the tile.
         self.place_tile(boardX, boardY, tile)
-        # self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
 
         if tile.isBlank:
             return ("ASK", tile)
@@ -175,11 +158,17 @@ class Board:
         """
 
         # Gather all unlocked tiles' positions.
+        # inPlay = [
+        #     (x, y)
+        #     for x in range(Board.GRID_SIZE)
+        #     for y in range(Board.GRID_SIZE)
+        #     if self.squares[x][y][0] and not self.squares[x][y][0].locked
+        # ]
         inPlay = [
             (x, y)
             for x in range(Board.GRID_SIZE)
             for y in range(Board.GRID_SIZE)
-            if self.squares[x][y][0] and not self.squares[x][y][0].locked
+            if self.get_tile(x,y) and not self.get_tile(x,y).locked
         ]
 
         num_tiles = len(inPlay)
@@ -221,11 +210,8 @@ class Board:
         (boardX, boardY) = self.getBoardPosition(x, y)
         if self.is_valid_position(boardX, boardY):
             tile = self.get_tile(boardX, boardY)
-            # tile = self.squares[boardX][boardY][0]
             if tile is not None and not tile.locked:
                 self.place_tile(boardX, boardY, None)
-                # self.squares[boardX][boardY] = (
-                #     None, self.squares[boardX][boardY][1])
                 self.setLocks()
                 return tile
         return None
@@ -285,9 +271,7 @@ class Board:
         return all(y == start_row for x, y in in_play)
 
     def all_tiles_in_straight_line(self, in_play):
-        if self.all_same_column(in_play) or self.all_same_row(in_play):
-            return True
-        return False
+        return self.all_same_column(in_play) or self.all_same_row(in_play):
 
     def played_words_are_broken(self, in_play):
         # if self.all_same_column(in_play):
