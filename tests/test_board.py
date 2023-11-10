@@ -47,10 +47,31 @@ def test_get_tile():
     assert board.get_tile(0, 0) == tile1
     assert board.get_tile(14, 14) == tile1
 
+def test_setLocks():
+    board = Board()
+
+    # Test no tentative tiles: clear all locks.
+    board.setLocks()
+    assert board.columnLock == -1
+    assert board.rowLock == -1
+
+    # Test one tentative tile: allow play on its row and column.
+    tile1 = Tile('A', 1)
+    board.place_tile(0, 0, tile1)
+    board.setLocks()
+    assert board.columnLock == 0
+    assert board.rowLock == 0
+
+    # Test multiple tentative tiles in a line: lock the perpendicular direction.
+    tile2 = Tile('B', 1)
+    board.place_tile(1, 0, tile2)
+    board.setLocks()
+    assert board.columnLock == -1
+    assert board.rowLock == 0
+
 # def test_can_place():
 #     board = Board()
 #     # Set up the squares attribute
-#     board.squares = [[(None, 'Normal') for _ in range(15)] for _ in range(15)]
 #     board.setLocks()
 
 #     # Test if the position is valid
@@ -58,13 +79,17 @@ def test_get_tile():
 #     assert board.can_place(0, 0) == True
 
 #     # Test if the position is occupied
-#     board.place_tile(0, 0, 'A')
+#     tile1 = Tile('A', 1)
+#     board.place_tile(0, 0, tile1)
 #     assert board.can_place(0, 0) == False
 #     assert board.can_place(0, 1) == True
 
-#     board.setLocks()
-    # now, we lock to column 0 and row 0
+    # board.setLocks()
+    # # now, we lock to column 0 and row 0
+    # # we can only place in column 0 and row 0
     # assert board.can_place(0, 1) == True
+    # # but cannot place in column 3
+    # assert board.can_place(3, 0) == False
     
     # board.columnLock = 0
     # assert board.can_place(0, 0) == True    
