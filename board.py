@@ -1,4 +1,5 @@
 import pygame, tile, player, dictionarywords, wordfrequency, time
+from gui import BEIGE, RED, BLUE, PINK, LBLUE
 from pygame.locals import *
 
 class Board:
@@ -28,11 +29,11 @@ class Board:
 	PROMPT_FONT = None
 	
 
-	BEIGE = (200, 180, 165)
-	RED	= (200, 0, 0)
-	BLUE = (0, 0, 200)
-	PINK = (255, 100, 100)
-	LBLUE = (100, 100, 255)
+	# BEIGE = (200, 180, 165)
+	# RED	= (200, 0, 0)
+	# BLUE = (0, 0, 200)
+	# PINK = (255, 100, 100)
+	# LBLUE = (100, 100, 255)
 	
 	MASK_COLOR = (0, 0, 0, 100)
 
@@ -232,6 +233,24 @@ class Board:
 		if self.all_same_column(in_play) or self.all_same_row(in_play):
 			return True
 		return False
+	
+	def played_words_are_broken(self, in_play):
+		# if self.all_same_column(in_play):
+		# 	start_col, start_row = in_play[0]
+		# 	topmost, bottommost = min(y for x, y in in_play), max(y for x, y in in_play)
+		# 	for y in range(topmost, bottommost + 1):
+		# 		if self.squares[start_col][y][0] is None:
+		# 			return True
+		result = False
+		if self.all_same_row(in_play):
+			# return False
+			start_col, start_row = in_play[0]
+			leftmost, rightmost = min(x for x, y in in_play), max(x for x, y in in_play)
+			for x in range(leftmost, rightmost + 1):
+				print(self.squares[x][start_row][0])
+				if self.squares[x][start_row][0] is None:
+					result = True
+		return result	
 			
 	'''
 	This function works by going through all tentative tiles on the board, validating the move
@@ -270,21 +289,20 @@ class Board:
 			return self.removeTempTiles(), -1
 
 		# VALIDATION STEP FOUR: Ensure the word is unbroken
-
+		# it'll fail if there's a gap between two tiles
+		# if self.played_words_are_broken(inPlay):
+		# 	return self.removeTempTiles(), -1
+		
 		leftmost, rightmost = min(x for x, y in inPlay), max(x for x, y in inPlay)
 		topmost, bottommost = min(y for x, y in inPlay), max(y for x, y in inPlay)
 
 		start_col, start_row = inPlay[0]
-
-		all_same_column = all(x == start_col for x, y in inPlay)
-		all_same_row = all(y == start_row for x, y in inPlay)
-
-		if all_same_column:
+		if self.all_same_column(inPlay):
 			for y in range(topmost, bottommost + 1):
 				if self.squares[start_col][y][0] is None:
 					return self.removeTempTiles(), -1
 
-		if all_same_row:
+		if self.all_same_row(inPlay):
 			for x in range(leftmost, rightmost + 1):
 				if self.squares[x][start_row][0] is None:
 					return self.removeTempTiles(), -1
@@ -723,15 +741,15 @@ class Board:
 					
 				(tile, bonus) = self.squares[x][y]
 				if(bonus == Board.NORMAL):
-					color = Board.BEIGE
+					color = BEIGE
 				elif(bonus == Board.DOUBLEWORD):
-					color = Board.PINK
+					color = PINK
 				elif(bonus == Board.TRIPLEWORD):
-					color = Board.RED
+					color = RED
 				elif(bonus == Board.DOUBLELETTER):
-					color = Board.LBLUE
+					color = LBLUE
 				elif(bonus == Board.TRIPLELETTER):
-					color = Board.BLUE
+					color = BLUE
 				else:
 					assert(False)
 				pygame.draw.rect(DISPLAYSURF, color, (left, top, Board.SQUARE_SIZE, Board.SQUARE_SIZE))
