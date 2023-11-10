@@ -3,6 +3,7 @@ from gui import BEIGE, RED, BLUE, PINK, LBLUE, MASK_COLOR
 from pygame.locals import *
 from views.board_view import draw_letter_prompt
 
+
 class Board:
     DEBUG_ERRORS = True
 
@@ -20,13 +21,6 @@ class Board:
     SQUARE_BORDER = tile.Tile.SQUARE_BORDER
     BOARD_TOP = 0
     BOARD_LEFT = 0
-
-    # Prompt Details
-    PROMPT_LEFT = 145
-    PROMPT_TOP = 200
-    PROMPT_WIDTH = 250
-    PROMPT_HEIGHT = 75
-    PROMPT_FONT = None
 
     def __init__(self):
         # Initialize squares using list comprehension
@@ -126,9 +120,6 @@ class Board:
 
         # Reset all timers
         self.resetAllMetrics()
-
-        # Load font
-        Board.PROMPT_FONT = pygame.font.Font("freesansbold.ttf", 20)
 
     def placeTentative(self, x, y, tile):
         """
@@ -726,7 +717,6 @@ class Board:
         assert blank.isBlank
 
         letter = None
-        # self.drawLetterPrompt(DISPLAYSURF, ALPHASURF)
         draw_letter_prompt(DISPLAYSURF, ALPHASURF)
         while letter == None:
             for event in pygame.event.get():
@@ -738,59 +728,6 @@ class Board:
 
         # Now set the letter
         blank.letter = letter
-
-    """
-    Draws a letter prompt to ask for the blank letter
-    """
-
-    # def drawLetterPrompt(self, DISPLAYSURF, ALPHASURF):
-    #     # Draw prompt shadow
-    #     ALPHASURF.fill((0, 0, 0, 0))
-    #     pygame.draw.rect(
-    #         ALPHASURF,
-    #         MASK_COLOR,
-    #         (
-    #             Board.PROMPT_LEFT,
-    #             Board.PROMPT_TOP,
-    #             Board.PROMPT_WIDTH + 4,
-    #             Board.PROMPT_HEIGHT + 4,
-    #         ),
-    #     )
-
-    #     # Draw prompt box
-    #     pygame.draw.rect(
-    #         ALPHASURF,
-    #         (0, 0, 0, 200),
-    #         (
-    #             Board.PROMPT_LEFT - 1,
-    #             Board.PROMPT_TOP - 1,
-    #             Board.PROMPT_WIDTH + 2,
-    #             Board.PROMPT_HEIGHT + 2,
-    #         ),
-    #     )
-    #     pygame.draw.rect(
-    #         ALPHASURF,
-    #         (255, 255, 255, 200),
-    #         (
-    #             Board.PROMPT_LEFT,
-    #             Board.PROMPT_TOP,
-    #             Board.PROMPT_WIDTH,
-    #             Board.PROMPT_HEIGHT,
-    #         ),
-    #     )
-
-    #     DISPLAYSURF.blit(ALPHASURF, (0, 0))
-
-    #     # Draw text
-    #     promptText = Board.PROMPT_FONT.render(
-    #         "TYPE A LETTER A-Z", True, (0, 0, 0, 200), (255, 255, 255, 200)
-    #     )
-    #     promptRect = promptText.get_rect()
-    #     promptRect.center = (
-    #         Board.PROMPT_LEFT + Board.PROMPT_WIDTH / 2,
-    #         Board.PROMPT_TOP + Board.PROMPT_HEIGHT / 2,
-    #     )
-    #     DISPLAYSURF.blit(promptText, promptRect)
 
     """
     Redraws only tiles which are animating

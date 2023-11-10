@@ -8,7 +8,11 @@ PROMPT_WIDTH = 250
 PROMPT_HEIGHT = 75
 PROMPT_FONT = None
 
+
 def draw_letter_prompt(DISPLAYSURF, ALPHASURF):
+    """
+    Draws a letter prompt to ask for the blank letter
+    """
     # Draw prompt shadow
     ALPHASURF.fill((0, 0, 0, 0))
     pygame.draw.rect(
@@ -46,7 +50,7 @@ def draw_letter_prompt(DISPLAYSURF, ALPHASURF):
 
     DISPLAYSURF.blit(ALPHASURF, (0, 0))
 
-    # Draw text    
+    # Draw text
     PROMPT_FONT = pygame.font.Font("freesansbold.ttf", 20)
     promptText = PROMPT_FONT.render(
         "TYPE A LETTER A-Z", True, (0, 0, 0, 200), (255, 255, 255, 200)
