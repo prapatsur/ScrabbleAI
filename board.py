@@ -271,7 +271,7 @@ class Board:
         return all(y == start_row for x, y in in_play)
 
     def all_tiles_in_straight_line(self, in_play):
-        return self.all_same_column(in_play) or self.all_same_row(in_play):
+        return self.all_same_column(in_play) or self.all_same_row(in_play)
 
     def played_words_are_broken(self, in_play):
         # if self.all_same_column(in_play):
