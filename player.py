@@ -60,14 +60,15 @@ class Player:
             self.heuristic = theHeuristic
 
         # start with a full set of tiles
-        self.grab()
+        self.fill_tray()
 
     """
 	Returns False if the player tries to draw new tiles and none exist in the bag (i.e. the
 	game is finished), True if either tiles were successfully removed, or the tray isn't empty 
 	"""
 
-    def grab(self):
+    def fill_tray(self):
+        """Fills the tray with tiles from the bag."""
         if not self.theBag.isEmpty():
             # Attempt to withdraw the needed number of tiles
             numNeeded = Player.TRAY_SIZE - len(self.tray)
@@ -120,7 +121,7 @@ class Player:
         if tiles is None and points >= 0:
             self.score += points
             self.lastScore = points
-            gameContinues = self.grab()
+            gameContinues = self.fill_tray()
             if gameContinues:
                 return True
             else:
@@ -170,7 +171,7 @@ class Player:
 
         self.tray = []
         self.theBag.shuffle()
-        self.grab()
+        self.fill_tray()
 
     """
 	Prototype for Draw Tray, it does nothing by default, but a Human player will draw

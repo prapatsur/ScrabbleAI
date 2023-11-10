@@ -1,5 +1,5 @@
 import pygame
-from gui import MASK_COLOR
+from gui import MASK_COLOR, BEIGE, PINK, RED, LBLUE, BLUE
 
 # Prompt Details
 PROMPT_LEFT = 145
@@ -29,6 +29,97 @@ class BoardView:
                         + self.board.BOARD_TOP
                     )
                     tile.drawDirty(left, top, DISPLAYSURF, (not tile.locked))
+
+    def draw(self, DISPLAYSURF, ALPHASURF):
+        # draw each square
+        for x in range(self.board.GRID_SIZE):
+            for y in range(self.board.GRID_SIZE):
+                # draw position
+                left = (
+                    x * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
+                    + self.board.SQUARE_BORDER
+                    + self.board.BOARD_LEFT
+                )
+                top = (
+                    y * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
+                    + self.board.SQUARE_BORDER
+                    + self.board.BOARD_TOP
+                )
+
+                tile = self.board.get_tile(x, y)
+                bonus = self.board.get_bonus(x, y)
+                if bonus == self.board.NORMAL:
+                    color = BEIGE
+                elif bonus == self.board.DOUBLEWORD:
+                    color = PINK
+                elif bonus == self.board.TRIPLEWORD:
+                    color = RED
+                elif bonus == self.board.DOUBLELETTER:
+                    color = LBLUE
+                elif bonus == self.board.TRIPLELETTER:
+                    color = BLUE
+                else:
+                    assert False
+                pygame.draw.rect(
+                    DISPLAYSURF,
+                    color,
+                    (left, top, self.board.SQUARE_SIZE, self.board.SQUARE_SIZE),
+                )
+
+                if tile is not None:
+                    if tile.locked:
+                        highlight = False
+                    else:
+                        highlight = True
+                    tile.draw(left, top, DISPLAYSURF, highlight)
+
+        # =======DRAW LOCK SHADING==========
+        ALPHASURF.fill((0, 0, 0, 0))
+        top = self.board.BOARD_TOP
+        left = self.board.BOARD_LEFT
+        right = (
+            self.board.GRID_SIZE * (self.board.SQUARE_BORDER + self.board.SQUARE_SIZE)
+            + self.board.SQUARE_BORDER
+        )
+        bottom = (
+            self.board.GRID_SIZE * (self.board.SQUARE_BORDER + self.board.SQUARE_SIZE)
+            + self.board.SQUARE_BORDER
+        )
+        x1 = (
+            self.board.columnLock * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
+            + self.board.BOARD_LEFT
+        )
+        x2 = x1 + (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER) + \
+            self.board.SQUARE_BORDER
+        y1 = self.board.rowLock * (self.board.SQUARE_SIZE +
+                             self.board.SQUARE_BORDER) + self.board.BOARD_LEFT
+        y2 = y1 + (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER) + \
+            self.board.SQUARE_BORDER
+        if self.board.rowLock >= 0 and self.board.columnLock >= 0:
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (left, top, x1 - left, y1 - top))
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (left, y2, x1 - left, bottom - y2))
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (x2, top, right - x2, y1 - top))
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (x2, y2, right - x2, bottom - y2))
+        elif self.board.rowLock >= 0:
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (left, top, right - left, y1 - top))
+            pygame.draw.rect(
+                ALPHASURF, MASK_COLOR, (left, y2, right - left, bottom - y2)
+            )
+        elif self.board.columnLock >= 0:
+            pygame.draw.rect(
+                ALPHASURF, MASK_COLOR, (left, top, x1 - left, bottom - top)
+            )
+            pygame.draw.rect(ALPHASURF, MASK_COLOR,
+                             (x2, top, right - x2, bottom - top))
+
+        DISPLAYSURF.blit(ALPHASURF, (0, 0))
+        # =================================
+
 
 def draw_letter_prompt(DISPLAYSURF, ALPHASURF):
     """
