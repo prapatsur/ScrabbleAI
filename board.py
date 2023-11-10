@@ -288,6 +288,7 @@ class Board:
     """
 
     def play(self, isFirstTurn=True):
+        # get board coordinates of all tentative tiles
         inPlay = self.getInPlay()
 
         # VALIDATION STEP ONE: There must be at least one tile played
@@ -311,20 +312,17 @@ class Board:
         # if self.played_words_are_broken(inPlay):
         # 	return self.removeTempTiles(), -1
 
-        leftmost, rightmost = min(
-            x for x, y in inPlay), max(x for x, y in inPlay)
-        topmost, bottommost = min(
-            y for x, y in inPlay), max(y for x, y in inPlay)
-
+        topmost, bottommost = min(y for x, y in inPlay), max(y for x, y in inPlay)
         start_col, start_row = inPlay[0]
         if self.all_same_column(inPlay):
             for y in range(topmost, bottommost + 1):
-                if self.squares[start_col][y][0] is None:
+                if self.get_tile(start_col, y) is None:
                     return self.removeTempTiles(), -1
 
+        leftmost, rightmost = min( x for x, y in inPlay), max(x for x, y in inPlay)
         if self.all_same_row(inPlay):
             for x in range(leftmost, rightmost + 1):
-                if self.squares[x][start_row][0] is None:
+                if self.get_tile(x, start_row) is None:
                     return self.removeTempTiles(), -1
 
         # VALIDATION STEPS FIVE & SIX:
@@ -751,7 +749,7 @@ class Board:
                     (left, top, Board.SQUARE_SIZE, Board.SQUARE_SIZE),
                 )
 
-                if tile != None:
+                if tile is not None:
                     if tile.locked:
                         highlight = False
                     else:
