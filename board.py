@@ -28,15 +28,6 @@ class Board:
 	PROMPT_HEIGHT = 75
 	PROMPT_FONT = None
 	
-
-	# BEIGE = (200, 180, 165)
-	# RED	= (200, 0, 0)
-	# BLUE = (0, 0, 200)
-	# PINK = (255, 100, 100)
-	# LBLUE = (100, 100, 255)
-	
-	MASK_COLOR = (0, 0, 0, 100)
-
 	def __init__(self):
 		# Initialize squares using list comprehension
 		self.squares = [[(None, Board.NORMAL) for _ in range(Board.GRID_SIZE)] for _ in range(Board.GRID_SIZE)]
@@ -699,7 +690,7 @@ class Board:
 		
 		#Draw prompt shadow
 		ALPHASURF.fill((0,0,0,0))
-		pygame.draw.rect(ALPHASURF, Board.MASK_COLOR, (Board.PROMPT_LEFT, Board.PROMPT_TOP, Board.PROMPT_WIDTH+4, Board.PROMPT_HEIGHT+4))
+		pygame.draw.rect(ALPHASURF, MASK_COLOR, (Board.PROMPT_LEFT, Board.PROMPT_TOP, Board.PROMPT_WIDTH+4, Board.PROMPT_HEIGHT+4))
 		
 		#Draw prompt box	
 		pygame.draw.rect(ALPHASURF, (0,0,0,200), (Board.PROMPT_LEFT-1, Board.PROMPT_TOP-1, Board.PROMPT_WIDTH+2, Board.PROMPT_HEIGHT+2))
@@ -772,16 +763,16 @@ class Board:
 		y1 = self.rowLock * (Board.SQUARE_SIZE + Board.SQUARE_BORDER) + Board.BOARD_LEFT
 		y2 = y1 + (Board.SQUARE_SIZE + Board.SQUARE_BORDER) + Board.SQUARE_BORDER				
 		if self.rowLock >= 0 and self.columnLock >= 0:
-			pygame.draw.rect(ALPHASURF, Board.MASK_COLOR, (left, top, x1-left, y1-top))
-			pygame.draw.rect(ALPHASURF, Board.MASK_COLOR, (left, y2, x1-left, bottom-y2))
-			pygame.draw.rect(ALPHASURF, Board.MASK_COLOR, (x2, top, right-x2, y1-top))
-			pygame.draw.rect(ALPHASURF, Board.MASK_COLOR, (x2, y2, right-x2, bottom-y2))
+			pygame.draw.rect(ALPHASURF, MASK_COLOR, (left, top, x1-left, y1-top))
+			pygame.draw.rect(ALPHASURF, MASK_COLOR, (left, y2, x1-left, bottom-y2))
+			pygame.draw.rect(ALPHASURF, MASK_COLOR, (x2, top, right-x2, y1-top))
+			pygame.draw.rect(ALPHASURF, MASK_COLOR, (x2, y2, right-x2, bottom-y2))
 		elif self.rowLock >= 0:
-			pygame.draw.rect(ALPHASURF, Board.MASK_COLOR, (left, top, right-left, y1-top))
-			pygame.draw.rect(ALPHASURF, Board.MASK_COLOR, (left, y2, right-left, bottom-y2))
+			pygame.draw.rect(ALPHASURF, MASK_COLOR, (left, top, right-left, y1-top))
+			pygame.draw.rect(ALPHASURF, MASK_COLOR, (left, y2, right-left, bottom-y2))
 		elif self.columnLock >= 0:
-			pygame.draw.rect(ALPHASURF, Board.MASK_COLOR, (left, top, x1-left, bottom-top))
-			pygame.draw.rect(ALPHASURF, Board.MASK_COLOR, (x2, top, right-x2, bottom-top))
+			pygame.draw.rect(ALPHASURF, MASK_COLOR, (left, top, x1-left, bottom-top))
+			pygame.draw.rect(ALPHASURF, MASK_COLOR, (x2, top, right-x2, bottom-top))
 			
 		DISPLAYSURF.blit(ALPHASURF, (0,0))
 		#=================================

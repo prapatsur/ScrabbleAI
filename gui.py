@@ -24,6 +24,7 @@ RED = (200, 0, 0)
 BLUE = (0, 0, 200)
 PINK = (255, 100, 100)
 LBLUE = (100, 100, 255)
+MASK_COLOR = (0, 0, 0, 100)
 
 # text box position
 MAIN_MENU_TEXTBOX_POS = (400, 400)
