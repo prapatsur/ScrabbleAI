@@ -28,12 +28,23 @@ class Board:
     BOARD_LEFT = 0
 
     def __init__(self):
-        # Initialize squares using list comprehension
-        self.squares = [
-            [(None, Board.NORMAL) for _ in range(Board.GRID_SIZE)]
-            for _ in range(Board.GRID_SIZE)
-        ]
+        # TODO: replace columnLock and rowLock variable with query
+        self.squares = self.init_squares()
 
+        self.columnLock = -1
+        self.rowLock = -1
+
+        # Load the dictionary
+        self.dictionary = dictionarywords.DictionaryWords(
+            Board.DICTIONARY_FILE)
+
+        # Load the file keeping track of word usage
+        self.wordfreq = wordfrequency.WordFrequency()
+
+        # Reset all timers
+        self.resetAllMetrics()
+
+    def init_squares(self):
         # BONUS SQUARES
         triplewords = [(0, 0), (7, 0), (14, 0), (0, 7),
                        (14, 7), (0, 14), (7, 14), (14, 14)]
@@ -54,29 +65,22 @@ class Board:
                          (7, 3), (8, 2), (6, 12), (7, 11),
                          (8, 12), (12, 6), (11, 7), (12, 8),
                          (6, 6), (8, 8), (6, 8), (8, 6)]
-
+        
+        # set all squares with no tile (None) and normal bonus
+        # TODO: may use null tile later
+        result = [[(None, Board.NORMAL) for _ in range(Board.GRID_SIZE)]
+                  for _ in range(Board.GRID_SIZE)]
+        # set bonus squares
         for x, y in triplewords:
-            self.squares[x][y] = (None, Board.TRIPLEWORD)
+            result[x][y] = (None, Board.TRIPLEWORD)
         for x, y in doublewords:
-            self.squares[x][y] = (None, Board.DOUBLEWORD)
+            result[x][y] = (None, Board.DOUBLEWORD)
         for x, y in tripleletters:
-            self.squares[x][y] = (None, Board.TRIPLELETTER)
+            result[x][y] = (None, Board.TRIPLELETTER)
         for x, y in doubleletters:
-            self.squares[x][y] = (None, Board.DOUBLELETTER)
-
-        self.columnLock = -1
-        self.rowLock = -1
-
-        # Load the dictionary
-        self.dictionary = dictionarywords.DictionaryWords(
-            Board.DICTIONARY_FILE)
-
-        # Load the file keeping track of word usage
-        self.wordfreq = wordfrequency.WordFrequency()
-
-        # Reset all timers
-        self.resetAllMetrics()
-
+            result[x][y] = (None, Board.DOUBLELETTER)
+        return result
+            
     def placeTentative(self, x, y, tile):
         """
         Locates a board position and tries to put a tile there.
