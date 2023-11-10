@@ -1,5 +1,5 @@
 import pygame, tile, player, dictionarywords, wordfrequency, time
-from gui import BEIGE, RED, BLUE, PINK, LBLUE
+from gui import BEIGE, RED, BLUE, PINK, LBLUE, MASK_COLOR
 from pygame.locals import *
 
 
@@ -233,10 +233,10 @@ class Board:
         return 0 <= boardX < Board.GRID_SIZE and 0 <= boardY < Board.GRID_SIZE
 
     """
-	Attempts to remove the tile from the given square, returns the tile if it
-	was removed successfully, otherwise returns None if the pointer was out of range,
-	the square didn't have a tile or if the tile was locked
-	"""
+    Attempts to remove the tile from the given square, returns the tile if it
+    was removed successfully, otherwise returns None if the pointer was out of range,
+    the square didn't have a tile or if the tile was locked
+    """
 
     def remove(self, x, y):
         (boardX, boardY) = self.getBoardPosition(x, y)
@@ -249,8 +249,8 @@ class Board:
         return None
 
     """
-	Returns the (boardX, boardY) tuple of the coordinates on the board based on screen coords
-	"""
+    Returns the (boardX, boardY) tuple of the coordinates on the board based on screen coords
+    """
 
     def getBoardPosition(self, x, y):
         x -= Board.BOARD_LEFT + Board.SQUARE_BORDER
@@ -273,8 +273,8 @@ class Board:
         return (-1, -1)
 
     """
-	Puts a tile on the board (board, not screen coords, for that use placeTentative)
-	"""
+    Puts a tile on the board (board, not screen coords, for that use placeTentative)
+    """
 
     def setPiece(self, xxx_todo_changeme, tile):
         (x, y) = xxx_todo_changeme
@@ -326,22 +326,22 @@ class Board:
         return result
 
     """
-	This function works by going through all tentative tiles on the board, validating the move
-	and then processing the play. The return value is a tuple of (tiles, points) with the former
-	being returned tiles in a move failure and the latter being the score in the case of success.
-	
-	In success, the tiles are locked, in failure, the tiles are removed entirely.
-	
-	Validation Rules:
-	
-		1) At least one tile must be tentative
-		2) All tentative tiles must lie on one line
-		3) On the first turn, one tile must be located on square START_POSITION
-		4) Linear word must be unbroken (including locked tiles)
-		5) On every other turn, at least one crossword must be formed
-		6) All words formed must be inside the dictionary
-	
-	"""
+    This function works by going through all tentative tiles on the board, validating the move
+    and then processing the play. The return value is a tuple of (tiles, points) with the former
+    being returned tiles in a move failure and the latter being the score in the case of success.
+    
+    In success, the tiles are locked, in failure, the tiles are removed entirely.
+    
+    Validation Rules:
+    
+        1) At least one tile must be tentative
+        2) All tentative tiles must lie on one line
+        3) On the first turn, one tile must be located on square START_POSITION
+        4) Linear word must be unbroken (including locked tiles)
+        5) On every other turn, at least one crossword must be formed
+        6) All words formed must be inside the dictionary
+    
+    """
 
     def play(self, isFirstTurn=True):
         inPlay = self.getInPlay()
@@ -406,9 +406,9 @@ class Board:
         return (None, totalScore)
 
     """
-	Recursively searches through the conflicted word space, trying all permutations
-	to see which assignment of word score bonuses yields the highest points
-	"""
+    Recursively searches through the conflicted word space, trying all permutations
+    to see which assignment of word score bonuses yields the highest points
+    """
 
     def wordScoreTreeSearch(self, conflicts, scores, bonusesApplied=[]):
         # BASE CASE: count up scores + bonuses return value
@@ -439,10 +439,10 @@ class Board:
             return (bestScore, bestBonusCombos)
 
     """
-	Checks if all the words played are valid and calculates the score, used for two purposes
-		1) as the second half of the play() algorithm
-		2) independently for AI verification checks
-	"""
+    Checks if all the words played are valid and calculates the score, used for two purposes
+        1) as the second half of the play() algorithm
+        2) independently for AI verification checks
+    """
 
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
         if Board.DEBUG_ERRORS:
@@ -467,12 +467,12 @@ class Board:
 
         # VALIDATION STEP FIVE: Ensure a crossword is formed (also keep a list of 'words built')
         """
-		Algorithm description: We can find all the crosswords by going through all the rows
-		and columns which contain tentative tiles. These are potential 'words'. Then we start
-		with a tentative tile on that row/col and expand outward in both directions until we
-		hit a blank on both ends. That becomes the 'word' created. Finally, we go through the
-		words and confirm that a previously played tile was used
-		"""
+        Algorithm description: We can find all the crosswords by going through all the rows
+        and columns which contain tentative tiles. These are potential 'words'. Then we start
+        with a tentative tile on that row/col and expand outward in both directions until we
+        hit a blank on both ends. That becomes the 'word' created. Finally, we go through the
+        words and confirm that a previously played tile was used
+        """
 
         # First build a list of possible word rows and cols (include x and y for the first seed tile)
         rowsToCheck = []
@@ -634,8 +634,8 @@ class Board:
         return (totalScore, spellings, seedRatio)
 
     """
-	Resets all timers
-	"""
+    Resets all timers
+    """
 
     def resetAllMetrics(self):
         self.scoringTime = 0
@@ -646,8 +646,8 @@ class Board:
         self.crosswordErrors = 0
 
     """
-	Removes tiles if we already know where they are
-	"""
+    Removes tiles if we already know where they are
+    """
 
     def pullTilesFast(self, tilesPlayed):
         if tilesPlayed != None:
@@ -659,8 +659,8 @@ class Board:
                 self.squares[x][y] = (None, self.squares[x][y][1])
 
     """
-	Returns a list of all word indices using the given tile
-	"""
+    Returns a list of all word indices using the given tile
+    """
 
     def shared(self, pos, words):
         wordsUsingPos = []
@@ -674,8 +674,8 @@ class Board:
         return wordsUsingPos
 
     """
-	Removes the temporary tiles on the board and returns them as a list
-	"""
+    Removes the temporary tiles on the board and returns them as a list
+    """
 
     def removeTempTiles(self):
         inPlay = []
@@ -694,8 +694,8 @@ class Board:
         return inPlay
 
     """
-	Calculates the number of seeds and number of tiles and returns them as a tuple
-	"""
+    Calculates the number of seeds and number of tiles and returns them as a tuple
+    """
 
     def calculateSeedRatio(self):
         numSeeds = 0
@@ -719,8 +719,8 @@ class Board:
         return (numSeeds, numTiles)
 
     """
-	Prompts player to set a letter for the blank character
-	"""
+    Prompts player to set a letter for the blank character
+    """
 
     def askForLetter(self, blank, DISPLAYSURF, ALPHASURF):
         assert blank.isBlank
@@ -729,67 +729,16 @@ class Board:
         self.drawLetterPrompt(DISPLAYSURF, ALPHASURF)
         while letter == None:
             for event in pygame.event.get():
-                if event.type == KEYUP:
-                    if event.key == K_a:
-                        letter = "A"
-                    elif event.key == K_b:
-                        letter = "B"
-                    elif event.key == K_c:
-                        letter = "C"
-                    elif event.key == K_d:
-                        letter = "D"
-                    elif event.key == K_e:
-                        letter = "E"
-                    elif event.key == K_f:
-                        letter = "F"
-                    elif event.key == K_g:
-                        letter = "G"
-                    elif event.key == K_h:
-                        letter = "H"
-                    elif event.key == K_i:
-                        letter = "I"
-                    elif event.key == K_j:
-                        letter = "J"
-                    elif event.key == K_k:
-                        letter = "K"
-                    elif event.key == K_l:
-                        letter = "L"
-                    elif event.key == K_m:
-                        letter = "M"
-                    elif event.key == K_n:
-                        letter = "N"
-                    elif event.key == K_o:
-                        letter = "O"
-                    elif event.key == K_p:
-                        letter = "P"
-                    elif event.key == K_q:
-                        letter = "Q"
-                    elif event.key == K_r:
-                        letter = "R"
-                    elif event.key == K_s:
-                        letter = "S"
-                    elif event.key == K_t:
-                        letter = "T"
-                    elif event.key == K_u:
-                        letter = "U"
-                    elif event.key == K_v:
-                        letter = "V"
-                    elif event.key == K_w:
-                        letter = "W"
-                    elif event.key == K_x:
-                        letter = "X"
-                    elif event.key == K_y:
-                        letter = "Y"
-                    elif event.key == K_z:
-                        letter = "Z"
+                if event.type == pygame.KEYUP and event.key in range(pygame.K_a, pygame.K_z + 1):
+                    letter = chr(event.key).upper()                
             pygame.display.update()
 
         # Now set the letter
         blank.letter = letter
 
     """
-	Draws a letter prompt to ask for the blank letter
-	"""
+    Draws a letter prompt to ask for the blank letter
+    """
 
     def drawLetterPrompt(self, DISPLAYSURF, ALPHASURF):
         # Draw prompt shadow
@@ -841,8 +790,8 @@ class Board:
         DISPLAYSURF.blit(promptText, promptRect)
 
     """
-	Redraws only tiles which are animating
-	"""
+    Redraws only tiles which are animating
+    """
 
     def drawDirty(self, DISPLAYSURF, ALPHASURF):
         for x in range(Board.GRID_SIZE):
@@ -863,8 +812,8 @@ class Board:
                     tile.drawDirty(left, top, DISPLAYSURF, (not tile.locked))
 
     """
-	Draw the board and any placed tiles
-	"""
+    Draw the board and any placed tiles
+    """
 
     def draw(self, DISPLAYSURF, ALPHASURF):
         # draw each square
