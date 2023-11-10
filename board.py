@@ -245,8 +245,6 @@ class Board:
     def setPiece(self, xxx_todo_changeme, tile):
         (x, y) = xxx_todo_changeme
         assert x >= 0 and y >= 0 and x < Board.GRID_SIZE and y < Board.GRID_SIZE
-        # assert self.squares[x][y][0] == None
-        # self.squares[x][y] = (tile, self.squares[x][y][1])
         assert self.get_tile(x, y) is None
         self.place_tile(x, y, tile)
 
@@ -256,12 +254,6 @@ class Board:
                 for x in range(Board.GRID_SIZE) 
                 for y in range(Board.GRID_SIZE) 
                 if self.get_tile(x, y) and not self.get_tile(x, y).locked]
-        # result = []
-        # for x in range(Board.GRID_SIZE):
-        #     for y in range(Board.GRID_SIZE):
-        #         if self.get_tile(x,y) is not None and not self.get_tile(x,y).locked:
-        #             result.append((x, y))
-        # return result
 
     def no_tile_played(self, in_play):
         return len(in_play) == 0
@@ -352,7 +344,6 @@ class Board:
         # Lock tiles played
         for x, y in inPlay:
             self.get_tile(x, y).locked = True
-            # self.squares[x][y][0].locked = True
 
         # Remove the locks on the board
         self.columnLock = -1
@@ -547,11 +538,9 @@ class Board:
             for (x, y), tile in word:
                 letterScore = tile.points
                 if (
-                    # self.squares[x][y][0].locked == False
                     self.get_tile(x, y).locked == False
                 ):  # Can't get bonuses for previously played tiles
                     crosswords = self.shared((x, y), wordsBuilt)
-                    # bonus = self.squares[x][y][1]
                     bonus = self.get_bonus(x, y)
                     if bonus == Board.DOUBLELETTER and not (x, y) in marks:
                         letterScore *= 2
@@ -614,13 +603,10 @@ class Board:
     def pullTilesFast(self, tilesPlayed):
         if tilesPlayed != None:
             for (x, y), tile in tilesPlayed:
-                # assert self.squares[x][y][0] != None
-                # assert self.squares[x][y][0].locked == False
                 assert self.get_tile(x, y) is not None
                 assert self.get_tile(x, y).locked == False
                 if self.get_tile(x,y).isBlank:
                     self.get_tile(x,y).letter = " "
-                # self.squares[x][y] = (None, self.squares[x][y][1])
                 self.place_tile(x, y, None)
 
     """
@@ -647,11 +633,9 @@ class Board:
         for x in range(Board.GRID_SIZE):
             for y in range(Board.GRID_SIZE):
                 # find all positions in the board to find unlocked tile, they are temporary
-                # if self.squares[x][y][0] != None and not self.squares[x][y][0].locked:
                 if self.get_tile(x, y) is not None and not self.get_tile(x, y).locked:
                     inPlay.append(self.get_tile(x, y))
                     # reset status of this board square to None
-                    # self.squares[x][y] = (None, self.squares[x][y][1])
                     self.place_tile(x, y, None)
 
         # Remove the locks the player can play again
@@ -669,7 +653,6 @@ class Board:
         numTiles = 0
         for x in range(Board.GRID_SIZE):
             for y in range(Board.GRID_SIZE):
-                # if self.squares[x][y][0] != None:
                 if self.get_tile(x, y) is not None:
                     numTiles += 1
                 elif (
@@ -714,7 +697,6 @@ class Board:
         for x in range(Board.GRID_SIZE):
             for y in range(Board.GRID_SIZE):
                 # draw position
-                # (tile, bonus) = self.squares[x][y]
                 tile = self.get_tile(x, y)
                 if tile is not None:
                     left = (
@@ -749,7 +731,6 @@ class Board:
                     + Board.BOARD_TOP
                 )
 
-                # (tile, bonus) = self.squares[x][y]
                 tile = self.get_tile(x, y)
                 bonus = self.get_bonus(x, y)
                 if bonus == Board.NORMAL:
