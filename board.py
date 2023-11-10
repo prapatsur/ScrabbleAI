@@ -269,6 +269,24 @@ class Board:
     def all_tiles_in_straight_line(self, in_play):
         return self.all_same_column(in_play) or self.all_same_row(in_play)
 
+    def played_words_are_broken_in_column(self, inPlay):
+        topmost, bottommost = min(y for x, y in inPlay), max(y for x, y in inPlay)
+        start_col, _ = inPlay[0]
+        if self.all_same_column(inPlay):
+            for y in range(topmost, bottommost + 1):
+                if self.get_tile(start_col, y) is None:
+                    return True
+        return False
+
+    def played_words_are_broken_in_row(self, inPlay):
+        leftmost, rightmost = min( x for x, y in inPlay), max(x for x, y in inPlay)
+        _, start_row = inPlay[0]
+        if self.all_same_row(inPlay):
+            for x in range(leftmost, rightmost + 1):
+                if self.get_tile(x, start_row) is None:
+                    return True
+        return False       
+
     """
     This function works by going through all tentative tiles on the board, validating the move
     and then processing the play. The return value is a tuple of (tiles, points) with the former
@@ -312,18 +330,22 @@ class Board:
         # if self.played_words_are_broken(inPlay):
         # 	return self.removeTempTiles(), -1
 
-        topmost, bottommost = min(y for x, y in inPlay), max(y for x, y in inPlay)
-        start_col, start_row = inPlay[0]
-        if self.all_same_column(inPlay):
-            for y in range(topmost, bottommost + 1):
-                if self.get_tile(start_col, y) is None:
-                    return self.removeTempTiles(), -1
+        # topmost, bottommost = min(y for x, y in inPlay), max(y for x, y in inPlay)
+        # start_col, start_row = inPlay[0]
+        # if self.all_same_column(inPlay):
+        #     for y in range(topmost, bottommost + 1):
+        #         if self.get_tile(start_col, y) is None:
+        #             return self.removeTempTiles(), -1
+        if self.played_words_are_broken_in_column(inPlay):
+            return self.removeTempTiles(), -1
 
-        leftmost, rightmost = min( x for x, y in inPlay), max(x for x, y in inPlay)
-        if self.all_same_row(inPlay):
-            for x in range(leftmost, rightmost + 1):
-                if self.get_tile(x, start_row) is None:
-                    return self.removeTempTiles(), -1
+        # leftmost, rightmost = min( x for x, y in inPlay), max(x for x, y in inPlay)
+        # if self.all_same_row(inPlay):
+        #     for x in range(leftmost, rightmost + 1):
+        #         if self.get_tile(x, start_row) is None:
+        #             return self.removeTempTiles(), -1
+        if self.played_words_are_broken_in_row(inPlay):
+            return self.removeTempTiles(), -1
 
         # VALIDATION STEPS FIVE & SIX:
         (totalScore, spellings, seedRatio) = self.validateWords(
