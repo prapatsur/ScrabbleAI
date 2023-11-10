@@ -128,6 +128,7 @@ class ScrabbleGame:
         self.gameOver = False
         self.event_state = EventState()
         self.user_data_file = UserData()
+        self.use_hint_box = useHintBox
 
         self.setup_game(useHintBox)
 
@@ -301,7 +302,9 @@ class ScrabbleGame:
             # if there is tile in hand
             return self.handle_tile_in_hand()
 
-    def runGame(self, useHintBox=False):
+    # def runGame(self, useHintBox=False):
+    def runGame(self):
+        useHintBox = self.use_hint_box
         # Start a new game
         self.setup_game(useHintBox)
 
@@ -502,6 +505,7 @@ class MainScreen:
         self.menu = MainMenu()
 
     def play_as_challenge(self):
+        # if it's real game, increase gameplay
         UserData().increase_gameplay()
         ScrabbleGame().runGame()
         self.menu.refresh_achievements()
@@ -513,7 +517,7 @@ class MainScreen:
         if selected_menu == MainMenu.NEW_GAME:
             self.play_as_challenge()
         elif selected_menu == MainMenu.TRAINING:
-            ScrabbleGame().runGame(useHintBox=True)
+            ScrabbleGame(useHintBox=True).runGame()
 
     def run(self):
         logger.info("Starting Scrabble")
@@ -533,7 +537,7 @@ class MainScreen:
                     sys.exit()
 
                 if TRAINING_FLAG:
-                    ScrabbleGame().runGame(useHintBox=True)
+                    ScrabbleGame(useHintBox=True).runGame()
                 pygame.display.flip()
             pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
 
