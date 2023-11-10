@@ -2,3 +2,4 @@
 media/wordfreq.txt
 app.log
 media/user.txt
+__pycache__/

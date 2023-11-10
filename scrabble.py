@@ -302,7 +302,6 @@ class ScrabbleGame:
             return self.handle_tile_in_hand()
 
     def runGame(self, useHintBox=False):
-        # USERDATA = self.user_data_file.get_user_data()
         # Start a new game
         self.setup_game(useHintBox)
 
