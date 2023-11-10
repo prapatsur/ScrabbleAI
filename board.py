@@ -1,5 +1,6 @@
 import pygame
 import tile
+from tile import Tile
 import player
 import dictionarywords
 import wordfrequency
@@ -22,8 +23,8 @@ class Board:
 
     GRID_SIZE = 15  # size in # of squares
     START_POSITION = (7, 7)
-    SQUARE_SIZE = tile.Tile.SQUARE_SIZE
-    SQUARE_BORDER = tile.Tile.SQUARE_BORDER
+    SQUARE_SIZE = Tile.SQUARE_SIZE
+    SQUARE_BORDER = Tile.SQUARE_BORDER
     BOARD_TOP = 0
     BOARD_LEFT = 0
 
@@ -84,7 +85,7 @@ class Board:
     def get_tile(self, boardX, boardY):
         return self.squares[boardX][boardY][0]
 
-    def place_tile(self, boardX, boardY, tile):
+    def place_tile(self, boardX, boardY, tile: Tile):
         self.squares[boardX][boardY] = (tile, self.squares[boardX][boardY][1])
         
     def is_valid_position(self, boardX, boardY):

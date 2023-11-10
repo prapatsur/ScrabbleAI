@@ -1,6 +1,7 @@
 import pytest
 from board import Board
 from tile import Tile
+import copy
 
 def test_all_same_column():
     board = Board()
@@ -27,22 +28,24 @@ def test_is_valid_position():
 def test_place_tile():
     board = Board()
     # Set up the squares attribute
-    board.squares = [[(None, 'Normal') for _ in range(15)] for _ in range(15)]
     tile1 = Tile('A', 1)
     tile2 = Tile('B', 1)
     # Test the method
     board.place_tile(0, 0, tile1)
-    assert board.squares[0][0] == (tile1, 'Normal')
+    assert board.get_tile(0, 0) == tile1
     board.place_tile(14, 14, tile2)
-    assert board.squares[14][14] == (tile2, 'Normal')
+    assert board.get_tile(14, 14) == tile2
 
 def test_get_tile():
     board = Board()
+    tile1 = Tile('A', 1)
     # Set up the squares attribute
-    board.squares = [[('A', 'Normal') for _ in range(15)] for _ in range(15)]
+    board.place_tile(0, 0, copy.copy(tile1))
+    board.place_tile(14, 14, copy.copy(tile1))
+
     # Test the method
-    assert board.get_tile(0, 0) == 'A'
-    assert board.get_tile(14, 14) == 'A'
+    assert board.get_tile(0, 0) == tile1
+    assert board.get_tile(14, 14) == tile1
 
 # def test_can_place():
 #     board = Board()

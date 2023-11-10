@@ -109,4 +109,7 @@ class Tile:
 		
 	def lock(self):
 		self.locked = True
+
+	def __eq__(self, other):
+		return self.letter == other.letter and self.points == other.points
 		
