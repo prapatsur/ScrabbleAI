@@ -172,11 +172,7 @@ class ScrabbleGame:
     def pull_tiles_back_to_tray(self):
         """if there are tiles on board, pull tiles back to tray"""
         tilesPulled = self.the_board.removeTempTiles()
-        # if there are tiles back, put it back to the player
-        if tilesPulled is not None:
-            # Take the tiles back
-            for tile in tilesPulled:
-                self.get_current_player().take(tile)
+        self.get_current_player().push_tiles_back_to_tray(tilesPulled)
 
     def place_hinted_tiles(self):
         """Play hint, put tiles on board and wait for user's action whether user want to play as hinted"""

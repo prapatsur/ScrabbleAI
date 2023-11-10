@@ -128,6 +128,14 @@ class Player:
 			tile.letter = ' '
 		self.tray.append(tile)			
 			
+	def push_tiles_back_to_tray(self, tiles):
+		"""Pushes tiles back to the tray."""
+		if tiles is None:
+			return
+		
+		for t in tiles:
+			self.take(t)
+
 	'''
 	Puts the tray back in the bag, shuffles the bag and withdraws new tiles
 	'''		
