@@ -73,7 +73,7 @@ class Player:
             numNeeded = Player.TRAY_SIZE - len(self.tray)
             for i in range(numNeeded):
                 newTile = self.theBag.grab()
-                if newTile != None:
+                if newTile is not None:
                     self.tray.append(newTile)
 
         # If the bag was empty AND our tray is empty, signal that play is over
@@ -90,7 +90,8 @@ class Player:
     a bonus for emptying their rack, which is usually the sum of the values of the 
     tiles left on their opponents' racks.
     
-	All possible plays have been exhausted, and both players consecutively pass their turn. If this happens, the game ends, and the player with the highest score at that point wins.
+	All possible plays have been exhausted, and both players consecutively pass their turn. 
+    If this happens, the game ends, and the player with the highest score at that point wins.
 	"""
 
     def isGameOver(self):
@@ -109,6 +110,10 @@ class Player:
 	"""
 
     def play(self, firstTurn):
+        # this method can return 3 values:
+        # True: the move was executed successfully
+        # False: the move was not executed successfully
+        # "END": the game is over
         (tiles, points) = self.theBoard.play(firstTurn)
 
         # The play was successful, add the points to our score and grab new tiles
@@ -122,7 +127,7 @@ class Player:
                 return "END"
 
         # Play didn't work, put the
-        elif tiles != None:
+        elif tiles is not None:
             # take the tiles back
             for t in tiles:
                 self.take(t)
@@ -139,7 +144,10 @@ class Player:
 	"""
 
     def take(self, tile):
+        # player takes means the tile goes back to the tray
         assert len(self.tray) < Player.TRAY_SIZE
+        # the tile is blank, when it's back to the tray
+        # it is reset to blank
         if tile.isBlank:
             tile.letter = " "
         self.tray.append(tile)

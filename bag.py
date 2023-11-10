@@ -58,3 +58,6 @@ class Bag:
 		"""Adds the tile n times into the bag."""
 		self.tiles.extend([tile.Tile(letter, points) for _ in range(n)])
 
+	def empty_bag(self):
+		self.tiles = []
+
