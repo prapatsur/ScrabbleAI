@@ -7,7 +7,7 @@ import wordfrequency
 import time
 from gui import BEIGE, RED, BLUE, PINK, LBLUE, MASK_COLOR
 from pygame.locals import *
-from views.board_view import draw_letter_prompt
+from views.board_view import draw_letter_prompt, BoardView
 
 
 class Board:
@@ -44,6 +44,7 @@ class Board:
 
         # Reset all timers
         self.resetAllMetrics()
+        board_view = BoardView(self)
 
     def init_squares(self):
         # BONUS SQUARES

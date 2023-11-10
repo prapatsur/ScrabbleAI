@@ -8,7 +8,11 @@ PROMPT_WIDTH = 250
 PROMPT_HEIGHT = 75
 PROMPT_FONT = None
 
+class BoardView:
+    def __init__(self, board):
+        self.board = board
 
+        
 def draw_letter_prompt(DISPLAYSURF, ALPHASURF):
     """
     Draws a letter prompt to ask for the blank letter
