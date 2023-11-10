@@ -80,7 +80,16 @@ class Board:
         for x, y in doubleletters:
             result[x][y] = (None, Board.DOUBLELETTER)
         return result
-            
+
+    def is_valid_position(self, boardX, boardY):
+        return 0 <= boardX < Board.GRID_SIZE and 0 <= boardY < Board.GRID_SIZE
+    
+    def can_place(self, mouse_position):
+        boardX, boardY = self.getBoardPosition(x, y)
+        if not self.is_valid_position(boardX, boardY):
+            return False
+        return True
+        
     def placeTentative(self, x, y, tile):
         """
         Locates a board position and tries to put a tile there.
