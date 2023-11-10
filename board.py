@@ -232,9 +232,6 @@ class Board:
 		if self.all_same_column(in_play) or self.all_same_row(in_play):
 			return True
 		return False
-		# if not (self.all_same_row(in_play) or self.all_same_column(in_play)):
-		# 	return False
-		# return True		
 			
 	'''
 	This function works by going through all tentative tiles on the board, validating the move
