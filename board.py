@@ -44,7 +44,7 @@ class Board:
 
         # Reset all timers
         self.resetAllMetrics()
-        board_view = BoardView(self)
+        self.board_view = BoardView(self)
 
     def init_squares(self):
         # BONUS SQUARES
@@ -724,22 +724,23 @@ class Board:
     """
 
     def drawDirty(self, DISPLAYSURF, ALPHASURF):
-        for x in range(Board.GRID_SIZE):
-            for y in range(Board.GRID_SIZE):
-                # draw position
-                tile = self.get_tile(x, y)
-                if tile is not None:
-                    left = (
-                        x * (Board.SQUARE_SIZE + Board.SQUARE_BORDER)
-                        + Board.SQUARE_BORDER
-                        + Board.BOARD_LEFT
-                    )
-                    top = (
-                        y * (Board.SQUARE_SIZE + Board.SQUARE_BORDER)
-                        + Board.SQUARE_BORDER
-                        + Board.BOARD_TOP
-                    )
-                    tile.drawDirty(left, top, DISPLAYSURF, (not tile.locked))
+        self.board_view.drawDirty(DISPLAYSURF, ALPHASURF)
+        # for x in range(Board.GRID_SIZE):
+        #     for y in range(Board.GRID_SIZE):
+        #         # draw position
+        #         tile = self.get_tile(x, y)
+        #         if tile is not None:
+        #             left = (
+        #                 x * (Board.SQUARE_SIZE + Board.SQUARE_BORDER)
+        #                 + Board.SQUARE_BORDER
+        #                 + Board.BOARD_LEFT
+        #             )
+        #             top = (
+        #                 y * (Board.SQUARE_SIZE + Board.SQUARE_BORDER)
+        #                 + Board.SQUARE_BORDER
+        #                 + Board.BOARD_TOP
+        #             )
+        #             tile.drawDirty(left, top, DISPLAYSURF, (not tile.locked))
 
     """
     Draw the board and any placed tiles
