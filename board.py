@@ -1,7 +1,7 @@
 import pygame, tile, player, dictionarywords, wordfrequency, time
 from gui import BEIGE, RED, BLUE, PINK, LBLUE, MASK_COLOR
 from pygame.locals import *
-
+from views.board_view import draw_letter_prompt
 
 class Board:
     DEBUG_ERRORS = True
@@ -726,11 +726,14 @@ class Board:
         assert blank.isBlank
 
         letter = None
-        self.drawLetterPrompt(DISPLAYSURF, ALPHASURF)
+        # self.drawLetterPrompt(DISPLAYSURF, ALPHASURF)
+        draw_letter_prompt(DISPLAYSURF, ALPHASURF)
         while letter == None:
             for event in pygame.event.get():
-                if event.type == pygame.KEYUP and event.key in range(pygame.K_a, pygame.K_z + 1):
-                    letter = chr(event.key).upper()                
+                if event.type == pygame.KEYUP and event.key in range(
+                    pygame.K_a, pygame.K_z + 1
+                ):
+                    letter = chr(event.key).upper()
             pygame.display.update()
 
         # Now set the letter
@@ -740,54 +743,54 @@ class Board:
     Draws a letter prompt to ask for the blank letter
     """
 
-    def drawLetterPrompt(self, DISPLAYSURF, ALPHASURF):
-        # Draw prompt shadow
-        ALPHASURF.fill((0, 0, 0, 0))
-        pygame.draw.rect(
-            ALPHASURF,
-            MASK_COLOR,
-            (
-                Board.PROMPT_LEFT,
-                Board.PROMPT_TOP,
-                Board.PROMPT_WIDTH + 4,
-                Board.PROMPT_HEIGHT + 4,
-            ),
-        )
+    # def drawLetterPrompt(self, DISPLAYSURF, ALPHASURF):
+    #     # Draw prompt shadow
+    #     ALPHASURF.fill((0, 0, 0, 0))
+    #     pygame.draw.rect(
+    #         ALPHASURF,
+    #         MASK_COLOR,
+    #         (
+    #             Board.PROMPT_LEFT,
+    #             Board.PROMPT_TOP,
+    #             Board.PROMPT_WIDTH + 4,
+    #             Board.PROMPT_HEIGHT + 4,
+    #         ),
+    #     )
 
-        # Draw prompt box
-        pygame.draw.rect(
-            ALPHASURF,
-            (0, 0, 0, 200),
-            (
-                Board.PROMPT_LEFT - 1,
-                Board.PROMPT_TOP - 1,
-                Board.PROMPT_WIDTH + 2,
-                Board.PROMPT_HEIGHT + 2,
-            ),
-        )
-        pygame.draw.rect(
-            ALPHASURF,
-            (255, 255, 255, 200),
-            (
-                Board.PROMPT_LEFT,
-                Board.PROMPT_TOP,
-                Board.PROMPT_WIDTH,
-                Board.PROMPT_HEIGHT,
-            ),
-        )
+    #     # Draw prompt box
+    #     pygame.draw.rect(
+    #         ALPHASURF,
+    #         (0, 0, 0, 200),
+    #         (
+    #             Board.PROMPT_LEFT - 1,
+    #             Board.PROMPT_TOP - 1,
+    #             Board.PROMPT_WIDTH + 2,
+    #             Board.PROMPT_HEIGHT + 2,
+    #         ),
+    #     )
+    #     pygame.draw.rect(
+    #         ALPHASURF,
+    #         (255, 255, 255, 200),
+    #         (
+    #             Board.PROMPT_LEFT,
+    #             Board.PROMPT_TOP,
+    #             Board.PROMPT_WIDTH,
+    #             Board.PROMPT_HEIGHT,
+    #         ),
+    #     )
 
-        DISPLAYSURF.blit(ALPHASURF, (0, 0))
+    #     DISPLAYSURF.blit(ALPHASURF, (0, 0))
 
-        # Draw text
-        promptText = Board.PROMPT_FONT.render(
-            "TYPE A LETTER A-Z", True, (0, 0, 0, 200), (255, 255, 255, 200)
-        )
-        promptRect = promptText.get_rect()
-        promptRect.center = (
-            Board.PROMPT_LEFT + Board.PROMPT_WIDTH / 2,
-            Board.PROMPT_TOP + Board.PROMPT_HEIGHT / 2,
-        )
-        DISPLAYSURF.blit(promptText, promptRect)
+    #     # Draw text
+    #     promptText = Board.PROMPT_FONT.render(
+    #         "TYPE A LETTER A-Z", True, (0, 0, 0, 200), (255, 255, 255, 200)
+    #     )
+    #     promptRect = promptText.get_rect()
+    #     promptRect.center = (
+    #         Board.PROMPT_LEFT + Board.PROMPT_WIDTH / 2,
+    #         Board.PROMPT_TOP + Board.PROMPT_HEIGHT / 2,
+    #     )
+    #     DISPLAYSURF.blit(promptText, promptRect)
 
     """
     Redraws only tiles which are animating
