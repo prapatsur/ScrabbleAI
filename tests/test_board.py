@@ -23,6 +23,23 @@ def test_is_valid_position():
     assert board.is_valid_position(-1, 0) == False
     assert board.is_valid_position(0, Board.GRID_SIZE) == False
 
+def test_place_tile():
+    board = Board()
+    # Set up the squares attribute
+    board.squares = [[(None, 'Normal') for _ in range(15)] for _ in range(15)]
+    # Test the method
+    board.place_tile(0, 0, 'A')
+    assert board.squares[0][0] == ('A', 'Normal')
+    board.place_tile(14, 14, 'B')
+    assert board.squares[14][14] == ('B', 'Normal')
+
+def test_get_tile():
+    board = Board()
+    # Set up the squares attribute
+    board.squares = [[('A', 'Normal') for _ in range(15)] for _ in range(15)]
+    # Test the method
+    assert board.get_tile(0, 0) == 'A'
+    assert board.get_tile(14, 14) == 'A'
 
 # def test_played_words_are_broken_1():
 #     # This test is for those that are not broken
