@@ -101,7 +101,6 @@ class Board:
         return self.get_tile(boardX, boardY) is not None
     
     def can_place(self, boardX, boardY):
-        # boardX, boardY = self.getBoardPosition(*mouse_position)
         if not self.is_valid_position(boardX, boardY):
             return False
         # The square is occupied.
@@ -162,14 +161,6 @@ class Board:
         - If one tentative tile: allow play on its row and column.
         - If multiple tentative tiles in a line: lock the perpendicular direction.
         """
-
-        # Gather all unlocked tiles' positions.
-        # inPlay = [
-        #     (x, y)
-        #     for x in range(Board.GRID_SIZE)
-        #     for y in range(Board.GRID_SIZE)
-        #     if self.get_tile(x,y) and not self.get_tile(x,y).locked
-        # ]
         inPlay = self.getInPlay()
 
         num_tiles = len(inPlay)
@@ -201,13 +192,12 @@ class Board:
     def is_valid_position(self, boardX, boardY):
         return 0 <= boardX < Board.GRID_SIZE and 0 <= boardY < Board.GRID_SIZE
 
-    """
-    Attempts to remove the tile from the given square, returns the tile if it
-    was removed successfully, otherwise returns None if the pointer was out of range,
-    the square didn't have a tile or if the tile was locked
-    """
-
     def remove(self, x, y):
+        """
+        Attempts to remove the tile from the given square, returns the tile if it
+        was removed successfully, otherwise returns None if the pointer was out of range,
+        the square didn't have a tile or if the tile was locked
+        """        
         (boardX, boardY) = self.getBoardPosition(x, y)
         if self.is_valid_position(boardX, boardY):
             tile = self.get_tile(boardX, boardY)
@@ -217,11 +207,8 @@ class Board:
                 return tile
         return None
 
-    """
-    Returns the (boardX, boardY) tuple of the coordinates on the board based on screen coords
-    """
-
     def getBoardPosition(self, x, y):
+        """ Returns the (boardX, boardY) tuple of the coordinates on the board based on screen coords """        
         x -= Board.BOARD_LEFT + Board.SQUARE_BORDER
         y -= Board.BOARD_TOP + Board.SQUARE_BORDER
 
@@ -241,11 +228,8 @@ class Board:
                     return (boardX, boardY)
         return (-1, -1)
 
-    """
-    Puts a tile on the board (board, not screen coords, for that use placeTentative)
-    """
-
     def setPiece(self, xxx_todo_changeme, tile):
+        """ Puts a tile on the board (board, not screen coords, for that use placeTentative) """        
         (x, y) = xxx_todo_changeme
         assert x >= 0 and y >= 0 and x < Board.GRID_SIZE and y < Board.GRID_SIZE
         assert self.get_tile(x, y) is None
@@ -290,54 +274,52 @@ class Board:
                     return True
         return False       
 
-    """
-    This function works by going through all tentative tiles on the board, validating the move
-    and then processing the play. The return value is a tuple of (tiles, points) with the former
-    being returned tiles in a move failure and the latter being the score in the case of success.
-    
-    In success, the tiles are locked, in failure, the tiles are removed entirely.
-    
-    Validation Rules:
-    
-        1) At least one tile must be tentative
-        2) All tentative tiles must lie on one line
-        3) On the first turn, one tile must be located on square START_POSITION
-        4) Linear word must be unbroken (including locked tiles)
-        5) On every other turn, at least one crossword must be formed
-        6) All words formed must be inside the dictionary
-    
-    """
-
     def play(self, isFirstTurn=True):
-        # get board coordinates of all tentative tiles
-        inPlay = self.getInPlay()
+        """
+        This function works by going through all tentative tiles on the board, validating the move
+        and then processing the play. The return value is a tuple of (tiles, points) with the former
+        being returned tiles in a move failure and the latter being the score in the case of success.
+        
+        In success, the tiles are locked, in failure, the tiles are removed entirely.
+        
+        Validation Rules:
+        
+            1) At least one tile must be tentative
+            2) All tentative tiles must lie on one line
+            3) On the first turn, one tile must be located on square START_POSITION
+            4) Linear word must be unbroken (including locked tiles)
+            5) On every other turn, at least one crossword must be formed
+            6) All words formed must be inside the dictionary
+        
+        """        
+        # get board coordinates of all tiles placed by user this turn
+        in_play = self.getInPlay()
 
         # VALIDATION STEP ONE: There must be at least one tile played
-        if self.no_tile_played(inPlay):
+        if self.no_tile_played(in_play):
             if Board.DEBUG_ERRORS:
                 print("Play requires at least one tile.")
-            return ([], -1)
+            # return ([], -1)
+            return self.removeTempTiles(), -1
 
         # VALIDATION STEP TWO: Tiles must be played in a straight line
-        if not self.all_tiles_in_straight_line(inPlay):
+        if not self.all_tiles_in_straight_line(in_play):
             if Board.DEBUG_ERRORS:
                 print("All tiles must be placed along a line.")
             return self.removeTempTiles(), -1
 
         # VALIDATION STEP THREE: If isFirstTurn, one tile must be on START_POSITION
-        if isFirstTurn and Board.START_POSITION not in inPlay:
+        if isFirstTurn and Board.START_POSITION not in in_play:
             return self.removeTempTiles(), -1
 
         # VALIDATION STEP FOUR: Ensure the word is unbroken
         # it'll fail if there's a gap between two tiles
-        if self.played_words_are_broken_in_column(inPlay) or \
-           self.played_words_are_broken_in_row(inPlay):
+        if self.played_words_are_broken_in_column(in_play) or \
+           self.played_words_are_broken_in_row(in_play):
             return self.removeTempTiles(), -1
 
         # VALIDATION STEPS FIVE & SIX:
-        (totalScore, spellings, seedRatio) = self.validateWords(
-            isFirstTurn, inPlay=inPlay
-        )
+        (totalScore, spellings, seedRatio) = self.validateWords( isFirstTurn, inPlay=in_play )
 
         if spellings is not None:
             for spelling in spellings:
@@ -349,7 +331,7 @@ class Board:
             return (self.removeTempTiles(), -1)
 
         # Lock tiles played
-        for x, y in inPlay:
+        for x, y in in_play:
             self.get_tile(x, y).locked = True
 
         # Remove the locks on the board
@@ -394,8 +376,8 @@ class Board:
             return (bestScore, bestBonusCombos)
 
     def rows_to_check(self, inPlay):
-        # TODO: I wonder when we have to return column as well
-        # 
+        # Build a list of rows to check
+        # but also return col which will be the seed position
         rowsToCheck = []
         rowsSet = set()
         for x, y in inPlay:
@@ -644,11 +626,8 @@ class Board:
 
         return (totalScore, spellings, seedRatio)
 
-    """
-    Resets all timers
-    """
-
     def resetAllMetrics(self):
+        """ Resets all timers """        
         self.scoringTime = 0
         self.crosswordValidationTime = 0
         self.dictionaryValidationTime = 0
@@ -656,39 +635,20 @@ class Board:
         self.invalidWordCount = 0
         self.crosswordErrors = 0
 
-    """
-    Removes tiles if we already know where they are
-    """
-
     def pullTilesFast(self, tilesPlayed):
-        if tilesPlayed != None:
-            for (x, y), tile in tilesPlayed:
-                assert self.get_tile(x, y) is not None
-                assert self.get_tile(x, y).locked == False
-                if self.get_tile(x,y).isBlank:
-                    self.get_tile(x,y).letter = " "
-                self.place_tile(x, y, None)
+        """ Removes tiles if we already know where they are """
+        if tilesPlayed is None:
+            return
 
-    """
-    Returns a list of all word indices using the given tile
-    """
-
-    def shared(self, pos, words):
-        wordsUsingPos = []
-        i = 0
-        for word in words:
-            for coords, tile in word:
-                if pos == coords:
-                    wordsUsingPos.append(i)
-            i += 1
-
-        return wordsUsingPos
-
-    """
-    Removes the temporary tiles on the board and returns them as a list
-    """
+        for (x, y), tile in tilesPlayed:
+            assert self.get_tile(x, y) is not None
+            assert self.get_tile(x, y).locked == False
+            if self.get_tile(x,y).isBlank:
+                self.get_tile(x,y).letter = " "
+            self.place_tile(x, y, None)
 
     def removeTempTiles(self):
+        """ Removes the temporary tiles on the board and returns them as a list """
         inPlay = []
         for x in range(Board.GRID_SIZE):
             for y in range(Board.GRID_SIZE):
@@ -704,10 +664,20 @@ class Board:
 
         return inPlay
 
-    """
-    Calculates the number of seeds and number of tiles and returns them as a tuple
-    """
+    def shared(self, pos, words):
+        """ Returns a list of all word indices using the given tile """        
+        wordsUsingPos = []
+        i = 0
+        for word in words:
+            for coords, tile in word:
+                if pos == coords:
+                    wordsUsingPos.append(i)
+            i += 1
+
+        return wordsUsingPos
+
     def calculateSeedRatio(self):  
+        """ Calculates the number of seeds and number of tiles and returns them as a tuple """        
         return (self.calculate_num_seeds(), self.count_tiles_on_board())
 
     def count_tiles_on_board(self):
@@ -753,12 +723,8 @@ class Board:
                 return True
         return False        
 
-
-    """
-    Prompts player to set a letter for the blank character
-    """
-
     def askForLetter(self, blank, DISPLAYSURF, ALPHASURF):
+        """ Prompts player to set a letter for the blank character """
         assert blank.isBlank
 
         letter = None
