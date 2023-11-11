@@ -412,9 +412,6 @@ class Board:
                 colsToCheck.append((x, y))
         return colsToCheck
 
-    def get_rows_and_cols_to_check(self, inPlay):
-        return self.rows_to_check(inPlay), self.cols_to_check(inPlay)
-    
     def build_words_along_rows(self, rowsToCheck):
         # Build words along rows from the seed position
         # and expand left and right until we hit a blank on both ends
@@ -511,48 +508,9 @@ class Board:
         """
 
         # First build a list of possible word rows and cols (include x and y for the first seed tile)
-        rowsToCheck, colsToCheck = self.get_rows_and_cols_to_check(inPlay)
-
-        # Build words along rows
-        # for col, row in rowsToCheck:
-        #     # build left
-        #     left = col
-        #     while left - 1 >= 0 and self.squares[left - 1][row][0] != None:
-        #         left -= 1
-
-        #     # build right
-        #     right = col
-        #     while (right + 1 < Board.GRID_SIZE and self.squares[right + 1][row][0] != None ):
-        #         right += 1
-
-        #     # Add the word built if it has at least 2 letters
-        #     if left != right:
-        #         wordsBuilt.append(
-        #             [
-        #                 ((x, row), self.squares[x][row][0])
-        #                 for x in range(left, right + 1)
-        #             ]
-        #         )
+        rowsToCheck = self.rows_to_check(inPlay)
         wordsBuilt.extend(self.build_words_along_rows(rowsToCheck))
-
-        # # Build words along cols
-        # for col, row in colsToCheck:
-        #     # build up
-        #     up = row
-        #     while up - 1 >= 0 and self.squares[col][up - 1][0] != None:
-        #         up -= 1
-
-        #     # build down
-        #     down = row
-        #     while down + 1 < Board.GRID_SIZE and self.squares[col][down + 1][0] != None:
-        #         down += 1
-
-        #     # Add the word built
-        #     if up != down:
-        #         wordsBuilt.append(
-        #             [((col, y), self.squares[col][y][0])
-        #              for y in range(up, down + 1)]
-        #         )
+        colsToCheck = self.cols_to_check(inPlay)
         wordsBuilt.extend(self.build_words_along_cols(colsToCheck))
 
         crosswordMade = False
