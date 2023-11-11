@@ -685,18 +685,14 @@ class Board:
         """        
         if self.get_tile(x, y) is not None:
             return False
-        # create a list of adjacent positions and then use the any() function 
-        # to check if any of the adjacent positions contain a tile.
-        adjacent_positions = [
-            (x - 1, y),
-            (x + 1, y),
-            (x, y - 1),
-            (x, y + 1)
-        ]
-        return any(
-            (0 <= adj_x < Board.GRID_SIZE) and (0 <= adj_y < Board.GRID_SIZE) and (self.get_tile(adj_x, adj_y) is not None)
-            for adj_x, adj_y in adjacent_positions
-        )
+        # check if any of the adjacent positions contain a tile.
+        # directly iterate over the offsets for speed
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            adj_x, adj_y = x + dx, y + dy
+            if (0 <= adj_x < Board.GRID_SIZE) and (0 <= adj_y < Board.GRID_SIZE) and \
+            (self.get_tile(adj_x, adj_y) is not None):
+                return True
+        return False        
 
 
     """
@@ -719,104 +715,10 @@ class Board:
         # Now set the letter
         blank.letter = letter
 
-    """
-    Redraws only tiles which are animating
-    """
-
     def drawDirty(self, DISPLAYSURF, ALPHASURF):
+        """Draws only the tiles which are animating"""
         self.board_view.drawDirty(DISPLAYSURF, ALPHASURF)
 
-    """
-    Draw the board and any placed tiles
-    """
-
     def draw(self, DISPLAYSURF, ALPHASURF):
+        """Draws the entire board with any placed tiles"""
         self.board_view.draw(DISPLAYSURF, ALPHASURF)
-    #     # draw each square
-    #     for x in range(Board.GRID_SIZE):
-    #         for y in range(Board.GRID_SIZE):
-    #             # draw position
-    #             left = (
-    #                 x * (Board.SQUARE_SIZE + Board.SQUARE_BORDER)
-    #                 + Board.SQUARE_BORDER
-    #                 + Board.BOARD_LEFT
-    #             )
-    #             top = (
-    #                 y * (Board.SQUARE_SIZE + Board.SQUARE_BORDER)
-    #                 + Board.SQUARE_BORDER
-    #                 + Board.BOARD_TOP
-    #             )
-
-    #             tile = self.get_tile(x, y)
-    #             bonus = self.get_bonus(x, y)
-    #             if bonus == Board.NORMAL:
-    #                 color = BEIGE
-    #             elif bonus == Board.DOUBLEWORD:
-    #                 color = PINK
-    #             elif bonus == Board.TRIPLEWORD:
-    #                 color = RED
-    #             elif bonus == Board.DOUBLELETTER:
-    #                 color = LBLUE
-    #             elif bonus == Board.TRIPLELETTER:
-    #                 color = BLUE
-    #             else:
-    #                 assert False
-    #             pygame.draw.rect(
-    #                 DISPLAYSURF,
-    #                 color,
-    #                 (left, top, Board.SQUARE_SIZE, Board.SQUARE_SIZE),
-    #             )
-
-    #             if tile is not None:
-    #                 if tile.locked:
-    #                     highlight = False
-    #                 else:
-    #                     highlight = True
-    #                 tile.draw(left, top, DISPLAYSURF, highlight)
-
-    #     # =======DRAW LOCK SHADING==========
-    #     ALPHASURF.fill((0, 0, 0, 0))
-    #     top = Board.BOARD_TOP
-    #     left = Board.BOARD_LEFT
-    #     right = (
-    #         Board.GRID_SIZE * (Board.SQUARE_BORDER + Board.SQUARE_SIZE)
-    #         + Board.SQUARE_BORDER
-    #     )
-    #     bottom = (
-    #         Board.GRID_SIZE * (Board.SQUARE_BORDER + Board.SQUARE_SIZE)
-    #         + Board.SQUARE_BORDER
-    #     )
-    #     x1 = (
-    #         self.columnLock * (Board.SQUARE_SIZE + Board.SQUARE_BORDER)
-    #         + Board.BOARD_LEFT
-    #     )
-    #     x2 = x1 + (Board.SQUARE_SIZE + Board.SQUARE_BORDER) + \
-    #         Board.SQUARE_BORDER
-    #     y1 = self.rowLock * (Board.SQUARE_SIZE +
-    #                          Board.SQUARE_BORDER) + Board.BOARD_LEFT
-    #     y2 = y1 + (Board.SQUARE_SIZE + Board.SQUARE_BORDER) + \
-    #         Board.SQUARE_BORDER
-    #     if self.rowLock >= 0 and self.columnLock >= 0:
-    #         pygame.draw.rect(ALPHASURF, MASK_COLOR,
-    #                          (left, top, x1 - left, y1 - top))
-    #         pygame.draw.rect(ALPHASURF, MASK_COLOR,
-    #                          (left, y2, x1 - left, bottom - y2))
-    #         pygame.draw.rect(ALPHASURF, MASK_COLOR,
-    #                          (x2, top, right - x2, y1 - top))
-    #         pygame.draw.rect(ALPHASURF, MASK_COLOR,
-    #                          (x2, y2, right - x2, bottom - y2))
-    #     elif self.rowLock >= 0:
-    #         pygame.draw.rect(ALPHASURF, MASK_COLOR,
-    #                          (left, top, right - left, y1 - top))
-    #         pygame.draw.rect(
-    #             ALPHASURF, MASK_COLOR, (left, y2, right - left, bottom - y2)
-    #         )
-    #     elif self.columnLock >= 0:
-    #         pygame.draw.rect(
-    #             ALPHASURF, MASK_COLOR, (left, top, x1 - left, bottom - top)
-    #         )
-    #         pygame.draw.rect(ALPHASURF, MASK_COLOR,
-    #                          (x2, top, right - x2, bottom - top))
-
-    #     DISPLAYSURF.blit(ALPHASURF, (0, 0))
-    #     # =================================
