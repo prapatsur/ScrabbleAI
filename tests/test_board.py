@@ -104,7 +104,7 @@ def test_rows_to_check():
     rowsToCheck = board.rows_to_check(inPlay)
     assert rowsToCheck == [(0, 0), (2, 1)]
 
-def test_find_left_bound():
+def test_find_left_n_right_bound():
     board = Board()
     tile1 = Tile('A', 1)
     tile2 = Tile('A', 1)
@@ -116,8 +116,9 @@ def test_find_left_bound():
     # Assume that those are tiles placed in the current turn
     inPlay = [(4,2), (5,2), (6,2)]
     rowsToCheck = board.rows_to_check(inPlay)  
-    # print(rowsToCheck)  
     # find the left bound of the word
     a_row = rowsToCheck[0]
     left_bound = board.find_left_bound(*a_row)
-    assert left_bound == 4  
+    assert left_bound == 4
+    right_bound = board.find_right_bound(*a_row)
+    assert right_bound == 6  

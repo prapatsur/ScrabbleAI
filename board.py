@@ -420,9 +420,7 @@ class Board:
             right = self.find_right_bound(col, row)
             if left != right:
                 wordsBuilt.append(self.build_word(left, right, row))
-        logger.debug("build_words_along_rows")
-        logger.debug(rowsToCheck)
-        logger.debug(wordsBuilt)
+        logger.debug(f"build_words_along_rows\n{rowsToCheck}\n{wordsBuilt}\n")
         return wordsBuilt
 
     def find_left_bound(self, col, row):
