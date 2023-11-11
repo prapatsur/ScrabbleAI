@@ -128,23 +128,15 @@ class Player:
                 return "END"
 
         # Play didn't work, put the
-        elif tiles is not None:
-            # take the tiles back
-            for t in tiles:
-                self.take(t)
-                assert len(self.tray) <= Player.TRAY_SIZE
-
+        if tiles is not None:
+            self.push_tiles_back_to_tray(tiles)
             return False
 
         # Simple case, we tried to play, but there were no tentative tiles!
-        else:
-            return False
-
-    """
-	Takes a tile previously held, should only be called for returning tentative pieces to the tray
-	"""
+        return False
 
     def take(self, tile):
+        """ Takes a tile previously held, should only be called for returning tentative pieces to the tray """        
         # player takes means the tile goes back to the tray
         assert len(self.tray) < Player.TRAY_SIZE
         # the tile is blank, when it's back to the tray
@@ -160,6 +152,7 @@ class Player:
 
         for t in tiles:
             self.take(t)
+        assert len(self.tray) <= Player.TRAY_SIZE
 
     """
 	Puts the tray back in the bag, shuffles the bag and withdraws new tiles
