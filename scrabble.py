@@ -202,7 +202,7 @@ class ScrabbleGame:
         # If we're stuck AND the AI is stuck, end the game without subtracting points
         if self.AIstuck:
             self.gameOver = True
-            self.endGame(self.use_hint_box, USERDATA, stuck=True)
+            self.endGame(stuck=True)
         self.redrawEverything()
 
     def handle_computer_cannot_play_move(self):
