@@ -28,28 +28,27 @@ Heuristic ideas:
 
 """
 
-# local files
-from dataclasses import dataclass
-import menu
-from menu import MainMenu, GameMenu
-import board
-import tile
-import bag
-import player
-import human
-import ai
-import heuristic
-from userdata import UserData
-
-import pygame
 import sys
 import time
+from collections import namedtuple
+# local files
+from dataclasses import dataclass
 from itertools import cycle
+
+import pygame
 from pygame.locals import *
 
-from gui import DISPLAYSURF, ALPHASURF, TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
+import ai
+import bag
+import board
+import heuristic
+import human
+import player
+import tile
 from gui import DARK_BROWN, WHITE
-from collections import namedtuple
+from gui import DISPLAYSURF, ALPHASURF, TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
+from menu import MainMenu, GameMenu
+from userdata import UserData
 
 tile.Tile.initialize()
 
@@ -147,28 +146,28 @@ class ScrabbleGame:
     def ask_for_hint(self):
         """return true if user hit hint box or training flag is on and it's not computer turn"""
         return (
-            (self.event_state.ask_hint or TRAINING_FLAG)
-            and not self.is_computer_turn()
-            and not self.gameOver
+                (self.event_state.ask_hint or TRAINING_FLAG)
+                and not self.is_computer_turn()
+                and not self.gameOver
         )
 
     def should_play_action(self):
         return (
-            self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()
+                self.event_state.action_key_hit or TRAINING_FLAG or self.is_computer_turn()
         ) and not self.gameOver
 
     def should_redraw(self):
         return (
-            (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG))
-            and not self.is_computer_turn()
-            and not self.gameOver
+                (self.event_state.shuffle_key_hit or (self.AIstuck and TRAINING_FLAG))
+                and not self.is_computer_turn()
+                and not self.gameOver
         )
 
     def should_handle_mouse_clicked(self):
         return (
-            self.event_state.mouse_clicked
-            and not self.is_computer_turn()
-            and not self.gameOver
+                self.event_state.mouse_clicked
+                and not self.is_computer_turn()
+                and not self.gameOver
         )
 
     def pull_tiles_back_to_tray(self):
@@ -341,7 +340,7 @@ class ScrabbleGame:
                 self.redrawEverything()
 
             if (
-                self.gameOver and TRAINING_FLAG
+                    self.gameOver and TRAINING_FLAG
             ):  # automatically start a new game for training purposes
                 still_playing = False
 
