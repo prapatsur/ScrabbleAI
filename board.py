@@ -290,8 +290,11 @@ class Board:
             4) Linear word must be unbroken (including locked tiles)
             5) On every other turn, at least one crossword must be formed
             6) All words formed must be inside the dictionary
-        
         """        
+        # My understanding is that this function is called when the user clicks the "Play" button.
+        # If play failed, return returned tiles and total score as -1
+        # If play succeeded, return None and total score as positive number
+
         # get board coordinates of all tiles placed by user this turn
         in_play = self.getInPlay()
 
@@ -299,7 +302,6 @@ class Board:
         if self.no_tile_played(in_play):
             if Board.DEBUG_ERRORS:
                 print("Play requires at least one tile.")
-            # return ([], -1)
             return self.removeTempTiles(), -1
 
         # VALIDATION STEP TWO: Tiles must be played in a straight line
@@ -319,16 +321,15 @@ class Board:
             return self.removeTempTiles(), -1
 
         # VALIDATION STEPS FIVE & SIX:
-        (totalScore, spellings, seedRatio) = self.validateWords( isFirstTurn, inPlay=in_play )
+        (totalScore, spellings, seedRatio) = self.validateWords(isFirstTurn, inPlay=in_play)
 
         if spellings is not None:
             for spelling in spellings:
                 self.wordfreq.wordPlayed(spelling)
-
             self.wordfreq.save()
 
         if totalScore < 0:
-            return (self.removeTempTiles(), -1)
+            return self.removeTempTiles(), -1
 
         # Lock tiles played
         for x, y in in_play:
