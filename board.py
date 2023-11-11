@@ -548,6 +548,12 @@ class Board:
                 wordScores[i] += letterScore
             wordScores[i] *= wordBonus
             i += 1
+
+        # If are conflicts, then go through all permutations to retrieve the highest possible score
+        if len(wordScoreOptimize) > 0:
+            (best, bestWordScores) = self.wordScoreTreeSearch( wordScoreOptimize, wordScores )
+            for bonus, word in bestWordScores:
+                wordScores[word] *= bonus
         return wordScores, wordScoreOptimize
    
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
@@ -625,39 +631,6 @@ class Board:
             totalScore += 50
 
         wordScores, wordScoreOptimize = self.calculate_word_scores(wordsBuilt)
-        # wordScores = {}  # contains word - points references for each word
-        # wordScoreOptimize = []  # stores words where word bonuses are conflicted
-        # i = 0
-        # for word in wordsBuilt:
-        #     wordScores[i] = 0
-        #     wordBonus = 1
-        #     marks = (
-        #         []
-        #     )  # We can only get bonuses for one word, so only apply corner bonuses once
-        #     for (x, y), tile in word:
-        #         letterScore = tile.points
-        #         if self.get_tile(x, y).locked == False:  # Can't get bonuses for previously played tiles
-        #             crosswords = self.shared((x, y), wordsBuilt)
-        #             bonus = self.get_bonus(x, y)
-        #             if bonus == Board.DOUBLELETTER and not (x, y) in marks:
-        #                 letterScore *= 2
-        #                 marks.append((x, y))
-        #             elif bonus == Board.TRIPLELETTER and not (x, y) in marks:
-        #                 letterScore *= 3
-        #                 marks.append((x, y))
-        #             elif bonus == Board.DOUBLEWORD:
-        #                 wordBonus, wordScoreOptimize = self.apply_double_word_bonus(crosswords, wordBonus, wordScoreOptimize)
-        #             elif bonus == Board.TRIPLEWORD:
-        #                 wordBonus, wordScoreOptimize = self.apply_triple_word_bonus(crosswords, wordBonus, wordScoreOptimize)
-        #         wordScores[i] += letterScore
-        #     wordScores[i] *= wordBonus
-        #     i += 1
-
-        # If are conflicts, then go through all permutations to retrieve the highest possible score
-        if len(wordScoreOptimize) > 0:
-            (best, bestWordScores) = self.wordScoreTreeSearch( wordScoreOptimize, wordScores )
-            for bonus, word in bestWordScores:
-                wordScores[word] *= bonus
 
         # Now add up all the words to make the total score
         for score in list(wordScores.values()):
