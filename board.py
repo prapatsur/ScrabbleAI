@@ -471,6 +471,18 @@ class Board:
 
     def build_word_by_col(self, col, up, down):
         return [((col, y), self.get_tile(col, y)) for y in range(up, down + 1)]
+    
+    def is_crossword_made(self, words_built):
+        """
+        Return True if the word includes a locked tile, otherwise return False.
+        Locked tile means that the tile is already on the board before the current turn.
+        So it means that the word is connected to the existing word on the board.
+        """
+        for word in words_built:
+            for (x, y), tile in word:
+                if tile.locked:
+                    return True
+        return False   
    
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
         """
@@ -513,11 +525,7 @@ class Board:
         colsToCheck = self.cols_to_check(inPlay)
         wordsBuilt.extend(self.build_words_along_cols(colsToCheck))
 
-        crosswordMade = False
-        for word in wordsBuilt:
-            for (x, y), tile in word:
-                if tile.locked:
-                    crosswordMade = True
+        crosswordMade = self.is_crossword_made(wordsBuilt)
 
         if Board.DEBUG_ERRORS:
             validationTimeStart = time.time()
