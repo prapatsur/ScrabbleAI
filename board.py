@@ -414,14 +414,14 @@ class Board:
         return self.rows_to_check(inPlay), self.cols_to_check(inPlay)
     
     def build_words_along_rows(self, rowsToCheck):
-        wordsBuilt = []
+        result = []
         for col, row in rowsToCheck:
             left = self.find_left_bound(col, row)
             right = self.find_right_bound(col, row)
             if left != right:
-                wordsBuilt.append(self.build_word(left, right, row))
-        logger.debug(f"build_words_along_rows\n{rowsToCheck}\n{wordsBuilt}\n")
-        return wordsBuilt
+                result.append(self.build_word(left, right, row))
+        logger.debug(f"build_words_along_rows\n{rowsToCheck}\n{result}\n")
+        return result
 
     def find_left_bound(self, col, row):
         """
@@ -440,7 +440,7 @@ class Board:
         return result
 
     def build_word(self, left, right, row):
-        return [((x, row), self.squares[x][row][0]) for x in range(left, right + 1)]    
+        return [((x, row), self.get_tile(x,row)) for x in range(left, right + 1)]    
     
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
         """

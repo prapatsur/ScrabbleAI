@@ -121,4 +121,19 @@ def test_find_left_n_right_bound():
     left_bound = board.find_left_bound(*a_row)
     assert left_bound == 4
     right_bound = board.find_right_bound(*a_row)
-    assert right_bound == 6  
+    assert right_bound == 6
+
+def test_build_word():
+    board = Board()
+    tile1 = Tile('A', 1)
+    tile2 = Tile('A', 1)
+    tile3 = Tile('A', 1)
+    # place tiles in row 2, starting from column 4
+    board.place_tile(4, 2, tile1)
+    board.place_tile(5, 2, tile2)
+    board.place_tile(6, 2, tile3)
+
+    word = board.build_word(4, 6, 2)
+    assert word == [((4, 2), tile1), 
+                    ((5, 2), tile2), 
+                    ((6, 2), tile3)]
