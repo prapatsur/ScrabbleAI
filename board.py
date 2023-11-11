@@ -391,13 +391,26 @@ class Board:
 
             return (bestScore, bestBonusCombos)
 
-    """
-    Checks if all the words played are valid and calculates the score, used for two purposes
-        1) as the second half of the play() algorithm
-        2) independently for AI verification checks
-    """
-
+    def get_rows_and_cols_to_check(self, inPlay):
+        rowsToCheck = []
+        colsToCheck = []
+        colsSet = set()
+        rowsSet = set()
+        for x, y in inPlay:
+            if x not in colsSet:
+                colsSet.add(x)
+                colsToCheck.append((x, y))
+            if y not in rowsSet:
+                rowsSet.add(y)
+                rowsToCheck.append((x, y))
+        return rowsToCheck, colsToCheck
+    
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
+        """
+        Checks if all the words played are valid and calculates the score, used for two purposes
+            1) as the second half of the play() algorithm
+            2) independently for AI verification checks
+        """
         if Board.DEBUG_ERRORS:
             startTime = time.time()
 
@@ -428,17 +441,18 @@ class Board:
         """
 
         # First build a list of possible word rows and cols (include x and y for the first seed tile)
-        rowsToCheck = []
-        colsToCheck = []
-        colsSet = []
-        rowsSet = []
-        for x, y in inPlay:
-            if not x in colsSet:
-                colsSet.append(x)
-                colsToCheck.append((x, y))
-            if not y in rowsSet:
-                rowsSet.append(y)
-                rowsToCheck.append((x, y))
+        rowsToCheck, colsToCheck = self.get_rows_and_cols_to_check(inPlay)
+        # rowsToCheck = []
+        # colsToCheck = []
+        # colsSet = []
+        # rowsSet = []
+        # for x, y in inPlay:
+        #     if not x in colsSet:
+        #         colsSet.append(x)
+        #         colsToCheck.append((x, y))
+        #     if not y in rowsSet:
+        #         rowsSet.append(y)
+        #         rowsToCheck.append((x, y))
 
         # Build words along rows
         for col, row in rowsToCheck:
