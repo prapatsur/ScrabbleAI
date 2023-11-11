@@ -97,3 +97,9 @@ def test_can_place():
     assert board.can_place(3, 0) == True
     # but cannot place in column 3 and row 3
     assert board.can_place(3, 3) == False
+
+def test_rows_to_check():
+    board = Board()
+    inPlay = [(0, 0), (1, 0), (2, 0), (2, 1)]
+    rowsToCheck = board.rows_to_check(inPlay)
+    assert rowsToCheck == [(0, 0), (2, 1)]

@@ -391,19 +391,50 @@ class Board:
 
             return (bestScore, bestBonusCombos)
 
-    def get_rows_and_cols_to_check(self, inPlay):
+    def rows_to_check(self, inPlay):
         rowsToCheck = []
+        rowsSet = set()
+        for x, y in inPlay:
+            if y not in rowsSet:
+                rowsSet.add(y)
+                rowsToCheck.append((x, y))
+        return rowsToCheck
+
+    def cols_to_check(self, inPlay):
         colsToCheck = []
         colsSet = set()
-        rowsSet = set()
         for x, y in inPlay:
             if x not in colsSet:
                 colsSet.add(x)
                 colsToCheck.append((x, y))
-            if y not in rowsSet:
-                rowsSet.add(y)
-                rowsToCheck.append((x, y))
-        return rowsToCheck, colsToCheck
+        return colsToCheck
+
+    def get_rows_and_cols_to_check(self, inPlay):
+        return self.rows_to_check(inPlay), self.cols_to_check(inPlay)
+    
+    def build_words_along_rows(self, rowsToCheck):
+        wordsBuilt = []
+        for col, row in rowsToCheck:
+            left = self.find_left_bound(col, row)
+            right = self.find_right_bound(col, row)
+            if left != right:
+                wordsBuilt.append(self.build_word(left, right, row))
+        return wordsBuilt
+
+    def find_left_bound(self, col, row):
+        left = col
+        while left - 1 >= 0 and self.squares[left - 1][row][0] is not None:
+            left -= 1
+        return left
+
+    def find_right_bound(self, col, row):
+        right = col
+        while right + 1 < Board.GRID_SIZE and self.squares[right + 1][row][0] is not None:
+            right += 1
+        return right
+
+    def build_word(self, left, right, row):
+        return [((x, row), self.squares[x][row][0]) for x in range(left, right + 1)]    
     
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
         """
@@ -442,38 +473,28 @@ class Board:
 
         # First build a list of possible word rows and cols (include x and y for the first seed tile)
         rowsToCheck, colsToCheck = self.get_rows_and_cols_to_check(inPlay)
-        # rowsToCheck = []
-        # colsToCheck = []
-        # colsSet = []
-        # rowsSet = []
-        # for x, y in inPlay:
-        #     if not x in colsSet:
-        #         colsSet.append(x)
-        #         colsToCheck.append((x, y))
-        #     if not y in rowsSet:
-        #         rowsSet.append(y)
-        #         rowsToCheck.append((x, y))
 
         # Build words along rows
-        for col, row in rowsToCheck:
-            # build left
-            left = col
-            while left - 1 >= 0 and self.squares[left - 1][row][0] != None:
-                left -= 1
+        # for col, row in rowsToCheck:
+        #     # build left
+        #     left = col
+        #     while left - 1 >= 0 and self.squares[left - 1][row][0] != None:
+        #         left -= 1
 
-            # build right
-            right = col
-            while (right + 1 < Board.GRID_SIZE and self.squares[right + 1][row][0] != None ):
-                right += 1
+        #     # build right
+        #     right = col
+        #     while (right + 1 < Board.GRID_SIZE and self.squares[right + 1][row][0] != None ):
+        #         right += 1
 
-            # Add the word built if it has at least 2 letters
-            if left != right:
-                wordsBuilt.append(
-                    [
-                        ((x, row), self.squares[x][row][0])
-                        for x in range(left, right + 1)
-                    ]
-                )
+        #     # Add the word built if it has at least 2 letters
+        #     if left != right:
+        #         wordsBuilt.append(
+        #             [
+        #                 ((x, row), self.squares[x][row][0])
+        #                 for x in range(left, right + 1)
+        #             ]
+        #         )
+        wordsBuilt.extend(self.build_words_along_rows(rowsToCheck))
 
         # Build words along cols
         for col, row in colsToCheck:
