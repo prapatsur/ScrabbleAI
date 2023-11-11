@@ -195,12 +195,12 @@ class Player:
     def givePoints(self, num):
         self.score += num
 
-    """
-	Accessor for score
-	"""
+    # """
+	# Accessor for score
+	# """
 
-    def getScore(self):
-        return score
+    # def getScore(self):
+    #     return score
 
     """
 	Pulses the last score value for the player so we can see per-turn points
