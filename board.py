@@ -393,6 +393,8 @@ class Board:
             return (bestScore, bestBonusCombos)
 
     def rows_to_check(self, inPlay):
+        # TODO: I wonder when we have to return column as well
+        # 
         rowsToCheck = []
         rowsSet = set()
         for x, y in inPlay:
@@ -414,12 +416,14 @@ class Board:
         return self.rows_to_check(inPlay), self.cols_to_check(inPlay)
     
     def build_words_along_rows(self, rowsToCheck):
+        # Build words along rows from the seed position
+        # and expand left and right until we hit a blank on both ends
         result = []
         for col, row in rowsToCheck:
             left = self.find_left_bound(col, row)
             right = self.find_right_bound(col, row)
             if left != right:
-                result.append(self.build_word(left, right, row))
+                result.append(self.build_word_by_row(left, right, row))
         logger.debug(f"build_words_along_rows\n{rowsToCheck}\n{result}\n")
         return result
 
@@ -434,14 +438,43 @@ class Board:
         return result
 
     def find_right_bound(self, col, row):
+        """
+        This method finds the rightmost boundary of a word on the board. 
+        It starts from a given position and moves right until it finds an empty square or reaches the edge of the board.
+        """        
         result = col
         while result+1 < Board.GRID_SIZE and self.get_tile(result+1, row) is not None:
             result += 1
         return result
 
-    def build_word(self, left, right, row):
+    def build_word_by_row(self, left, right, row):
+        """
+        This method constructs a word from the board. It starts from the leftmost position and moves right, collecting tiles until it reaches the rightmost position.
+        """        
         return [((x, row), self.get_tile(x,row)) for x in range(left, right + 1)]    
-    
+
+    def build_words_along_cols(self, colsToCheck):
+        result = []
+        for col, row in colsToCheck:
+            up = self.find_up_bound(col, row)
+            down = self.find_down_bound(col, row)
+            if up != down:
+                result.append(self.build_word_by_col(col, up, down))
+        return result
+
+    def find_up_bound(self, col, row):
+        while row - 1 >= 0 and self.get_tile(col, row - 1) is not None:
+            row -= 1
+        return row
+
+    def find_down_bound(self, col, row):
+        while row + 1 < Board.GRID_SIZE and self.get_tile(col, row + 1) is not None:
+            row += 1
+        return row
+
+    def build_word_by_col(self, col, up, down):
+        return [((col, y), self.get_tile(col, y)) for y in range(up, down + 1)]
+   
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
         """
         Checks if all the words played are valid and calculates the score, used for two purposes
@@ -502,24 +535,25 @@ class Board:
         #         )
         wordsBuilt.extend(self.build_words_along_rows(rowsToCheck))
 
-        # Build words along cols
-        for col, row in colsToCheck:
-            # build up
-            up = row
-            while up - 1 >= 0 and self.squares[col][up - 1][0] != None:
-                up -= 1
+        # # Build words along cols
+        # for col, row in colsToCheck:
+        #     # build up
+        #     up = row
+        #     while up - 1 >= 0 and self.squares[col][up - 1][0] != None:
+        #         up -= 1
 
-            # build down
-            down = row
-            while down + 1 < Board.GRID_SIZE and self.squares[col][down + 1][0] != None:
-                down += 1
+        #     # build down
+        #     down = row
+        #     while down + 1 < Board.GRID_SIZE and self.squares[col][down + 1][0] != None:
+        #         down += 1
 
-            # Add the word built
-            if up != down:
-                wordsBuilt.append(
-                    [((col, y), self.squares[col][y][0])
-                     for y in range(up, down + 1)]
-                )
+        #     # Add the word built
+        #     if up != down:
+        #         wordsBuilt.append(
+        #             [((col, y), self.squares[col][y][0])
+        #              for y in range(up, down + 1)]
+        #         )
+        wordsBuilt.extend(self.build_words_along_cols(colsToCheck))
 
         crosswordMade = False
         for word in wordsBuilt:

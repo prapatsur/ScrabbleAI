@@ -133,7 +133,7 @@ def test_build_word():
     board.place_tile(5, 2, tile2)
     board.place_tile(6, 2, tile3)
 
-    word = board.build_word(4, 6, 2)
+    word = board.build_word_by_row(4, 6, 2)
     assert word == [((4, 2), tile1), 
                     ((5, 2), tile2), 
                     ((6, 2), tile3)]
