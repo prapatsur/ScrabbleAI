@@ -12,6 +12,7 @@ import logging
 logger = logging.getLogger("scrabble_app")
 
 class Board:
+    # DEBUG_ERRORS = False
     DEBUG_ERRORS = True
 
     NORMAL = "normal"
@@ -483,6 +484,29 @@ class Board:
                 if tile.locked:
                     return True
         return False   
+
+    def build_spellings(self, wordsBuilt):
+        result = []
+        for word in wordsBuilt:
+            spelling = "".join(tile.letter for pos, tile in word)
+            result.append(spelling)
+        return result
+
+    def is_valid_word(self, spelling, vocabulary):
+        if not self.dictionary.isValid(spelling, vocabulary):
+            if Board.DEBUG_ERRORS:
+                self.invalidWordCount += 1
+                # print(f"'{spelling}' isn't in the dictionary.")
+            return False
+        return True
+
+    def check_words_in_dictionary(self, wordsBuilt, vocabulary, tilesPlayed, seedRatio):
+        spellings = self.build_spellings(wordsBuilt)
+        for spelling in spellings:
+            if not self.is_valid_word(spelling, vocabulary):
+                self.pullTilesFast(tilesPlayed)
+                return (-1, None, seedRatio)
+        return (1, spellings, seedRatio)
    
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
         """
@@ -497,6 +521,7 @@ class Board:
 
         # If we're doing this step separately from normal play, put the tiles on to run
         # the algorithm
+        # TODO: I wonder if we can remove this step
         if tilesPlayed is not None:
             inPlay = []
             for pos, tile in tilesPlayed:
@@ -542,20 +567,23 @@ class Board:
 
         # TO-DO
         # VALIDATION STEP SIX: Ensure all words in wordsBuilt are in the Scrabble Dictionary
-        spellings = []
-        for word in wordsBuilt:
-            spelling = ""
-            for pos, tile in word:
-                spelling += tile.letter
-            spellings.append(spelling)
-            if not self.dictionary.isValid(spelling, vocabulary):
-                # fail, word isn't a valid scrabble word
-                if Board.DEBUG_ERRORS:
-                    self.invalidWordCount += 1
-                    if tilesPlayed == None:
-                        print("'" + spelling + "' isn't in the dictionary.")
-                self.pullTilesFast(tilesPlayed)
-                return (-1, None, seedRatio)
+        # spellings = []
+        # for word in wordsBuilt:
+        #     spelling = ""
+        #     for pos, tile in word:
+        #         spelling += tile.letter
+        #     spellings.append(spelling)
+        #     if not self.dictionary.isValid(spelling, vocabulary):
+        #         # fail, word isn't a valid scrabble word
+        #         if Board.DEBUG_ERRORS:
+        #             self.invalidWordCount += 1
+        #             if tilesPlayed == None:
+        #                 print("'" + spelling + "' isn't in the dictionary.")
+        #         self.pullTilesFast(tilesPlayed)
+        #         return (-1, None, seedRatio)
+        (totalScore, spellings, seedRatio) = self.check_words_in_dictionary(wordsBuilt, vocabulary, tilesPlayed, seedRatio)
+        if totalScore==-1:
+            return (totalScore, spellings, seedRatio)
 
         if Board.DEBUG_ERRORS:
             scoringTimeStart = time.time()
