@@ -554,7 +554,7 @@ class Board:
             (best, bestWordScores) = self.wordScoreTreeSearch( wordScoreOptimize, wordScores )
             for bonus, word in bestWordScores:
                 wordScores[word] *= bonus
-        return wordScores, wordScoreOptimize
+        return wordScores
    
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
         """
@@ -630,7 +630,7 @@ class Board:
         if len(inPlay) == player.Player.TRAY_SIZE:
             totalScore += 50
 
-        wordScores, wordScoreOptimize = self.calculate_word_scores(wordsBuilt)
+        wordScores = self.calculate_word_scores(wordsBuilt)
 
         # Now add up all the words to make the total score
         for score in list(wordScores.values()):
