@@ -73,7 +73,8 @@ logging.basicConfig(
 
 # Get the logger with the same name ('scrabble_app') that you created earlier
 logger = logging.getLogger("scrabble_app")
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 # Event_state

@@ -8,7 +8,8 @@ import time
 from gui import BEIGE, RED, BLUE, PINK, LBLUE, MASK_COLOR
 from pygame.locals import *
 from views.board_view import draw_letter_prompt, BoardView
-
+import logging
+logger = logging.getLogger("scrabble_app")
 
 class Board:
     DEBUG_ERRORS = True
@@ -419,19 +420,26 @@ class Board:
             right = self.find_right_bound(col, row)
             if left != right:
                 wordsBuilt.append(self.build_word(left, right, row))
+        logger.debug("build_words_along_rows")
+        logger.debug(rowsToCheck)
+        logger.debug(wordsBuilt)
         return wordsBuilt
 
     def find_left_bound(self, col, row):
-        left = col
-        while left - 1 >= 0 and self.squares[left - 1][row][0] is not None:
-            left -= 1
-        return left
+        """
+        This method finds the leftmost boundary of a word on the board. 
+        It starts from a given position and moves left until it finds an empty square or reaches the edge of the board.
+        """
+        result = col
+        while result-1 >= 0 and self.get_tile(result-1, row) is not None:
+            result -= 1
+        return result
 
     def find_right_bound(self, col, row):
-        right = col
-        while right + 1 < Board.GRID_SIZE and self.squares[right + 1][row][0] is not None:
-            right += 1
-        return right
+        result = col
+        while result+1 < Board.GRID_SIZE and self.get_tile(result+1, row) is not None:
+            result += 1
+        return result
 
     def build_word(self, left, right, row):
         return [((x, row), self.squares[x][row][0]) for x in range(left, right + 1)]    
