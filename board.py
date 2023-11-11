@@ -507,6 +507,22 @@ class Board:
                 self.pullTilesFast(tilesPlayed)
                 return (-1, None, seedRatio)
         return (1, spellings, seedRatio)
+
+    def apply_double_word_bonus(self, crosswords, wordBonus, wordScoreOptimize):
+        if len(crosswords) <= 1:
+            wordBonus *= 2
+        else:
+            if not (2, crosswords) in wordScoreOptimize:
+                wordScoreOptimize.append((2, crosswords))
+        return wordBonus, wordScoreOptimize  
+   
+    def apply_triple_word_bonus(self, crosswords, wordBonus, wordScoreOptimize):
+        if len(crosswords) <= 1:
+            wordBonus *= 3
+        else:
+            if not (3, crosswords) in wordScoreOptimize:
+                wordScoreOptimize.append((3, crosswords))
+        return wordBonus, wordScoreOptimize
    
     def validateWords(self, isFirstTurn, tilesPlayed=None, inPlay=None, vocabulary=-1):
         """
@@ -607,11 +623,10 @@ class Board:
             )  # We can only get bonuses for one word, so only apply corner bonuses once
             for (x, y), tile in word:
                 letterScore = tile.points
-                if (
-                    self.get_tile(x, y).locked == False
-                ):  # Can't get bonuses for previously played tiles
+                if self.get_tile(x, y).locked == False:  # Can't get bonuses for previously played tiles
                     crosswords = self.shared((x, y), wordsBuilt)
                     bonus = self.get_bonus(x, y)
+                    # marks.extend(self.apply_bonus(bonus, marks, letterScore, crosswords, wordScoreOptimize))
                     if bonus == Board.DOUBLELETTER and not (x, y) in marks:
                         letterScore *= 2
                         marks.append((x, y))
@@ -619,17 +634,19 @@ class Board:
                         letterScore *= 3
                         marks.append((x, y))
                     elif bonus == Board.DOUBLEWORD:
-                        if len(crosswords) <= 1:
-                            wordBonus *= 2
-                        else:
-                            if not (2, crosswords) in wordScoreOptimize:
-                                wordScoreOptimize.append((2, crosswords))
+                        wordBonus, wordScoreOptimize = self.apply_double_word_bonus(crosswords, wordBonus, wordScoreOptimize)
+                        # if len(crosswords) <= 1:
+                        #     wordBonus *= 2
+                        # else:
+                        #     if not (2, crosswords) in wordScoreOptimize:
+                        #         wordScoreOptimize.append((2, crosswords))
                     elif bonus == Board.TRIPLEWORD:
-                        if len(crosswords) <= 1:
-                            wordBonus *= 3
-                        else:
-                            if not (3, crosswords) in wordScoreOptimize:
-                                wordScoreOptimize.append((3, crosswords))
+                        wordBonus, wordScoreOptimize = self.apply_triple_word_bonus(crosswords, wordBonus, wordScoreOptimize)
+                        # if len(crosswords) <= 1:
+                        #     wordBonus *= 3
+                        # else:
+                        #     if not (3, crosswords) in wordScoreOptimize:
+                        #         wordScoreOptimize.append((3, crosswords))
                 wordScores[i] += letterScore
             wordScores[i] *= wordBonus
             i += 1
