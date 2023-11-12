@@ -28,7 +28,7 @@ class Bag:
 
 		
 		#DEBUG - Small bag for debugging total game states
-		# self.add(' ', 0, 2)
+		self.add(' ', 0, 2)
 		self.add('E', 1, 3)
 		self.add('S', 1, 3)
 		self.add('A', 1, 3)

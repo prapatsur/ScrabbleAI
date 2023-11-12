@@ -7,7 +7,7 @@ import wordfrequency
 import time
 from gui import BEIGE, RED, BLUE, PINK, LBLUE, MASK_COLOR
 from pygame.locals import *
-from views.board_view import draw_letter_prompt, BoardView
+from views.board_view import BoardView
 import logging
 logger = logging.getLogger("scrabble_app")
 
@@ -729,7 +729,7 @@ class Board:
         assert blank.isBlank
 
         letter = None
-        draw_letter_prompt(self.board_view.DISPLAYSURF, self.board_view.ALPHASURF)
+        self.board_view.draw_letter_prompt()
         while letter == None:
             for event in pygame.event.get():
                 if event.type == pygame.KEYUP and event.key in range(
