@@ -743,4 +743,4 @@ class Board:
 
     def draw(self, DISPLAYSURF, ALPHASURF):
         """Draws the entire board with any placed tiles"""
-        self.board_view.draw(DISPLAYSURF, ALPHASURF)
+        self.board_view.draw()
