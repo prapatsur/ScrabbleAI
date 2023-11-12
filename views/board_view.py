@@ -108,49 +108,6 @@ class BoardView:
                     highlight = not tile.locked
                     tile.draw(left, top, self.DISPLAYSURF, highlight)
 
-    # def draw_each_square(self):
-    #     # draw each square
-    #     for x in range(self.board.GRID_SIZE):
-    #         for y in range(self.board.GRID_SIZE):
-    #             # draw position
-    #             left = (
-    #                     x * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
-    #                     + self.board.SQUARE_BORDER
-    #                     + self.board.BOARD_LEFT
-    #             )
-    #             top = (
-    #                     y * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
-    #                     + self.board.SQUARE_BORDER
-    #                     + self.board.BOARD_TOP
-    #             )
-
-    #             tile = self.board.get_tile(x, y)
-    #             bonus = self.board.get_bonus(x, y)
-    #             if bonus == self.board.NORMAL:
-    #                 color = BEIGE
-    #             elif bonus == self.board.DOUBLEWORD:
-    #                 color = PINK
-    #             elif bonus == self.board.TRIPLEWORD:
-    #                 color = RED
-    #             elif bonus == self.board.DOUBLELETTER:
-    #                 color = LBLUE
-    #             elif bonus == self.board.TRIPLELETTER:
-    #                 color = BLUE
-    #             else:
-    #                 assert False
-    #             pygame.draw.rect(
-    #                 self.DISPLAYSURF,
-    #                 color,
-    #                 (left, top, self.board.SQUARE_SIZE, self.board.SQUARE_SIZE),
-    #             )
-
-    #             if tile is not None:
-    #                 if tile.locked:
-    #                     highlight = False
-    #                 else:
-    #                     highlight = True
-    #                 tile.draw(left, top, self.DISPLAYSURF, highlight)
-
     def draw_letter_prompt(self):
         """ Draws a letter prompt to ask for the blank letter """
         # delegate tasks to letter_prompt_view
