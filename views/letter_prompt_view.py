@@ -1,3 +1,12 @@
+import pygame
+from gui import MASK_COLOR
+
+# Prompt Details
+PROMPT_LEFT = 145
+PROMPT_TOP = 200
+PROMPT_WIDTH = 250
+PROMPT_HEIGHT = 75
+PROMPT_FONT = None
 class LetterPromptView:
     def __init__(self, display_surf, alpha_surf):
         self.DISPLAYSURF = display_surf

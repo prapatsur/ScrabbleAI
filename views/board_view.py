@@ -1,12 +1,6 @@
 import pygame
 from gui import MASK_COLOR, BEIGE, PINK, RED, LBLUE, BLUE
-
-# Prompt Details
-PROMPT_LEFT = 145
-PROMPT_TOP = 200
-PROMPT_WIDTH = 250
-PROMPT_HEIGHT = 75
-PROMPT_FONT = None
+from views.letter_prompt_view import LetterPromptView
 
 class BoardView:
     def __init__(self, board):
@@ -14,7 +8,8 @@ class BoardView:
         pygame.init()
         self.DISPLAYSURF = pygame.display.set_mode((800, 600))
         self.ALPHASURF = self.DISPLAYSURF.convert_alpha()
-        pygame.display.set_caption("Wordsmith - Prapat edition")       
+        pygame.display.set_caption("Wordsmith - Prapat edition") 
+        self.letter_prompt_view = LetterPromptView(self.DISPLAYSURF, self.ALPHASURF)      
 
     def draw(self):
         # draw each square
@@ -107,51 +102,5 @@ class BoardView:
 
     def draw_letter_prompt(self):
         """ Draws a letter prompt to ask for the blank letter """
-        # Draw prompt shadow
-        self.ALPHASURF.fill((0, 0, 0, 0))
-        pygame.draw.rect(
-            self.ALPHASURF,
-            MASK_COLOR,
-            (
-                PROMPT_LEFT,
-                PROMPT_TOP,
-                PROMPT_WIDTH + 4,
-                PROMPT_HEIGHT + 4,
-            ),
-        )
-
-        # Draw prompt box
-        pygame.draw.rect(
-            self.ALPHASURF,
-            (0, 0, 0, 200),
-            (
-                PROMPT_LEFT - 1,
-                PROMPT_TOP - 1,
-                PROMPT_WIDTH + 2,
-                PROMPT_HEIGHT + 2,
-            ),
-        )
-        pygame.draw.rect(
-            self.ALPHASURF,
-            (255, 255, 255, 200),
-            (
-                PROMPT_LEFT,
-                PROMPT_TOP,
-                PROMPT_WIDTH,
-                PROMPT_HEIGHT,
-            ),
-        )
-
-        self.DISPLAYSURF.blit(self.ALPHASURF, (0, 0))
-
-        # Draw text
-        PROMPT_FONT = pygame.font.Font("freesansbold.ttf", 20)
-        promptText = PROMPT_FONT.render(
-            "TYPE A LETTER A-Z", True, (0, 0, 0, 200), (255, 255, 255, 200)
-        )
-        promptRect = promptText.get_rect()
-        promptRect.center = (
-            PROMPT_LEFT + PROMPT_WIDTH / 2,
-            PROMPT_TOP + PROMPT_HEIGHT / 2,
-        )
-        self.DISPLAYSURF.blit(promptText, promptRect)
+        # delegate tasks to letter_prompt_view
+        self.letter_prompt_view.draw()
