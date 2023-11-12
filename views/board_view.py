@@ -16,23 +16,23 @@ class BoardView:
         self.ALPHASURF = self.DISPLAYSURF.convert_alpha()
         pygame.display.set_caption("Wordsmith - Prapat edition")       
 
-    def drawDirty(self, DISPLAYSURF, ALPHASURF):
-        for x in range(self.board.GRID_SIZE):
-            for y in range(self.board.GRID_SIZE):
-                # draw position
-                tile = self.board.get_tile(x, y)
-                if tile is not None:
-                    left = (
-                        x * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
-                        + self.board.SQUARE_BORDER
-                        + self.board.BOARD_LEFT
-                    )
-                    top = (
-                        y * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
-                        + self.board.SQUARE_BORDER
-                        + self.board.BOARD_TOP
-                    )
-                    tile.drawDirty(left, top, DISPLAYSURF, (not tile.locked))
+    # def drawDirty(self, DISPLAYSURF, ALPHASURF):
+    #     for x in range(self.board.GRID_SIZE):
+    #         for y in range(self.board.GRID_SIZE):
+    #             # draw position
+    #             tile = self.board.get_tile(x, y)
+    #             if tile is not None:
+    #                 left = (
+    #                     x * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
+    #                     + self.board.SQUARE_BORDER
+    #                     + self.board.BOARD_LEFT
+    #                 )
+    #                 top = (
+    #                     y * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
+    #                     + self.board.SQUARE_BORDER
+    #                     + self.board.BOARD_TOP
+    #                 )
+    #                 tile.drawDirty(left, top, DISPLAYSURF, (not tile.locked))
 
     def draw(self):
         # draw each square
