@@ -434,7 +434,6 @@ class ScrabbleGame:
         self.the_board.draw(DISPLAYSURF, ALPHASURF)
         self.get_current_player().drawTray(DISPLAYSURF)
         self.drawScore()
-        # self.gameMenu.display()
         self.gameMenu.display()
 
     def swap_points(self):

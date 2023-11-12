@@ -38,8 +38,7 @@ class Board:
         self.rowLock = -1
 
         # Load the dictionary
-        self.dictionary = dictionarywords.DictionaryWords(
-            Board.DICTIONARY_FILE)
+        self.dictionary = dictionarywords.DictionaryWords(Board.DICTIONARY_FILE)
 
         # Load the file keeping track of word usage
         self.wordfreq = wordfrequency.WordFrequency()

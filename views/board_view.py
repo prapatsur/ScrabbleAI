@@ -12,6 +12,10 @@ class BoardView:
         self.letter_prompt_view = LetterPromptView(self.DISPLAYSURF, self.ALPHASURF)      
 
     def draw(self):
+        self.draw_game_board()
+
+    def draw_game_board(self):
+        """ Draws the game board """
         self.draw_each_square()
         self.draw_lock_shading()
 
@@ -61,36 +65,39 @@ class BoardView:
                              (x2, top, right - x2, bottom - top))
         self.DISPLAYSURF.blit(self.ALPHASURF, (0, 0))
 
+    def calculate_position(self, x, y):
+        left = (
+            x * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
+            + self.board.SQUARE_BORDER
+            + self.board.BOARD_LEFT
+        )
+        top = (
+            y * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
+            + self.board.SQUARE_BORDER
+            + self.board.BOARD_TOP
+        )
+        return left, top
+
+    def determine_color(self, bonus):
+        if bonus == self.board.NORMAL:
+            return BEIGE
+        elif bonus == self.board.DOUBLEWORD:
+            return PINK
+        elif bonus == self.board.TRIPLEWORD:
+            return RED
+        elif bonus == self.board.DOUBLELETTER:
+            return LBLUE
+        elif bonus == self.board.TRIPLELETTER:
+            return BLUE
+        else:
+            assert False
+
     def draw_each_square(self):
-        # draw each square
         for x in range(self.board.GRID_SIZE):
             for y in range(self.board.GRID_SIZE):
-                # draw position
-                left = (
-                        x * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
-                        + self.board.SQUARE_BORDER
-                        + self.board.BOARD_LEFT
-                )
-                top = (
-                        y * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
-                        + self.board.SQUARE_BORDER
-                        + self.board.BOARD_TOP
-                )
-
+                left, top = self.calculate_position(x, y)
                 tile = self.board.get_tile(x, y)
-                bonus = self.board.get_bonus(x, y)
-                if bonus == self.board.NORMAL:
-                    color = BEIGE
-                elif bonus == self.board.DOUBLEWORD:
-                    color = PINK
-                elif bonus == self.board.TRIPLEWORD:
-                    color = RED
-                elif bonus == self.board.DOUBLELETTER:
-                    color = LBLUE
-                elif bonus == self.board.TRIPLELETTER:
-                    color = BLUE
-                else:
-                    assert False
+                color = self.determine_color(self.board.get_bonus(x, y))
                 pygame.draw.rect(
                     self.DISPLAYSURF,
                     color,
@@ -98,11 +105,51 @@ class BoardView:
                 )
 
                 if tile is not None:
-                    if tile.locked:
-                        highlight = False
-                    else:
-                        highlight = True
+                    highlight = not tile.locked
                     tile.draw(left, top, self.DISPLAYSURF, highlight)
+
+    # def draw_each_square(self):
+    #     # draw each square
+    #     for x in range(self.board.GRID_SIZE):
+    #         for y in range(self.board.GRID_SIZE):
+    #             # draw position
+    #             left = (
+    #                     x * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
+    #                     + self.board.SQUARE_BORDER
+    #                     + self.board.BOARD_LEFT
+    #             )
+    #             top = (
+    #                     y * (self.board.SQUARE_SIZE + self.board.SQUARE_BORDER)
+    #                     + self.board.SQUARE_BORDER
+    #                     + self.board.BOARD_TOP
+    #             )
+
+    #             tile = self.board.get_tile(x, y)
+    #             bonus = self.board.get_bonus(x, y)
+    #             if bonus == self.board.NORMAL:
+    #                 color = BEIGE
+    #             elif bonus == self.board.DOUBLEWORD:
+    #                 color = PINK
+    #             elif bonus == self.board.TRIPLEWORD:
+    #                 color = RED
+    #             elif bonus == self.board.DOUBLELETTER:
+    #                 color = LBLUE
+    #             elif bonus == self.board.TRIPLELETTER:
+    #                 color = BLUE
+    #             else:
+    #                 assert False
+    #             pygame.draw.rect(
+    #                 self.DISPLAYSURF,
+    #                 color,
+    #                 (left, top, self.board.SQUARE_SIZE, self.board.SQUARE_SIZE),
+    #             )
+
+    #             if tile is not None:
+    #                 if tile.locked:
+    #                     highlight = False
+    #                 else:
+    #                     highlight = True
+    #                 tile.draw(left, top, self.DISPLAYSURF, highlight)
 
     def draw_letter_prompt(self):
         """ Draws a letter prompt to ask for the blank letter """
