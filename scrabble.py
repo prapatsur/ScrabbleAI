@@ -495,16 +495,16 @@ class ScrabbleGame:
 
 class MainScreen:
     def __init__(self):
-        self.menu = MainMenu()
+        self.main_menu = MainMenu()
 
     def play_as_challenge(self):
         # if it's real game, increase gameplay
         UserData().increase_gameplay()
         ScrabbleGame().runGame()
-        self.menu.refresh_achievements()
+        self.main_menu.refresh_achievements()
 
     def highlight_hovered_menu(self, mouse_pos):
-        self.menu.update(mouse_pos)
+        self.main_menu.update(mouse_pos)
 
     def act_based_on_selected_menu(self, selected_menu):
         if selected_menu == MainMenu.NEW_GAME:
@@ -523,7 +523,7 @@ class MainScreen:
 
                 selected_menu = ""
                 if event.type == MOUSEBUTTONUP:
-                    selected_menu = self.menu.get_selected_menu(event.pos)
+                    selected_menu = self.main_menu.get_selected_menu(event.pos)
                     self.act_based_on_selected_menu(selected_menu)
 
                 if event.type == QUIT or selected_menu == MainMenu.EXIT_GAME:
@@ -534,7 +534,7 @@ class MainScreen:
                     ScrabbleGame(useHintBox=True).runGame()
 
                 # update the whole display
-                self.menu.display()
+                self.main_menu.display()
                 pygame.display.flip()
                 pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
 
