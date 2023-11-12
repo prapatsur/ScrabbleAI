@@ -28,3 +28,4 @@ MASK_COLOR = (0, 0, 0, 100)
 
 # text box position
 MAIN_MENU_TEXTBOX_POS = (400, 400)
+

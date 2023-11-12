@@ -284,7 +284,7 @@ class ScrabbleGame:
             )
         TIC.play()
         if success == "ASK":
-            self.the_board.askForLetter(blank, DISPLAYSURF, ALPHASURF)
+            self.the_board.askForLetter(blank, ALPHASURF)
         self.get_current_player().placeTentative()
         return None
 

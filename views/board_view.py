@@ -11,6 +11,10 @@ PROMPT_FONT = None
 class BoardView:
     def __init__(self, board):
         self.board = board
+        pygame.init()
+        self.DISPLAYSURF = pygame.display.set_mode((800, 600))
+        self.ALPHASURF = self.DISPLAYSURF.convert_alpha()
+        pygame.display.set_caption("Wordsmith - Prapat edition")       
 
     def drawDirty(self, DISPLAYSURF, ALPHASURF):
         for x in range(self.board.GRID_SIZE):

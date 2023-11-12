@@ -21,22 +21,16 @@ class Menu:
         self.rect = (0, 0, 800, 600)
         self.background = WHITE
 
-    """
-	Goes through all buttons and returns the name of the button, if it was clicked
-	"""
-
     def get_selected_menu(self, mouse_position):
+        """ Goes through all buttons and returns the name of the button, if it was clicked """        
         for key, button in self.buttons.items():
             if button.within(*mouse_position):
                 CLICK.play()
                 return key
         return ""
 
-    """
-	Goes through and updates all buttons, redrawing them if they are hovered
-	"""
-
     def update(self, mouse_position=None):
+        """ Goes through and updates all buttons, redrawing them if they are hovered """        
         assert mouse_position is not None
         for button in list(self.buttons.values()):
             button.update(mouse_position)

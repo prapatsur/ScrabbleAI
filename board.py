@@ -724,12 +724,12 @@ class Board:
                 return True
         return False        
 
-    def askForLetter(self, blank, DISPLAYSURF, ALPHASURF):
+    def askForLetter(self, blank, ALPHASURF):
         """ Prompts player to set a letter for the blank character """
         assert blank.isBlank
 
         letter = None
-        draw_letter_prompt(DISPLAYSURF, ALPHASURF)
+        draw_letter_prompt(self.board_view.DISPLAYSURF, ALPHASURF)
         while letter == None:
             for event in pygame.event.get():
                 if event.type == pygame.KEYUP and event.key in range(
