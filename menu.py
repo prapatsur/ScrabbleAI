@@ -39,8 +39,7 @@ class Menu:
     def update(self, mouse_position=None):
         assert mouse_position is not None
         for button in list(self.buttons.values()):
-            # button.update(mouse_position)
-            button.zz_update(mouse_position)
+            button.update(mouse_position)
 
     def within(self, mouseX, mouseY):
         (left, top, width, height) = self.rect
@@ -51,15 +50,10 @@ class Menu:
             and mouseY <= top + height
         )
 
-    # def display(self):
-    #     pygame.draw.rect(DISPLAYSURF, self.background, self.rect)
-    #     for button in list(self.buttons.values()):
-    #         button.redraw()
-
-    def zz_display(self):
+    def display(self):
         pygame.draw.rect(DISPLAYSURF, self.background, self.rect)
         for button in list(self.buttons.values()):
-            button.zz_draw()
+            button.draw()
 
 class MainMenu(Menu):
     NEW_GAME = "new"
@@ -138,8 +132,6 @@ class MainMenu(Menu):
 
         return text
 
-
-# ==================== GAME MENU =====================
 
 
 class GameMenu(Menu):

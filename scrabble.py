@@ -336,8 +336,6 @@ class ScrabbleGame:
                 # 4. place tile on tray
 
                 self.inHand = self.tileGrab()
-                # ?:why redraw everything here
-                self.redrawEverything()
 
             # automatically start a new game for training purposes
             if ( self.gameOver and TRAINING_FLAG ):  
@@ -347,20 +345,10 @@ class ScrabbleGame:
             if self.event_state.back_to_mainscreen:
                 still_playing = False
 
-            # self.redrawNecessary()
-            # pygame.display.update()
+            # update the whole display
             self.redrawEverything()
-            # self.gameMenu.zz_display()
             pygame.display.flip()
             pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
-
-    # """
-	# Function which redraws only animated elements
-	# """
-
-    # def redrawNecessary(self):
-    #     self.the_board.drawDirty(DISPLAYSURF, ALPHASURF)
-    #     self.drawScore()
 
     def draw_text(self, text, left, top, color):
         """draw text and return rect of the draw area"""
@@ -451,7 +439,7 @@ class ScrabbleGame:
         self.get_current_player().drawTray(DISPLAYSURF)
         self.drawScore()
         # self.gameMenu.display()
-        self.gameMenu.zz_display()
+        self.gameMenu.display()
 
     def swap_points(self):
         surplus = 0
@@ -464,12 +452,11 @@ class ScrabbleGame:
 
         self.players[self.active].give_points(surplus)
 
-    """
-	Ends the game, taking the tray value from all unfinished players, subtracting the value
-	from their score and giving it to the active player (who just finished)
-	"""
-
     def endGame(self, stuck=False):
+        """
+        Ends the game, taking the tray value from all unfinished players, subtracting the value
+        from their score and giving it to the active player (who just finished)
+        """        
         userdata = self.user_data_file.get_user_data()
         # Do points swaps only if someone could finish
         # if not stuck:
@@ -538,7 +525,6 @@ class MainScreen:
                 if event.type == MOUSEBUTTONUP:
                     selected_menu = self.menu.get_selected_menu(event.pos)
                     self.act_based_on_selected_menu(selected_menu)
-                    # self.menu.display()  # redraw the whole menu after coming back from a game
 
                 if event.type == QUIT or selected_menu == MainMenu.EXIT_GAME:
                     pygame.quit()
@@ -546,8 +532,9 @@ class MainScreen:
 
                 if TRAINING_FLAG:
                     ScrabbleGame(useHintBox=True).runGame()
-                # self.menu.display()
-                self.menu.zz_display()
+
+                # update the whole display
+                self.menu.display()
                 pygame.display.flip()
                 pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
 
