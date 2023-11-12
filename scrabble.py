@@ -311,9 +311,8 @@ class ScrabbleGame:
         # Start a new game
         self.setup_game()
 
-        still_playing = True
         # main game loop
-        while still_playing:
+        while True:
             self.gather_events()
 
             if self.use_hint():
@@ -338,12 +337,9 @@ class ScrabbleGame:
                 self.inHand = self.tileGrab()
 
             # automatically start a new game for training purposes
-            if ( self.gameOver and TRAINING_FLAG ):  
-                still_playing = False
-
             # if user click on QUIT button, go back to main screen
-            if self.event_state.back_to_mainscreen:
-                still_playing = False
+            if (self.gameOver and TRAINING_FLAG) or self.event_state.back_to_mainscreen:
+                break
 
             # update the whole display
             self.redrawEverything()
