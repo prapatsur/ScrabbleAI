@@ -44,13 +44,6 @@ class Tile:
 		self.lastPulseTime = 0
 		self.dirty = False
 		
-	# '''
-	# Redraws only if the tile is animating
-	# '''	
-	# def drawDirty(self, left, top, DISPLAYSURF, highlight = False):
-	# 	if self.dirty:
-	# 		self.draw(left,top,DISPLAYSURF,highlight)
-		
 	'''
 	Draws the tile on the screen
 	'''
