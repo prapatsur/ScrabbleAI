@@ -2,6 +2,14 @@ import pygame
 from gui import MASK_COLOR, BEIGE, PINK, RED, LBLUE, BLUE
 from views.letter_prompt_view import LetterPromptView
 
+BONUS_COLOR_MAP = {
+    'normal': BEIGE,
+    'doubleword': PINK,
+    'tripleword': RED,
+    'doubleletter': LBLUE,
+    'tripleletter': BLUE,
+}
+
 class BoardView:
     def __init__(self, board):
         self.board = board
@@ -78,26 +86,12 @@ class BoardView:
         )
         return left, top
 
-    def determine_color(self, bonus):
-        if bonus == self.board.NORMAL:
-            return BEIGE
-        elif bonus == self.board.DOUBLEWORD:
-            return PINK
-        elif bonus == self.board.TRIPLEWORD:
-            return RED
-        elif bonus == self.board.DOUBLELETTER:
-            return LBLUE
-        elif bonus == self.board.TRIPLELETTER:
-            return BLUE
-        else:
-            assert False
-
     def draw_each_square(self):
         for x in range(self.board.GRID_SIZE):
             for y in range(self.board.GRID_SIZE):
                 left, top = self.calculate_position(x, y)
                 tile = self.board.get_tile(x, y)
-                color = self.determine_color(self.board.get_bonus(x, y))
+                color = BONUS_COLOR_MAP.get(self.board.get_bonus(x, y), BEIGE)
                 pygame.draw.rect(
                     self.DISPLAYSURF,
                     color,
