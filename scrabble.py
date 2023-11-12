@@ -47,6 +47,7 @@ import player
 import tile
 from gui import DARK_BROWN, WHITE
 from gui import DISPLAYSURF, ALPHASURF, TIC, TICTIC, DINGDING, SCRIFFLE, CLICK
+from settings import FPS, SCREEN_WIDTH, SCREEN_HEIGHT
 from menu import MainMenu, GameMenu
 from userdata import UserData
 
@@ -533,6 +534,47 @@ class MainScreen:
                 pygame.display.flip()
                 pygame.time.Clock().tick(30)  # cap the frame rate 30 fps
 
+class MenuScreen:
+    pass
+class GameScreen:
+    pass
+
+class zz_ScrabbleGame:
+    def __init__(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption('Scrabble Game')
+
+        # Load screens
+        self.menu_screen = MenuScreen(self)
+        self.game_screen = GameScreen(self)
+
+        # Start with the menu screen
+        self.current_screen = self.menu_screen
+
+        self.clock = pygame.time.Clock()
+
+    def run(self):
+        while True:
+            # Event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                self.current_screen.handle_event(event)
+
+            # Update screen
+            self.current_screen.update()
+            
+            # Render screen
+            self.current_screen.render(self.screen)
+            pygame.display.flip()
+
+            # Ensure program maintains a rate of FPS frames per second
+            self.clock.tick(FPS)
+
+    def switch_to_screen(self, new_screen):
+        self.current_screen = new_screen
 
 if __name__ == "__main__":
     if sys.version_info < (3, 10):
