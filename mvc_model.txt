@@ -2,7 +2,7 @@ Directory structure I got from ChatGPT how I should structure my code in MVC pat
 
 ScrabbleGame/
 │
-├── main.py            # Entry point of the game, sets up the MVC components
+├── scrabble.py            # Entry point of the game, sets up the MVC components
 │
 ├── controllers/       # Controllers handle the game flow and user input
 │   └── game_controller.py
