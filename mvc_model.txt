@@ -1,0 +1,31 @@
+Directory structure I got from ChatGPT how I should structure my code in MVC pattern
+
+ScrabbleGame/
+│
+├── main.py            # Entry point of the game, sets up the MVC components
+│
+├── controllers/       # Controllers handle the game flow and user input
+│   └── game_controller.py
+│
+├── models/            # The business logic and state of your game
+│   ├── game_model.py  # Game logic, scoring, and state
+│   ├── player.py      # Player state and actions
+│   ├── tile.py        # Tile state and behavior
+│   └── board.py       # Board state and behavior
+│
+├── views/             # The GUI components of your game
+│   ├── game_view.py   # Main game screen and game-related interactions
+│   ├── menu_view.py   # Start menu, game over screens, etc.
+│   └── assets/        # Static files like images, fonts, sounds, etc.
+│       ├── images/
+│       ├── fonts/
+│       └── sounds/
+│
+├── utils/             # Utility functions and classes that support MVC components
+│   ├── constants.py   # Constants like screen size, colors, etc.
+│   └── helpers.py     # Helper functions
+│
+└── tests/             # Automated tests for your game
+    ├── test_game_model.py
+    ├── test_player.py
+    └── test_board.py
