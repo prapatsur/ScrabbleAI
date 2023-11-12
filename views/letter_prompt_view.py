@@ -14,19 +14,24 @@ class LetterPromptView:
 
     def draw(self):
         """ Draws a letter prompt to ask for the blank letter """
-        # Draw prompt shadow
-        self.ALPHASURF.fill((0, 0, 0, 0))
-        pygame.draw.rect(
-            self.ALPHASURF,
-            MASK_COLOR,
-            (
-                PROMPT_LEFT,
-                PROMPT_TOP,
-                PROMPT_WIDTH + 4,
-                PROMPT_HEIGHT + 4,
-            ),
-        )
+        self.draw_prompt_shadow()
+        self.draw_prompt_box()
+        self.draw_prompt_text()
 
+    def draw_prompt_text(self):
+        # Draw text
+        PROMPT_FONT = pygame.font.Font("freesansbold.ttf", 20)
+        promptText = PROMPT_FONT.render(
+            "TYPE A LETTER A-Z", True, (0, 0, 0, 200), (255, 255, 255, 200)
+        )
+        promptRect = promptText.get_rect()
+        promptRect.center = (
+            PROMPT_LEFT + PROMPT_WIDTH / 2,
+            PROMPT_TOP + PROMPT_HEIGHT / 2,
+        )
+        self.DISPLAYSURF.blit(promptText, promptRect)
+
+    def draw_prompt_box(self):
         # Draw prompt box
         pygame.draw.rect(
             self.ALPHASURF,
@@ -48,17 +53,18 @@ class LetterPromptView:
                 PROMPT_HEIGHT,
             ),
         )
-
         self.DISPLAYSURF.blit(self.ALPHASURF, (0, 0))
 
-        # Draw text
-        PROMPT_FONT = pygame.font.Font("freesansbold.ttf", 20)
-        promptText = PROMPT_FONT.render(
-            "TYPE A LETTER A-Z", True, (0, 0, 0, 200), (255, 255, 255, 200)
+    def draw_prompt_shadow(self):
+        # Draw prompt shadow
+        self.ALPHASURF.fill((0, 0, 0, 0))
+        pygame.draw.rect(
+            self.ALPHASURF,
+            MASK_COLOR,
+            (
+                PROMPT_LEFT,
+                PROMPT_TOP,
+                PROMPT_WIDTH + 4,
+                PROMPT_HEIGHT + 4,
+            ),
         )
-        promptRect = promptText.get_rect()
-        promptRect.center = (
-            PROMPT_LEFT + PROMPT_WIDTH / 2,
-            PROMPT_TOP + PROMPT_HEIGHT / 2,
-        )
-        self.DISPLAYSURF.blit(promptText, promptRect)
