@@ -143,7 +143,7 @@ class ScrabbleGame:
     def get_current_player(self):
         return self.current_player
 
-    def ask_for_hint(self):
+    def use_hint(self):
         """return true if user hit hint box or training flag is on and it's not computer turn"""
         return (
                 (self.event_state.ask_hint or TRAINING_FLAG)
@@ -316,7 +316,7 @@ class ScrabbleGame:
         while still_playing:
             self.gather_events()
 
-            if self.ask_for_hint():
+            if self.use_hint():
                 # take back what's already on the board
                 self.pull_tiles_back_to_tray()
                 self.place_hinted_tiles()
