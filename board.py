@@ -741,10 +741,6 @@ class Board:
         # Now set the letter
         blank.letter = letter
 
-    def drawDirty(self, DISPLAYSURF, ALPHASURF):
-        """Draws only the tiles which are animating"""
-        self.board_view.drawDirty(DISPLAYSURF, ALPHASURF)
-
     def draw(self, DISPLAYSURF, ALPHASURF):
         """Draws the entire board with any placed tiles"""
         self.board_view.draw(DISPLAYSURF, ALPHASURF)
